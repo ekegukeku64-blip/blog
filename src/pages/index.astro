@@ -37,19 +37,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     if (v) {
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
       if (!isMobile) {
-        const loadAndPlay = () => {
+        let videoLoaded = false;
+        const loadVideo = () => {
+          if (videoLoaded) return;
+          videoLoaded = true;
           if (!v.src) {
             v.src = '/blog/maple.mp4';
             v.load();
           }
           v.play().catch(() => {});
         };
-        if (window.requestIdleCallback) {
-          requestIdleCallback(loadAndPlay, { timeout: 3000 });
-        } else {
-          setTimeout(loadAndPlay, 1500);
-        }
-        document.addEventListener('click', () => v.play().catch(() => {}), { once: true });
+        window.addEventListener('load', () => {
+          let scrollFired = false;
+          const onScroll = () => { if (!scrollFired) { scrollFired = true; setTimeout(loadVideo, 2000); } };
+          window.addEventListener('scroll', onScroll, { once: true, passive: true });
+          document.addEventListener('click', onScroll, { once: true });
+          setTimeout(() => { if (!scrollFired) { scrollFired = true; loadVideo(); } }, 15000);
+        });
       }
     }
   </script>

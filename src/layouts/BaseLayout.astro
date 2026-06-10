@@ -4,10 +4,9 @@ import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
-import '@fontsource/noto-serif-sc/chinese-simplified-400.css';
-import '@fontsource/noto-serif-sc/chinese-simplified-600.css';
-import '@fontsource/noto-serif-sc/chinese-simplified-700.css';
 import '@fontsource/jetbrains-mono/400.css';
+import font400Woff2 from '@fontsource/noto-serif-sc/files/noto-serif-sc-chinese-simplified-400-normal.woff2?url';
+import font700Woff2 from '@fontsource/noto-serif-sc/files/noto-serif-sc-chinese-simplified-700-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BackToTop from '../components/BackToTop.astro';
@@ -55,6 +54,22 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <meta name="twitter:site" content="@moku_blog" />
     <meta name="author" content="又逢雨季" />
     <title>{title} | 墨迹博客</title>
+    <style is:inline>
+      @font-face {
+        font-family: 'Noto Serif SC';
+        font-style: normal;
+        font-display: optional;
+        font-weight: 400;
+        src: url({font400Woff2}) format('woff2');
+      }
+      @font-face {
+        font-family: 'Noto Serif SC';
+        font-style: normal;
+        font-display: optional;
+        font-weight: 700;
+        src: url({font700Woff2}) format('woff2');
+      }
+    </style>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -126,21 +141,25 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       if (gv) {
         const isMobile = window.matchMedia('(max-width: 768px)').matches;
         if (!isMobile) {
-          const loadAndPlay = () => {
+          let videoLoaded = false;
+          const loadVideo = () => {
+            if (videoLoaded) return;
+            videoLoaded = true;
             if (!gv.src) {
               gv.src = '/blog/maple.mp4';
               gv.load();
             }
             gv.play().catch(() => {});
           };
-          // 等页面完全加载后再加载视频，不阻塞首屏
-          if (window.requestIdleCallback) {
-            requestIdleCallback(loadAndPlay, { timeout: 3000 });
-          } else {
-            setTimeout(loadAndPlay, 1500);
-          }
-          // 如果用户点击了页面，也尝试播放（用于解除自动播放限制）
-          document.addEventListener('click', () => gv.play().catch(() => {}), { once: true });
+          // 页面完全加载后，等用户开始滚动时才加载视频
+          window.addEventListener('load', () => {
+            let scrollFired = false;
+            const onScroll = () => { if (!scrollFired) { scrollFired = true; setTimeout(loadVideo, 2000); } };
+            window.addEventListener('scroll', onScroll, { once: true, passive: true });
+            document.addEventListener('click', onScroll, { once: true });
+            // 兜底：15秒后还没交互就加载
+            setTimeout(() => { if (!scrollFired) { scrollFired = true; loadVideo(); } }, 15000);
+          });
         }
       }
     </script>
