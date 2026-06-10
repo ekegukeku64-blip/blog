@@ -1,9 +1,14 @@
 // Ocean wave splash — plays once ever (localStorage), not per session
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-const KEY = 'splash-shown';
+const KEY = 'splash-v2';
 const DURATION = 4000;
 const FADE = 800;
+
+const forceShow = new URLSearchParams(location.search).has('splash');
+if (forceShow) {
+  localStorage.removeItem(KEY);
+}
 
 if (localStorage.getItem(KEY)) {
   document.documentElement.classList.add('splash-done');
