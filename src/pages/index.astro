@@ -9,13 +9,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <video
         id="entrance-video"
         class="bg-media"
-        src={`${import.meta.env.BASE_URL}maple.mp4`}
         poster={`${import.meta.env.BASE_URL}maple.jpg`}
-        autoplay
         loop
         muted
-        playsinline
-        preload="none">
+        playsinline>
       </video>
     </div>
 
@@ -39,12 +36,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const v = document.getElementById('entrance-video');
     if (v) {
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
-      if (isMobile) {
-        v.removeAttribute('src');
-        v.load();
-      } else {
-        const tryPlay = () => v.play().catch(() => {});
-        requestIdleCallback ? requestIdleCallback(tryPlay) : setTimeout(tryPlay, 300);
+      if (!isMobile) {
+        const loadAndPlay = () => {
+          if (!v.src) {
+            v.src = '/blog/maple.mp4';
+            v.load();
+          }
+          v.play().catch(() => {});
+        };
+        if (window.requestIdleCallback) {
+          requestIdleCallback(loadAndPlay, { timeout: 3000 });
+        } else {
+          setTimeout(loadAndPlay, 1500);
+        }
+        document.addEventListener('click', () => v.play().catch(() => {}), { once: true });
       }
     }
   </script>
