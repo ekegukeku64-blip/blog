@@ -482,7 +482,7 @@ const musicBase = `${import.meta.env.BASE_URL}music/`;
     audio.addEventListener('pause', updateUI);
     audio.addEventListener('ended', () => nextTrack());
 
-    loadTrack(0);
+    // 不自动加载音频 — 等用户首次点击播放再加载
     updateUI();
   }
 

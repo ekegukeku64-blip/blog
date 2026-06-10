@@ -108,7 +108,8 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <div class="global-bg-layer" aria-hidden="true">
       <video id="global-bg-video" class="global-bg-video"
         src={`${import.meta.env.BASE_URL}maple.mp4`}
-        autoplay loop muted playsinline>
+        poster={`${import.meta.env.BASE_URL}maple.jpg`}
+        autoplay loop muted playsinline preload="none">
       </video>
     </div>
     <ReadingProgress />
@@ -124,10 +125,17 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <script is:inline>
       const gv = document.getElementById('global-bg-video');
       if (gv) {
-        const tryPlay = () => gv.play().catch(() => {});
-        tryPlay();
-        document.addEventListener('click', () => tryPlay(), { once: true });
-        document.addEventListener('touchstart', () => tryPlay(), { once: true });
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        if (isMobile) {
+          // 移动端不加载视频，用 poster 静态图代替
+          gv.removeAttribute('src');
+          gv.load();
+        } else {
+          const tryPlay = () => gv.play().catch(() => {});
+          // 页面加载后再播，避免阻塞首屏
+          requestIdleCallback ? requestIdleCallback(tryPlay) : setTimeout(tryPlay, 200);
+          document.addEventListener('click', () => tryPlay(), { once: true });
+        }
       }
     </script>
     <script is:inline>
