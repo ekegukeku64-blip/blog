@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: "Noto Serif SC", "Georgia", serif;
-  --font-display: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --font-serif: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  --font-display: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
   --font-sans: "Inter", "-apple-system", "PingFang SC", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
