@@ -33,18 +33,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </main>
 
   <script is:inline>
-    const v = document.getElementById('entrance-video');
-    if (v) {
+    function initEntranceVideo() {
+      const v = document.getElementById('entrance-video');
+      if (!v) return;
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
-      if (!isMobile) {
-        if (!v.src) {
-          v.src = '/blog/maple.mp4';
-          v.load();
-        }
-        v.play().catch(() => {});
-        document.addEventListener('click', () => v.play().catch(() => {}), { once: true });
-      }
+      if (isMobile) return;
+      v.src = '/blog/maple.mp4';
+      v.load();
+      v.play().catch(() => {});
     }
+    initEntranceVideo();
+    document.addEventListener('astro:page-load', initEntranceVideo);
+    document.addEventListener('click', () => {
+      const v = document.getElementById('entrance-video');
+      if (v) v.play().catch(() => {});
+    }, { once: true });
   </script>
 </BaseLayout>
 
