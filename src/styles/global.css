@@ -451,12 +451,13 @@ nav a, button {
   pointer-events: none;
   opacity: var(--spotlight-opacity, 0);
   background: radial-gradient(
-    circle 320px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
-    rgba(180, 200, 220, 0.14) 0%,
-    rgba(148, 163, 184, 0.06) 30%,
-    transparent 55%
+    circle 350px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    rgba(122, 149, 175, 0.22) 0%,
+    rgba(122, 149, 175, 0.1) 25%,
+    rgba(100, 130, 160, 0.04) 50%,
+    transparent 68%
   );
-  transition: opacity 0.35s ease-out;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-tilt::after {
@@ -467,8 +468,8 @@ nav a, button {
   border-radius: inherit;
   pointer-events: none;
   opacity: var(--spotlight-opacity, 0);
-  border: 1px solid rgba(200, 180, 140, 0.12);
-  transition: opacity 0.35s ease-out;
+  border: 1px solid rgba(122, 149, 175, 0.2);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-tilt > * {

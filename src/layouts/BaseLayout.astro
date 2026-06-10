@@ -121,10 +121,13 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
   </head>
   <body class={`min-h-screen flex flex-col${isEntrance ? ' page-entrance' : ''}`}>
     <div class="global-bg-layer" aria-hidden="true">
-      <video id="global-bg-video" class="global-bg-video"
-        poster={`${import.meta.env.BASE_URL}maple.jpg`}
-        loop muted playsinline>
-      </video>
+      <img
+        id="global-bg-image"
+        class="global-bg-video"
+        src={`${import.meta.env.BASE_URL}maple.jpg`}
+        alt=""
+        loading="lazy"
+      />
     </div>
     <ReadingProgress />
     <Header />
@@ -137,30 +140,10 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <PageProgress />
     <Analytics />
     <script is:inline>
-      const gv = document.getElementById('global-bg-video');
-      if (gv) {
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        if (!isMobile) {
-          let videoLoaded = false;
-          const loadVideo = () => {
-            if (videoLoaded) return;
-            videoLoaded = true;
-            if (!gv.src) {
-              gv.src = '/blog/maple.mp4';
-              gv.load();
-            }
-            gv.play().catch(() => {});
-          };
-          // 页面完全加载后，等用户开始滚动时才加载视频
-          window.addEventListener('load', () => {
-            let scrollFired = false;
-            const onScroll = () => { if (!scrollFired) { scrollFired = true; setTimeout(loadVideo, 2000); } };
-            window.addEventListener('scroll', onScroll, { once: true, passive: true });
-            document.addEventListener('click', onScroll, { once: true });
-            // 兜底：15秒后还没交互就加载
-            setTimeout(() => { if (!scrollFired) { scrollFired = true; loadVideo(); } }, 15000);
-          });
-        }
+      // Global background image lazy load
+      const gbi = document.getElementById('global-bg-image');
+      if (gbi && gbi.loading !== 'lazy') {
+        gbi.loading = 'lazy';
       }
     </script>
     <script is:inline>
