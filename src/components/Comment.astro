@@ -281,7 +281,7 @@
     const form = document.getElementById('comment-form')
     const list = document.getElementById('comment-list')
     const authPrompt = document.getElementById('comment-auth-prompt')
-    const userAvatar = document.getElementById('comment-user-avatar') as HTMLImageElement
+    const userAvatar = document.getElementById('comment-user-avatar')
     const userName = document.getElementById('comment-user-name')
     const loginGoogle = document.getElementById('comment-login-google')
     const loginGithub = document.getElementById('comment-login-github')
@@ -315,7 +315,7 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
       if (!currentUser) return
-      const textarea = document.getElementById('comment-content') as HTMLTextAreaElement
+      const textarea = document.getElementById('comment-content')
       const content = textarea.value.trim()
       if (!content) return
 

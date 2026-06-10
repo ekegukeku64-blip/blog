@@ -14,7 +14,6 @@ import BackToTop from '../components/BackToTop.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import PageProgress from '../components/PageProgress.astro';
-import ThemePicker from '../components/ThemePicker.astro';
 import Analytics from '../components/Analytics.astro';
 import { ClientRouter } from 'astro:transitions';
 
@@ -99,6 +98,8 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       });
       document.documentElement.classList.add('dark');
       if (document.body) syncPageEntrance();
+      // 清除旧版 ThemePicker 残留在 localStorage 的暖色
+      try { localStorage.removeItem('accent_color'); } catch (_) {}
     </script>
     <ClientRouter />
     <slot name="head" />
@@ -119,7 +120,6 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <BackToTop />
     <MusicPlayer />
     <PageProgress />
-    <ThemePicker />
     <Analytics />
     <script is:inline>
       const gv = document.getElementById('global-bg-video');

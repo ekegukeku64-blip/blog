@@ -98,9 +98,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     import { removeBackground } from '@imgly/background-removal';
 
     const uploadZone = document.getElementById('upload-zone')!;
-    const fileInput = document.getElementById('file-input') as HTMLInputElement;
-    const editor = document.getElementById('editor')!;
-    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    const fileInput = document.getElementById('file-input');
+    const editor = document.getElementById('editor');
+    const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 
     let mode = 'eraser';
@@ -113,11 +113,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
     // === Upload ===
     uploadZone.addEventListener('click', () => fileInput.click());
-    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); (uploadZone as HTMLElement).style.borderColor = 'var(--color-accent)'; });
-    uploadZone.addEventListener('dragleave', () => { (uploadZone as HTMLElement).style.borderColor = ''; });
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = 'var(--color-accent)'; });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
     uploadZone.addEventListener('drop', (e) => {
       e.preventDefault();
-      (uploadZone as HTMLElement).style.borderColor = '';
+      uploadZone.style.borderColor = '';
       const f = e.dataTransfer!.files[0];
       if (f && f.type.startsWith('image/')) loadImage(f);
     });
@@ -142,7 +142,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           history = [];
           saveHistory();
         };
-        img.src = ev.target!.result as string;
+        img.src = ev.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -203,7 +203,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         });
         btn.classList.add('bg-accent', 'dark:bg-dark-accent', 'text-white');
         btn.classList.remove('text-text-muted', 'dark:text-dark-text-muted');
-        mode = (btn as HTMLElement).dataset.mode!;
+        mode = btn.dataset.mode;
         document.getElementById('brush-opts')!.style.display = (mode === 'eraser' || mode === 'restore') ? 'flex' : 'none';
         canvas.style.cursor = (mode === 'eraser' || mode === 'restore') ? 'crosshair' : 'default';
       });
@@ -218,14 +218,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     function saveHistory() {
       if (history.length >= 20) history.shift();
       history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      (document.getElementById('btn-undo') as HTMLButtonElement).disabled = history.length <= 1;
+      document.getElementById('btn-undo').disabled = history.length <= 1;
     }
 
     document.getElementById('btn-undo')!.addEventListener('click', () => {
       if (history.length > 1) {
         history.pop();
         ctx.putImageData(history[history.length - 1], 0, 0);
-        (document.getElementById('btn-undo') as HTMLButtonElement).disabled = history.length <= 1;
+        document.getElementById('btn-undo').disabled = history.length <= 1;
       }
     });
 
@@ -240,7 +240,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     document.getElementById('btn-switch')!.addEventListener('click', () => {
       editor.style.display = 'none';
       uploadZone.style.display = '';
-      (uploadZone as HTMLElement).style.borderColor = '';
+      uploadZone.style.borderColor = '';
       originalImage = null;
       origImageData = null;
       history = [];
@@ -286,7 +286,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     canvas.addEventListener('mouseleave', endDraw);
 
     function applyBrush(x: number, y: number) {
-      const size = parseInt((document.getElementById('brush-size') as HTMLInputElement).value);
+      const size = parseInt(document.getElementById('brush-size').value);
       const r = size / 2;
       ctx.save();
       ctx.beginPath();
@@ -414,7 +414,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       // 恢复草稿
       list.querySelectorAll('.draft-restore-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
-          const id = (btn as HTMLElement).dataset.id;
+          const id = btn.dataset.id;
           if (!id) return;
           const { getDraft } = await import('../../utils/draftStorage');
           const draft = await getDraft(id);
@@ -441,7 +441,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       // 删除草稿
       list.querySelectorAll('.draft-delete-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
-          const id = (btn as HTMLElement).dataset.id;
+          const id = btn.dataset.id;
           if (!id) return;
           await deleteDraft(id);
           await renderDraftList();

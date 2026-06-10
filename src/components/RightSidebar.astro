@@ -42,23 +42,22 @@ const { totalPosts, thisMonth, wordCount } = Astro.props;
 </div>
 
 <script>
-  function initClickWave(target: HTMLElement) {
+  function initClickWave(target) {
     if (target.dataset.waveReady === 'true') return;
     target.dataset.waveReady = 'true';
 
     target.addEventListener('click', (event) => {
-      const pointer = event as MouseEvent;
       const rect = target.getBoundingClientRect();
 
-      target.style.setProperty('--wave-x', `${pointer.clientX - rect.left}px`);
-      target.style.setProperty('--wave-y', `${pointer.clientY - rect.top}px`);
+      target.style.setProperty('--wave-x', `${event.clientX - rect.left}px`);
+      target.style.setProperty('--wave-y', `${event.clientY - rect.top}px`);
       target.classList.remove('is-waving');
       void target.offsetWidth;
       target.classList.add('is-waving');
     });
 
     target.addEventListener('animationend', (event) => {
-      if ((event as AnimationEvent).animationName === 'clickWave') {
+      if (event.animationName === 'clickWave') {
         target.classList.remove('is-waving');
       }
     });

@@ -52,15 +52,14 @@ function formatDate(date: Date) {
 <script>
   const MAX_TILT = 1.5;
 
-  function initTilt(wrapper: Element) {
-    const card = wrapper.querySelector('.card-tilt') as HTMLElement;
+  function initTilt(wrapper) {
+    const card = wrapper.querySelector('.card-tilt');
     if (!card) return;
 
-    wrapper.addEventListener('mousemove', (e: Event) => {
-      const me = e as MouseEvent;
+    wrapper.addEventListener('mousemove', (e) => {
       const rect = wrapper.getBoundingClientRect();
-      const x = (me.clientX - rect.left) / rect.width;
-      const y = (me.clientY - rect.top) / rect.height;
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
 
       const tiltX = (y - 0.5) * 2 * MAX_TILT;
       const tiltY = (x - 0.5) * -2 * MAX_TILT;
