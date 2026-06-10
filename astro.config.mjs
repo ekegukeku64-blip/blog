@@ -10,7 +10,17 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [mdx(), sitemap()],
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [
+      tailwindcss(),
+      {
+        name: 'fix-font-display',
+        transform(code, id) {
+          if (id.includes('@fontsource/noto-serif-sc')) {
+            return code.replace(/font-display:\s*swap/g, 'font-display: optional');
+          }
+        },
+      },
+    ],
   },
   markdown: {
     shikiConfig: {
