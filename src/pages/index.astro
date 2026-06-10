@@ -1,68 +1,251 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const latestPost = sortedPosts[0];
+
 ---
 
 <BaseLayout title="墨迹 - Entrance">
-  <script src={`${import.meta.env.BASE_URL}scripts/shader-splash.js`} type="module"></script>
-  <main class="entrance-container">
+  <link slot="head" rel="preload" as="video" href={`${import.meta.env.BASE_URL}maple.mp4`} type="video/mp4" />
+  <main class="entrance-container" id="entrance-root">
     <div class="bg-layer">
-      <img id="entrance-poster" class="bg-media" src={`${import.meta.env.BASE_URL}maple.jpg`} alt="" />
       <video
         id="entrance-video"
         class="bg-media"
         poster={`${import.meta.env.BASE_URL}maple.jpg`}
+        autoplay
         loop
         muted
-        playsinline
-        style="display:none">
+        playsinline>
+        <source src={`${import.meta.env.BASE_URL}maple.mp4`} type="video/mp4" />
       </video>
     </div>
 
+    <canvas id="particle-canvas" class="particle-canvas" aria-hidden="true"></canvas>
+
     <div class="fog-veil" aria-hidden="true"></div>
 
-    <!-- SVG filters for liquid glass button -->
+    <!-- SVG filters -->
     <svg class="hidden"><defs><filter id="btn-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="turbulence"/><feGaussianBlur in="turbulence" stdDeviation="2" result="blurredNoise"/><feDisplacementMap in="SourceGraphic" in2="blurredNoise" scale="70" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="4" result="finalBlur"/><feComposite in="finalBlur" in2="finalBlur" operator="over"/></filter></defs></svg>
 
     <div class="content-layer">
-      <h1 class="blur-reveal title">墨迹</h1>
+      <h1 class="ink-title">
+        <span class="ink-char" style="animation-delay:0.1s">墨</span><span class="ink-char" style="animation-delay:0.4s">迹</span>
+      </h1>
       <p class="blur-reveal subtitle">一个不装成熟的个人空间</p>
 
-      <a href={`${import.meta.env.BASE_URL}home/`} class="blur-reveal enter-btn">
+      <a href={`${import.meta.env.BASE_URL}home/`} class="blur-reveal enter-btn" id="enter-btn">
         <span class="btn-glass-overlay" aria-hidden="true"></span>
         <span class="btn-text">Enter Room</span>
       </a>
+
+      {latestPost && (
+        <p class="recent-update">
+          最近更新：{latestPost.data.pubDate.toLocaleDateString('zh-CN', { month:'long', day:'numeric' })} · {latestPost.data.title}
+        </p>
+      )}
+    </div>
+
+    <div class="bottom-quote" id="bottom-quote">
+      <p class="quote-text" id="quote-text"></p>
+      <p class="quote-author" id="quote-author"></p>
     </div>
   </main>
 
   <script is:inline>
-    { // block scope to avoid conflicts with BaseLayout is:inline scripts
-    const v = document.getElementById('entrance-video');
-    const poster = document.getElementById('entrance-poster');
-    if (v && poster) {
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
-      if (!isMobile) {
-        let loaded = false;
-        const loadVideo = () => {
-          if (loaded) return;
-          loaded = true;
-          if (!v.src) {
-            v.src = '/blog/maple.mp4';
-            v.load();
-          }
-          v.play().then(() => {
-            poster.style.display = 'none';
-            v.style.display = '';
-          }).catch(() => {});
-        };
-        window.addEventListener('load', () => {
-          const trigger = () => { setTimeout(loadVideo, 2000); };
-          window.addEventListener('scroll', trigger, { once: true, passive: true });
-          document.addEventListener('click', trigger, { once: true });
-          setTimeout(() => loadVideo(), 20000);
-        });
+    { // === particle system — fireflies + maple leaves ===
+    const canvas = document.getElementById('particle-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      let W = 0, H = 0, animId;
+      const fireflies = [];
+      const leaves = [];
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        W = canvas.width = rect.width;
+        H = canvas.height = rect.height;
       }
+
+      class Firefly {
+        constructor() { this.reset(true); }
+        reset(init) {
+          this.x = Math.random() * W;
+          this.y = init ? Math.random() * H : H + 30;
+          this.size = 0.8 + Math.random() * 1.5;
+          this.glow = 8 + Math.random() * 14;
+          this.speed = 0.15 + Math.random() * 0.35;
+          this.drift = (Math.random() - 0.5) * 0.35;
+          this.phase = Math.random() * Math.PI * 2;
+          this.pulse = 0.01 + Math.random() * 0.02;
+          this.alpha = 0;
+        }
+        update() {
+          const dx = this.x - mouseX;
+          const dy = this.y - mouseY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 80 && dist > 0) {
+            this.x += (dx / dist) * 0.6;
+            this.y += (dy / dist) * 0.6;
+          }
+          this.y -= this.speed;
+          this.x += Math.sin(this.phase) * this.drift;
+          this.phase += 0.01;
+          this.alpha = 0.04 + Math.sin(Date.now() * this.pulse + this.phase) * 0.08;
+          if (this.y < -40) this.reset(false);
+        }
+        draw() {
+          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.glow);
+          g.addColorStop(0, `rgba(220,200,150,${(this.alpha * 0.7).toFixed(2)})`);
+          g.addColorStop(0.3, `rgba(200,170,120,${(this.alpha * 0.35).toFixed(2)})`);
+          g.addColorStop(0.7, `rgba(160,130,80,${(this.alpha * 0.05).toFixed(2)})`);
+          g.addColorStop(1, 'rgba(160,130,80,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath(); ctx.arc(this.x, this.y, this.glow, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = `rgba(230,215,180,${(this.alpha * 1.1).toFixed(2)})`;
+          ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+        }
+      }
+
+      class MapleLeaf {
+        constructor() { this.reset(true); }
+        reset(init) {
+          this.x = Math.random() * W * 1.2 - W * 0.1;
+          this.y = init ? Math.random() * H * -0.5 : -30;
+          this.size = 6 + Math.random() * 12;
+          this.speed = 0.3 + Math.random() * 0.9;
+          this.sway = (Math.random() - 0.5) * 1.4;
+          this.phase = Math.random() * Math.PI * 2;
+          this.rot = Math.random() * Math.PI * 2;
+          this.rotSpeed = (Math.random() - 0.5) * 0.02;
+          this.alpha = 0.15 + Math.random() * 0.35;
+        }
+        update() {
+          this.y += this.speed;
+          this.x += Math.sin(this.phase) * this.sway;
+          this.phase += 0.015;
+          this.rot += this.rotSpeed;
+          if (this.y > H + 40) this.reset(false);
+        }
+        draw() {
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.rot);
+          ctx.globalAlpha = this.alpha;
+          const s = this.size;
+          ctx.fillStyle = '#4a2020';
+          ctx.beginPath();
+          ctx.moveTo(0, -s);
+          ctx.bezierCurveTo(s*0.7, -s*0.6, s*0.8, s*0.3, 0, s);
+          ctx.bezierCurveTo(-s*0.8, s*0.3, -s*0.7, -s*0.6, 0, -s);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(120,60,40,0.3)';
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(0, -s); ctx.lineTo(0, s);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      for (let i = 0; i < 8; i++) fireflies.push(new Firefly());
+      for (let i = 0; i < 7; i++) leaves.push(new MapleLeaf());
+
+      let mouseX = -999, mouseY = -999;
+      let canvasRect = canvas.getBoundingClientRect();
+      let parallaxPending = false;
+
+      const updateCanvasRect = () => { canvasRect = canvas.getBoundingClientRect(); };
+
+      const onMouseMove = (e) => {
+        mouseX = e.clientX - canvasRect.left;
+        mouseY = e.clientY - canvasRect.top;
+        if (!parallaxPending) {
+          parallaxPending = true;
+          requestAnimationFrame(() => {
+            const bgMedia = document.querySelector('.bg-media');
+            if (bgMedia) {
+              const px = (e.clientX / window.innerWidth - 0.5) * -12;
+              const py = (e.clientY / window.innerHeight - 0.5) * -12;
+              bgMedia.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) scale(1.06)`;
+            }
+            parallaxPending = false;
+          });
+        }
+      };
+      const onMouseLeave = () => { mouseX = -999; mouseY = -999; };
+
+      document.addEventListener('mousemove', onMouseMove, { passive: true });
+      document.addEventListener('mouseleave', onMouseLeave);
+
+      function animate() {
+        ctx.clearRect(0, 0, W, H);
+        fireflies.forEach(f => { f.update(); f.draw(); });
+        leaves.forEach(l => { l.update(); l.draw(); });
+        animId = requestAnimationFrame(animate);
+      }
+
+      const onResize = () => { resize(); updateCanvasRect(); };
+      window.addEventListener('resize', onResize, { passive: true });
+      resize();
+      animate();
+
+      document.addEventListener('astro:before-swap', () => {
+        cancelAnimationFrame(animId);
+        window.removeEventListener('resize', onResize);
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseleave', onMouseLeave);
+      }, { once: true });
     }
-    } // end block scope
+    } // end particle block
+
+    { // === random quote ===
+    const quotes = [
+      { text: '山不让尘，川不辞盈。', author: '张华' },
+      { text: '身在无间，心在桃源。', author: '墨香铜臭' },
+      { text: '明月松间照，清泉石上流。', author: '王维' },
+      { text: '行到水穷处，坐看云起时。', author: '王维' },
+      { text: '空山不见人，但闻人语响。', author: '王维' },
+      { text: '晚来天欲雪，能饮一杯无？', author: '白居易' },
+      { text: '浮生若梦，为欢几何。', author: '李白' },
+      { text: '此心安处是吾乡。', author: '苏轼' },
+      { text: '人生如逆旅，我亦是行人。', author: '苏轼' },
+      { text: '醉后不知天在水，满船清梦压星河。', author: '唐温如' },
+      { text: '山中何事？松花酿酒，春水煎茶。', author: '张可久' },
+      { text: '且将新火试新茶，诗酒趁年华。', author: '苏轼' },
+      { text: '我见青山多妩媚，料青山见我应如是。', author: '辛弃疾' },
+      { text: '欲买桂花同载酒，终不似，少年游。', author: '刘过' },
+    ];
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    const tel = document.getElementById('quote-text');
+    const ael = document.getElementById('quote-author');
+    if (tel) tel.textContent = '「' + q.text + '」';
+    if (ael) ael.textContent = '— ' + q.author;
+    } // end quote block
+
+    { // === enter transition ===
+    const btn = document.getElementById('enter-btn');
+    const root = document.getElementById('entrance-root');
+    if (btn && root) {
+      const doEnter = (e) => {
+        if (e) e.preventDefault();
+        const href = btn.getAttribute('href');
+        if (!href) return;
+        root.classList.add('is-leaving');
+        document.removeEventListener('keydown', onKeyDown);
+        setTimeout(() => { location.href = href; }, 800);
+      };
+      const onKeyDown = (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); doEnter(e); }
+      };
+      btn.addEventListener('click', doEnter);
+      document.addEventListener('keydown', onKeyDown);
+    }
+    } // end transition block
+
   </script>
 </BaseLayout>
 
@@ -76,6 +259,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     justify-content: center;
     overflow: hidden;
     background-color: #070A13;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .entrance-container.is-leaving {
+    opacity: 0;
+    filter: blur(8px) saturate(0.3);
+    pointer-events: none;
   }
 
   .entrance-container::after {
@@ -95,51 +286,62 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     pointer-events: none;
   }
 
-  .bg-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
-
+  .bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
   .bg-media {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.38;
-    filter: saturate(0.85);
-    transform: scale(1.06);
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.38; filter: saturate(0.85); transform: scale(1.06);
+    will-change: transform;
   }
 
-  .fog-veil {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background:
-      radial-gradient(ellipse 60% 50% at 50% 40%, transparent 35%, rgba(7,10,19,0.55) 100%);
+  .particle-canvas {
+    position: absolute; inset: 0; z-index: 2;
+    width: 100%; height: 100%;
     pointer-events: none;
   }
 
+  .fog-veil {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse 60% 50% at 50% 40%, transparent 35%, rgba(7,10,19,0.55) 100%);
+  }
+
   .content-layer {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    position: relative; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
     margin-top: 6rem;
   }
 
-  .title {
+  /* ── Ink bleed title ── */
+  .ink-title {
     font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
     font-size: 5rem;
     font-weight: 700;
-    color: rgba(242, 238, 234, 0.68);
     margin: 0;
     letter-spacing: 0.14em;
-    text-shadow: 0 0 120px rgba(122, 149, 175, 0.18), 0 0 40px rgba(200, 180, 140, 0.12);
+    color: rgba(242, 238, 234, 0.68);
+  }
+
+  .ink-char {
+    display: inline-block;
+    animation: inkBleed 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    clip-path: inset(0 100% 0 0);
+    text-shadow: 0 0 80px rgba(200, 180, 140, 0.55), 0 0 30px rgba(122, 149, 175, 0.45);
+  }
+
+  @keyframes inkBleed {
+    0% {
+      clip-path: inset(0 100% 0 0);
+      text-shadow: 0 0 80px rgba(200, 180, 140, 0.55), 0 0 30px rgba(122, 149, 175, 0.45);
+      filter: blur(4px);
+    }
+    55% {
+      text-shadow: 0 0 50px rgba(200, 180, 140, 0.35), 0 0 18px rgba(122, 149, 175, 0.3);
+      filter: blur(1px);
+    }
+    100% {
+      clip-path: inset(0 0 0 0);
+      text-shadow: 0 0 120px rgba(122, 149, 175, 0.18), 0 0 40px rgba(200, 180, 140, 0.12);
+      filter: blur(0);
+    }
   }
 
   .subtitle {
@@ -150,116 +352,155 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-bottom: 3.5rem;
   }
 
+  /* ── Recent update ── */
+  .recent-update {
+    margin-top: 2.8rem;
+    font-size: 0.78rem;
+    color: rgba(168, 175, 186, 0.4);
+    letter-spacing: 0.08em;
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    animation: fadeInUp 0.8s 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Enter button ── */
   .enter-btn {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex; align-items: center; justify-content: center;
     padding: 1rem 3.5rem;
-    font-size: 0.85rem;
-    letter-spacing: 0.24em;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-weight: 600;
+    font-size: 0.85rem; letter-spacing: 0.24em;
+    text-decoration: none; text-transform: uppercase; font-weight: 600;
     color: rgba(245, 245, 245, 0.78);
-    border: none;
-    border-radius: 100px;
-    cursor: pointer;
-    outline: none;
+    border: none; border-radius: 100px; cursor: pointer; outline: none;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     background: transparent;
-    /* Liquid glass shadow stack */
     box-shadow:
-      0 0 8px rgba(0, 0, 0, 0.03),
-      0 2px 6px rgba(0, 0, 0, 0.08),
-      inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.09),
-      inset -3px -3px 0.5px -3.5px rgba(255, 255, 255, 0.85),
-      inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.6),
-      inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.6),
-      inset 0 0 6px 6px rgba(255, 255, 255, 0.12),
-      inset 0 0 2px 2px rgba(255, 255, 255, 0.06),
-      0 0 12px rgba(0, 0, 0, 0.15);
+      0 0 8px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.08),
+      inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.09),
+      inset -3px -3px 0.5px -3.5px rgba(255,255,255,0.85),
+      inset 1px 1px 1px -0.5px rgba(255,255,255,0.6),
+      inset -1px -1px 1px -0.5px rgba(255,255,255,0.6),
+      inset 0 0 6px 6px rgba(255,255,255,0.12),
+      inset 0 0 2px 2px rgba(255,255,255,0.06),
+      0 0 12px rgba(0,0,0,0.15);
   }
 
   .btn-glass-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    height: 100%;
-    width: 100%;
-    border-radius: 100px;
+    position: absolute; top: 0; left: 0; z-index: 0;
+    height: 100%; width: 100%; border-radius: 100px;
     backdrop-filter: url(#btn-glass);
-    transition: all 0.3s ease;
-    pointer-events: none;
+    transition: all 0.3s ease; pointer-events: none;
   }
-
-  .btn-text {
-    position: relative;
-    z-index: 10;
-  }
+  .btn-text { position: relative; z-index: 10; }
 
   .enter-btn:hover {
-    color: rgba(255, 255, 255, 0.92);
-    transform: scale(1.03);
+    color: rgba(255,255,255,0.92); transform: scale(1.03);
     box-shadow:
-      0 0 12px rgba(0, 0, 0, 0.05),
-      0 4px 12px rgba(0, 0, 0, 0.12),
-      inset 3px 3px 0.5px -3px rgba(255, 255, 255, 0.14),
-      inset -3px -3px 0.5px -3px rgba(255, 255, 255, 0.9),
-      inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.7),
-      inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.7),
-      inset 0 0 8px 8px rgba(255, 255, 255, 0.15),
-      inset 0 0 3px 3px rgba(255, 255, 255, 0.08),
-      0 0 20px rgba(122, 149, 175, 0.15);
+      0 0 12px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.12),
+      inset 3px 3px 0.5px -3px rgba(255,255,255,0.14),
+      inset -3px -3px 0.5px -3px rgba(255,255,255,0.9),
+      inset 1px 1px 1px -0.5px rgba(255,255,255,0.7),
+      inset -1px -1px 1px -0.5px rgba(255,255,255,0.7),
+      inset 0 0 8px 8px rgba(255,255,255,0.15),
+      inset 0 0 3px 3px rgba(255,255,255,0.08),
+      0 0 20px rgba(122,149,175,0.15);
   }
 
   .enter-btn:active {
-    transform: scale(0.96) translateY(2px);
-    transition: transform 0.1s ease-out;
+    transform: scale(0.96) translateY(2px); transition: transform 0.1s ease-out;
     box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.15),
-      inset 3px 3px 0.5px -4px rgba(255, 255, 255, 0.04),
-      inset -3px -3px 0.5px -4px rgba(255, 255, 255, 0.4),
-      inset 1px 1px 1px -1px rgba(255, 255, 255, 0.3),
-      inset -1px -1px 1px -1px rgba(255, 255, 255, 0.3),
-      inset 0 0 4px 4px rgba(255, 255, 255, 0.06),
-      inset 0 0 1px 1px rgba(255, 255, 255, 0.03);
+      0 1px 2px rgba(0,0,0,0.15),
+      inset 3px 3px 0.5px -4px rgba(255,255,255,0.04),
+      inset -3px -3px 0.5px -4px rgba(255,255,255,0.4),
+      inset 1px 1px 1px -1px rgba(255,255,255,0.3),
+      inset -1px -1px 1px -1px rgba(255,255,255,0.3),
+      inset 0 0 4px 4px rgba(255,255,255,0.06),
+      inset 0 0 1px 1px rgba(255,255,255,0.03);
   }
 
   .enter-btn::after {
     content: "";
-    position: absolute;
-    top: calc(100% + 2rem);
-    left: 50%;
+    position: absolute; top: calc(100% + 2rem); left: 50%;
     transform: translateX(-50%);
-    width: 1px;
-    height: 80px;
-    background: linear-gradient(to bottom, rgba(122, 149, 175, 0.12), rgba(122, 149, 175, 0.01), transparent);
+    width: 1px; height: 80px;
+    background: linear-gradient(to bottom, rgba(122,149,175,0.12), rgba(122,149,175,0.01), transparent);
     pointer-events: none;
   }
 
+  /* ── Bottom quote ── */
+  .bottom-quote {
+    position: absolute; bottom: 1.5rem; left: 0; right: 0;
+    z-index: 10; text-align: center;
+    animation: fadeInUp 0.8s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .quote-text {
+    font-family: 'PingFang SC', 'Microsoft YaHei', serif;
+    font-size: 0.85rem;
+    color: rgba(168, 175, 186, 0.28);
+    letter-spacing: 0.1em;
+    margin: 0;
+  }
+
+  .quote-author {
+    font-size: 0.7rem;
+    color: rgba(168, 175, 186, 0.18);
+    margin: 0.35rem 0 0;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Shared animations ── */
   .blur-reveal {
-    opacity: 0;
-    filter: blur(12px);
-    transform: translateY(20px);
+    opacity: 0; filter: blur(12px); transform: translateY(20px);
     animation: blurFadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  .title { animation-delay: 0.2s; }
-  .subtitle { animation-delay: 0.4s; }
-  .enter-btn { animation-delay: 0.8s; }
+  .subtitle { animation-delay: 0.6s; }
+  .enter-btn {
+    animation: blurFadeIn 1.5s 1s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+               btnBreathe 4s 2.5s ease-in-out infinite;
+  }
 
   @keyframes blurFadeIn {
-    to {
-      opacity: 1;
-      filter: blur(0);
-      transform: translateY(0);
+    to { opacity: 1; filter: blur(0); transform: translateY(0); }
+  }
+
+  @keyframes btnBreathe {
+    0%, 100% {
+      box-shadow:
+        0 0 8px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.08),
+        inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.09),
+        inset -3px -3px 0.5px -3.5px rgba(255,255,255,0.85),
+        inset 1px 1px 1px -0.5px rgba(255,255,255,0.6),
+        inset -1px -1px 1px -0.5px rgba(255,255,255,0.6),
+        inset 0 0 6px 6px rgba(255,255,255,0.12),
+        inset 0 0 2px 2px rgba(255,255,255,0.06),
+        0 0 12px rgba(0,0,0,0.15);
+    }
+    50% {
+      box-shadow:
+        0 0 16px rgba(122,149,175,0.08), 0 2px 8px rgba(0,0,0,0.06),
+        inset 3px 3px 0.5px -3.5px rgba(255,255,255,0.12),
+        inset -3px -3px 0.5px -3.5px rgba(255,255,255,0.9),
+        inset 1px 1px 1px -0.5px rgba(255,255,255,0.7),
+        inset -1px -1px 1px -0.5px rgba(255,255,255,0.7),
+        inset 0 0 10px 10px rgba(255,255,255,0.16),
+        inset 0 0 3px 3px rgba(255,255,255,0.09),
+        0 0 24px rgba(122,149,175,0.1);
     }
   }
 
   @media (max-width: 768px) {
-    .title { font-size: 3rem; }
+    .ink-title { font-size: 3rem; }
     .content-layer { margin-top: 3rem; }
+    .recent-update { font-size: 0.7rem; white-space: normal; }
+    .quote-text { font-size: 0.75rem; }
   }
 </style>
