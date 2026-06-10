@@ -308,7 +308,7 @@ const musicBase = `${import.meta.env.BASE_URL}music/`;
 
 <script is:inline>
   function initMusicPlayer() {
-    const audio = document.getElementById('music-audio') as HTMLAudioElement;
+    const audio = document.getElementById('music-audio');
     const panel = document.getElementById('music-panel');
     const trigger = document.getElementById('music-trigger');
     const toggle = document.getElementById('music-toggle');
@@ -317,12 +317,12 @@ const musicBase = `${import.meta.env.BASE_URL}music/`;
     const label = document.getElementById('music-label');
     const iconPlay = document.getElementById('music-icon-play');
     const iconPause = document.getElementById('music-icon-pause');
-    const trackBtns = document.querySelectorAll<HTMLButtonElement>('.music-track');
+    const trackBtns = document.querySelectorAll('.music-track');
     const customBtn = document.getElementById('music-custom-btn');
     const customRow = document.getElementById('music-custom-row');
-    const urlInput = document.getElementById('music-url-input') as HTMLInputElement;
+    const urlInput = document.getElementById('music-url-input');
     const urlPlay = document.getElementById('music-url-play');
-    const fileInput = document.getElementById('music-file-input') as HTMLInputElement;
+    const fileInput = document.getElementById('music-file-input');
 
     if (!audio || !panel || !trigger) return;
 
@@ -473,7 +473,7 @@ const musicBase = `${import.meta.env.BASE_URL}music/`;
 
     document.addEventListener('click', (e) => {
       const player = document.getElementById('music-player');
-      if (player && !player.contains(e.target as Node)) {
+      if (player && !player.contains(e.target)) {
         panel.classList.remove('is-open');
       }
     });
