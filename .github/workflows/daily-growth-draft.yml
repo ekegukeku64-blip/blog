@@ -36,6 +36,7 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
+          shopt -s nullglob
           git add src/content/posts/daily-*.md src/content/posts/growth-*.md public/hero/daily-*.svg public/hero/growth-*.svg
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
