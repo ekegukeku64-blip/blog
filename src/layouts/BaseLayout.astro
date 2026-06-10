@@ -122,6 +122,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <PageProgress />
     <Analytics />
     <script is:inline>
+      { // block scope for is:inline scripts
       const gv = document.getElementById('global-bg-video');
       const poster = document.getElementById('global-bg-poster');
       if (gv && poster) {
@@ -150,6 +151,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
           });
         }
       }
+      } // end block scope
     </script>
     <script is:inline>
       function initScrollReveal() {

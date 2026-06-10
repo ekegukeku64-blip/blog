@@ -35,6 +35,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </main>
 
   <script is:inline>
+    { // block scope to avoid conflicts with BaseLayout is:inline scripts
     const v = document.getElementById('entrance-video');
     const poster = document.getElementById('entrance-poster');
     if (v && poster) {
@@ -61,6 +62,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         });
       }
     }
+    } // end block scope
   </script>
 </BaseLayout>
 
