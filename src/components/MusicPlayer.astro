@@ -327,7 +327,7 @@ const musicBase = `${import.meta.env.BASE_URL}music/`;
     if (!audio || !panel || !trigger) return;
 
     // 从 DOM 读取预设曲目
-    const builtin: { name: string; src: string }[] = [];
+    const builtin = [];
     trackBtns.forEach(btn => {
       const s = btn.getAttribute('data-src');
       if (s) builtin.push({ name: btn.getAttribute('data-name') || '', src: s });
@@ -359,7 +359,7 @@ const musicBase = `${import.meta.env.BASE_URL}music/`;
       }
     }
 
-    function loadTrack(index: number) {
+    function loadTrack(index) {
       currentIndex = index;
       audio.src = tracks[index]?.src || '';
       audio.load();
@@ -401,7 +401,7 @@ const musicBase = `${import.meta.env.BASE_URL}music/`;
       audio.play().catch(() => {});
     }
 
-    function playCustomFile(file: File) {
+    function playCustomFile(file) {
       const url = URL.createObjectURL(file);
       const name = file.name.replace(/\.[^.]+$/, '');
       const existingIdx = tracks.findIndex((_, i) => i >= builtin.length);
