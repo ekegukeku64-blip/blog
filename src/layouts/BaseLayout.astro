@@ -1,0 +1,244 @@
+---
+import '../styles/global.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/noto-serif-sc/chinese-simplified-400.css';
+import '@fontsource/noto-serif-sc/chinese-simplified-600.css';
+import '@fontsource/noto-serif-sc/chinese-simplified-700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BackToTop from '../components/BackToTop.astro';
+import MusicPlayer from '../components/MusicPlayer.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import PageProgress from '../components/PageProgress.astro';
+import ThemePicker from '../components/ThemePicker.astro';
+import Analytics from '../components/Analytics.astro';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const { title, description = '一个关于技术、设计与生活的博客', image } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.pathname === '/';
+---
+<!doctype html>
+<html lang="zh-CN" class="dark" style="background-color: transparent !important; color: #F5F5F4 !important;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="google-site-verification" content="nF43Ycr0M27ASMgp4dtsTYJa9xfQ2mO9lyB1aWs2iYs" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#070A13" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+    <link rel="apple-touch-icon" href={`${import.meta.env.BASE_URL}apple-touch-icon.svg`} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" type="application/rss+xml" title="墨迹博客 RSS" href={new URL('/blog/rss.xml', Astro.site)} />
+    <meta property="og:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="墨迹博客" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
+    <meta name="twitter:site" content="@moku_blog" />
+    <meta name="author" content="又逢雨季" />
+    <title>{title} | 墨迹博客</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "墨迹博客",
+        "description": "一个关于技术、设计与生活的博客",
+        "url": "https://ekegukeku64-blip.github.io/blog/",
+        "author": { "@type": "Person", "name": "又逢雨季" },
+        "inLanguage": "zh-CN"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "墨迹博客",
+        "url": "https://ekegukeku64-blip.github.io/blog/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://ekegukeku64-blip.github.io/blog/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <script is:inline>
+      // 物理锁死深色模式 + ClientRouter 导航后修复 page-entrance class
+      function syncPageEntrance() {
+        if (!document.body) return;
+        const onEntrance = location.pathname === '/blog/' || location.pathname === '/';
+        document.body.classList.toggle('page-entrance', onEntrance);
+        if (!onEntrance) {
+          const gv = document.getElementById('global-bg-video');
+          if (gv) gv.play().catch(() => {});
+        }
+      }
+      document.addEventListener('astro:after-swap', () => {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.setProperty('background-color', 'transparent', 'important');
+        document.documentElement.style.setProperty('color', '#F5F5F4', 'important');
+        syncPageEntrance();
+      });
+      document.documentElement.classList.add('dark');
+      if (document.body) syncPageEntrance();
+    </script>
+    <ClientRouter />
+    <slot name="head" />
+  </head>
+  <body class={`min-h-screen flex flex-col${isEntrance ? ' page-entrance' : ''}`}>
+    <div class="global-bg-layer" aria-hidden="true">
+      <video id="global-bg-video" class="global-bg-video"
+        src={`${import.meta.env.BASE_URL}maple.mp4`}
+        autoplay loop muted playsinline>
+      </video>
+    </div>
+    <ReadingProgress />
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <BackToTop />
+    <MusicPlayer />
+    <PageProgress />
+    <ThemePicker />
+    <Analytics />
+    <script is:inline>
+      const gv = document.getElementById('global-bg-video');
+      if (gv) {
+        const tryPlay = () => gv.play().catch(() => {});
+        tryPlay();
+        document.addEventListener('click', () => tryPlay(), { once: true });
+        document.addEventListener('touchstart', () => tryPlay(), { once: true });
+      }
+    </script>
+    <script is:inline>
+      function initScrollReveal() {
+        let staggerIdx = 0;
+        let staggerTimer = null;
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const delay = staggerIdx * 60;
+              setTimeout(() => {
+                entry.target.classList.add('is-revealed');
+              }, delay);
+              staggerIdx++;
+              clearTimeout(staggerTimer);
+              staggerTimer = setTimeout(() => { staggerIdx = 0; }, 400);
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { root: null, rootMargin: '0px 0px -30px 0px', threshold: 0.08 });
+
+        // Observe elements with .reveal-target class + prose content elements
+        document.querySelectorAll('.reveal-target').forEach(el => {
+          el.classList.remove('is-revealed');
+          observer.observe(el);
+        });
+
+        // Auto-tag prose elements inside post content for scroll reveal
+        document.querySelectorAll('.prose p, .prose h2, .prose h3, .prose pre, .prose blockquote, .prose ul, .prose ol').forEach(el => {
+          el.classList.add('reveal-target');
+          el.classList.remove('is-revealed');
+          observer.observe(el);
+        });
+      }
+
+      initScrollReveal();
+      document.addEventListener('astro:page-load', initScrollReveal);
+    </script>
+    <script is:inline>
+      function initMagneticElements() {
+        document.querySelectorAll('nav a, nav button, .magnetic').forEach(magnet => {
+          magnet.addEventListener('mousemove', (e) => {
+            const rect = magnet.getBoundingClientRect();
+            const x = (e.clientX - rect.left) - rect.width / 2;
+            const y = (e.clientY - rect.top) - rect.height / 2;
+            magnet.style.transition = 'none';
+            magnet.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+          });
+          magnet.addEventListener('mouseleave', () => {
+            magnet.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            magnet.style.transform = 'translate(0px, 0px)';
+          });
+        });
+      }
+      initMagneticElements();
+      document.addEventListener('astro:page-load', initMagneticElements);
+    </script>
+    <script is:inline>
+      function initBlurReveal() {
+        let delayCount = 0;
+        let delayTimer = null;
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const delay = delayCount * 100;
+              setTimeout(() => {
+                entry.target.classList.add('is-focused');
+              }, 100 + delay);
+              delayCount++;
+              clearTimeout(delayTimer);
+              delayTimer = setTimeout(() => { delayCount = 0; }, 150);
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.blur-reveal').forEach(el => {
+          el.classList.remove('is-focused');
+          observer.observe(el);
+        });
+      }
+      initBlurReveal();
+      document.addEventListener('astro:page-load', initBlurReveal);
+    </script>
+    <script is:inline>
+      function initPageClickWave() {
+        window.__pageClickWaveLayer = document.getElementById('page-click-wave');
+        if (window.__pageClickWaveReady) return;
+        window.__pageClickWaveReady = true;
+
+        document.addEventListener('pointerdown', (event) => {
+          const layer = window.__pageClickWaveLayer;
+          if (!layer) return;
+          layer.style.setProperty('--page-wave-x', `${event.clientX}px`);
+          layer.style.setProperty('--page-wave-y', `${event.clientY}px`);
+          layer.classList.remove('is-waving');
+          void layer.offsetWidth;
+          layer.classList.add('is-waving');
+        }, { passive: true });
+
+        document.addEventListener('animationend', (event) => {
+          if (event.animationName === 'waterDropRing') {
+            window.__pageClickWaveLayer?.classList.remove('is-waving');
+          }
+        });
+      }
+
+      initPageClickWave();
+      document.addEventListener('astro:page-load', initPageClickWave);
+    </script>
+    <div id="page-click-wave" class="page-click-wave" aria-hidden="true"></div>
+  </body>
+</html>

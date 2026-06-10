@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const tools = [
+  { name: 'JSON 格式化', desc: '格式化、校验、压缩 JSON 数据', icon: '{ }', slug: 'json', color: 'from-amber-500/20 to-orange-500/20' },
+  { name: 'Base64 编解码', desc: '文本与 Base64 互转', icon: 'B64', slug: 'base64', color: 'from-blue-500/20 to-cyan-500/20' },
+  { name: '颜色转换器', desc: 'HEX / RGB / HSL 互转', icon: '#', slug: 'color', color: 'from-purple-500/20 to-pink-500/20' },
+  { name: '字数统计', desc: '字符、单词、行数统计', icon: '字', slug: 'counter', color: 'from-green-500/20 to-emerald-500/20' },
+  { name: 'Markdown 预览', desc: '实时 Markdown 渲染', icon: 'M↓', slug: 'markdown', color: 'from-slate-500/20 to-gray-500/20' },
+  { name: '文本对比', desc: '高亮两段文本的差异', icon: '≠', slug: 'diff', color: 'from-red-500/20 to-rose-500/20' },
+  { name: 'URL 编解码', desc: 'URL 编码与解码', icon: '%', slug: 'url', color: 'from-teal-500/20 to-cyan-500/20' },
+  { name: '正则测试', desc: '在线测试正则表达式', icon: '.*', slug: 'regex', color: 'from-indigo-500/20 to-violet-500/20' },
+  { name: '智能抠图', desc: 'AI 一键抠图，手动微调', icon: '✂', slug: 'remove-bg', color: 'from-pink-500/20 to-rose-500/20' },
+  { name: '图片压缩', desc: '压缩图片体积，支持 JPG/PNG/WebP', icon: '📦', slug: 'compress', color: 'from-orange-500/20 to-amber-500/20' },
+  { name: '二维码生成', desc: '文字/链接转二维码', icon: '▦', slug: 'qrcode', color: 'from-gray-500/20 to-slate-500/20' },
+  { name: '密码生成器', desc: '生成安全随机密码', icon: '🔒', slug: 'password', color: 'from-emerald-500/20 to-green-500/20' },
+  { name: '时间戳转换', desc: 'Unix 时间戳与日期互转', icon: '⏱', slug: 'timestamp', color: 'from-blue-500/20 to-indigo-500/20' },
+  { name: 'CSS 渐变', desc: '可视化生成 CSS 渐变', icon: '🌈', slug: 'gradient', color: 'from-fuchsia-500/20 to-purple-500/20' },
+  { name: 'GitHub 查看', desc: '不跳转 GitHub，直接看仓库 README', icon: 'GH', slug: 'github', color: 'from-gray-500/20 to-slate-500/20' },
+];
+---
+
+<BaseLayout title="在线工具" description="实用开发者工具集合">
+  <div class="max-w-5xl mx-auto px-6 py-16">
+    <div class="mb-12 ink-reveal">
+      <span class="inline-block px-3 py-1 text-xs font-sans tracking-widest text-accent dark:text-dark-accent border border-accent/30 dark:border-dark-accent/30 mb-4">TOOLS</span>
+      <h1 class="font-display text-4xl font-bold text-text dark:text-dark-text mb-3">在线工具</h1>
+      <p class="text-text-muted dark:text-dark-text-muted font-serif">浏览器端运行，数据不上传服务器</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {tools.map((tool, i) => (
+        <a
+          href={`${import.meta.env.BASE_URL}tools/${tool.slug}/`}
+          class:list={[
+            'group relative block p-6 rounded-xl border border-border/40 dark:border-dark-border/40 hover:border-accent/40 dark:hover:border-dark-accent/40 hover:shadow-lg hover:shadow-accent/5 dark:hover:shadow-dark-accent/5 transition-all duration-300 ink-reveal',
+            `ink-reveal-delay-${(i % 4) + 1}`,
+          ]}
+        >
+          <div class:list={['absolute inset-0 rounded-xl bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300', tool.color]}></div>
+          <div class="relative">
+            <div class="w-12 h-12 rounded-xl bg-surface-alt dark:bg-dark-surface-alt flex items-center justify-center text-sm font-mono font-bold text-accent dark:text-dark-accent mb-4 group-hover:scale-110 transition-transform duration-300 border border-accent/10 dark:border-dark-accent/10">
+              {tool.icon}
+            </div>
+            <h3 class="font-bold text-text dark:text-dark-text mb-1.5 group-hover:text-accent dark:group-hover:text-dark-accent transition-colors">
+              {tool.name}
+            </h3>
+            <p class="text-xs text-text-muted dark:text-dark-text-muted font-serif leading-relaxed">
+              {tool.desc}
+            </p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,357 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import Sidebar from '../components/Sidebar.astro';
+import TagCloud from '../components/TagCloud.astro';
+import RightSidebar from '../components/RightSidebar.astro';
+import { getCollection } from 'astro:content';
+import { calcReadingTime } from '../utils/readingTime';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const featuredPost = sortedPosts.find(p => p.data.featured);
+const recentPosts = sortedPosts.filter(p => p !== featuredPost).slice(0, 6);
+
+const postsMeta = sortedPosts.map(p => ({
+  slug: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  tags: p.data.tags?.slice(0, 3) || [],
+}));
+
+const categories = [...new Set(allPosts.map(p => p.data.category))].map(name => ({
+  name,
+  count: allPosts.filter(p => p.data.category === name).length,
+}));
+const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))];
+
+// techDailyLinks 改为客户端获取，避免服务端 fetch 阻塞页面渲染
+const sidebarPosts = sortedPosts.slice(0, 5).map(p => ({
+  title: p.data.title,
+  slug: p.id,
+  pubDate: p.data.pubDate,
+}));
+
+const now = new Date();
+const thisMonth = sortedPosts.filter(p => {
+  const d = p.data.pubDate;
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+}).length;
+const totalWords = allPosts.reduce((sum, p) => sum + (p.body?.length || 0), 0);
+const wordCount = totalWords > 10000 ? `${(totalWords / 10000).toFixed(1)}万` : `${totalWords}`;
+
+let streak = 0;
+const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+for (let i = 0; i < 365; i++) {
+  const day = new Date(today);
+  day.setDate(day.getDate() - i);
+  const hasPost = sortedPosts.some(p => {
+    const d = new Date(p.data.pubDate.getFullYear(), p.data.pubDate.getMonth(), p.data.pubDate.getDate());
+    return d.getTime() === day.getTime();
+  });
+  if (hasPost || i > 0) {
+    if (hasPost) streak++;
+    else if (i > 0) break;
+  }
+}
+if (streak === 0) {
+  for (let i = 1; i <= 365; i++) {
+    const day = new Date(today);
+    day.setDate(day.getDate() - i);
+    const hasPost = sortedPosts.some(p => {
+      const d = new Date(p.data.pubDate.getFullYear(), p.data.pubDate.getMonth(), p.data.pubDate.getDate());
+      return d.getTime() === day.getTime();
+    });
+    if (hasPost) streak++;
+    else break;
+  }
+}
+---
+
+<BaseLayout title="首页">
+  <!-- Hero -->
+  <div class="hero-wrapper">
+    <div class="hero-left-text home-stagger-left">
+      <p class="text-[11px] tracking-[0.35em] text-text-muted dark:text-dark-text-muted uppercase mb-8 font-sans">Personal notes / AI tools / real life</p>
+      <h1 class="hero-title font-display font-bold mb-6 text-text dark:text-dark-text blur-reveal">墨迹</h1>
+      <p class="max-w-md text-base font-serif leading-[1.9] text-text-secondary dark:text-dark-text-secondary mb-3">
+        一个不装成熟的个人空间，<br/>记录我怎么靠试错、AI 和一点点执行力往前走。
+      </p>
+      <p class="max-w-sm text-sm text-text-muted dark:text-dark-text-muted leading-relaxed mb-10 font-serif">
+        做过游戏，放下了；学过前端，停过；<br/>现在在玩 AI、写工具、做内容。
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href={`${import.meta.env.BASE_URL}blog/`} class="capsule-btn">
+          开始阅读
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+        <a href={`${import.meta.env.BASE_URL}tools/`} class="capsule-btn">
+          看工具箱
+        </a>
+      </div>
+    </div>
+
+    <div class="home-stagger-right">
+      <RightSidebar
+        totalPosts={allPosts.length}
+        thisMonth={thisMonth}
+        wordCount={wordCount}
+      />
+    </div>
+  </div>
+
+  <!-- 分隔线 + 滚动引导 -->
+  <div class="max-w-4xl mx-auto px-6 pt-2">
+    <div class="h-px bg-gradient-to-r from-transparent via-border-strong/30 to-transparent dark:via-dark-border-strong/30"></div>
+    <div class="flex justify-center py-5">
+      <div class="scroll-indicator"></div>
+    </div>
+  </div>
+
+  <!-- 下半屏：水感内容区 -->
+  <div class="content-section pt-8 pb-4">
+
+  <!-- 精选文章 -->
+  {featuredPost && (
+    <section class="max-w-4xl mx-auto px-6 pb-8 reveal-target">
+      <h2 class="section-kicker mb-6">精选文章</h2>
+      <a href={`${import.meta.env.BASE_URL}blog/${featuredPost.id}/`} class="group block card-flat p-6">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="seal">{featuredPost.data.category}</span>
+          <time class="text-[11px] text-[#d6dae1] font-mono">{featuredPost.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+        </div>
+        <h3 class="font-display font-bold text-xl text-[#F5F5F4] group-hover:text-[#7a95af] transition-colors duration-200 leading-snug mb-2">
+          {featuredPost.data.title}
+        </h3>
+        <p class="text-sm text-[#d6dae1] line-clamp-2 leading-relaxed">
+          {featuredPost.data.description}
+        </p>
+      </a>
+    </section>
+  )}
+
+  <!-- 分隔线 -->
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="h-px bg-gradient-to-r from-transparent via-border-strong/30 to-transparent dark:via-dark-border-strong/30"></div>
+  </div>
+
+  <!-- 最新文章 + 侧边栏 -->
+  <section class="max-w-4xl mx-auto px-6 py-10">
+    <div class="flex items-center justify-between mb-6 reveal-target">
+      <h2 class="section-kicker">最新文章</h2>
+      <a href={`${import.meta.env.BASE_URL}blog/`} class="text-xs text-accent dark:text-dark-accent hover:text-accent-hover dark:hover:text-dark-accent-hover transition-colors font-serif">
+        查看全部 &rarr;
+      </a>
+    </div>
+    <div class="flex flex-col md:flex-row gap-10">
+      <div class="flex-1 min-w-0">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {recentPosts.map((post, i) => (
+            <div class="reveal-target" style={`transition-delay: ${(i % 4) * 0.06}s`}>
+              <PostCard
+                title={post.data.title}
+                description={post.data.description}
+                pubDate={post.data.pubDate}
+                heroImage={post.data.heroImage}
+                tags={post.data.tags}
+                category={post.data.category}
+                slug={post.id}
+                readingTime={calcReadingTime(post.body || '')}
+                featured={post === featuredPost}
+              />
+            </div>
+          ))}
+        </div>
+
+        <!-- 分类 -->
+        <div class="mt-8 flex flex-wrap gap-2 reveal-target" style="transition-delay: 0.12s">
+          {categories.sort((a, b) => b.count - a.count).map((cat) => (
+            <a
+              href={`${import.meta.env.BASE_URL}blog/?category=${encodeURIComponent(cat.name)}`}
+              class="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-serif text-[#d6dae1] bg-[#0F172A]/30 backdrop-blur-sm border border-white/[0.04] rounded-md hover:text-[#F5F5F4] hover:border-white/[0.10] hover:-translate-y-0.5 transition-all duration-500"
+              style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)"
+            >
+              <span>{cat.name}</span>
+              <span class="text-[10px] opacity-30">{cat.count}</span>
+            </a>
+          ))}
+        </div>
+
+        {recentPosts.length === 0 && (
+          <div class="text-center py-24 text-text-muted dark:text-dark-text-muted">
+            <p class="text-lg mb-2 font-serif">还没有文章</p>
+            <p class="text-sm">在 <code class="px-2 py-0.5 bg-surface-alt dark:bg-dark-surface-alt rounded text-xs">src/content/posts/</code> 目录下添加 Markdown 文件即可</p>
+          </div>
+        )}
+
+        <!-- 博客动态 -->
+        <div class="mt-12 reveal-target" style="transition-delay: 0.06s">
+          <div class="h-px bg-gradient-to-r from-transparent via-border-strong/20 to-transparent dark:via-dark-border-strong/20 mb-8"></div>
+          <h3 class="section-kicker mb-6">博客动态</h3>
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p class="text-2xl font-display font-bold text-text dark:text-dark-text">{thisMonth}</p>
+              <p class="text-[11px] text-text-muted dark:text-dark-text-muted mt-1 font-serif">本月发文</p>
+            </div>
+            <div>
+              <p class="text-2xl font-display font-bold text-text dark:text-dark-text">{allPosts.length}</p>
+              <p class="text-[11px] text-text-muted dark:text-dark-text-muted mt-1 font-serif">总计文章</p>
+            </div>
+            <div>
+              <p class="text-2xl font-display font-bold text-text dark:text-dark-text">{wordCount}</p>
+              <p class="text-[11px] text-text-muted dark:text-dark-text-muted mt-1 font-serif">总字数</p>
+            </div>
+          </div>
+          {streak > 0 && (
+            <p class="mt-4 text-xs text-text-muted/60 dark:text-dark-text-muted/60 text-center font-serif">
+              已连续更新 {streak} 天
+            </p>
+          )}
+        </div>
+
+        <!-- 友链 -->
+        <div class="mt-10 reveal-target" style="transition-delay: 0.12s">
+          <div class="h-px bg-gradient-to-r from-transparent via-border-strong/20 to-transparent dark:via-dark-border-strong/20 mb-6"></div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="section-kicker">友链</h3>
+            <a href={`${import.meta.env.BASE_URL}friends/`} class="text-xs text-accent dark:text-dark-accent hover:text-accent-hover dark:hover:text-dark-accent-hover transition-colors font-serif">查看全部 &rarr;</a>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://ekegukeku64-blip.github.io/tech-daily/" target="_blank" rel="noopener" class="text-sm text-text-muted dark:text-dark-text-muted hover:text-accent dark:hover:text-dark-accent transition-colors font-serif">
+              技术日报
+            </a>
+          </div>
+        </div>
+
+        <!-- 每日一言 -->
+        <div class="mt-10 reveal-target" style="transition-delay: 0.12s">
+          <div class="h-px bg-gradient-to-r from-transparent via-border-strong/20 to-transparent dark:via-dark-border-strong/20 mb-6"></div>
+          <h3 class="section-kicker mb-4">每日一言</h3>
+          <p id="daily-quote-text" class="text-sm text-text/50 dark:text-dark-text/50 font-serif italic leading-[2]"></p>
+          <p id="daily-quote-author" class="text-xs text-text-muted/40 dark:text-dark-text-muted/40 mt-3 text-right"></p>
+        </div>
+
+        <!-- 标签 -->
+        {allTags.length > 0 && (
+          <div class="mt-10 reveal-target" style="transition-delay: 0.18s">
+            <div class="h-px bg-gradient-to-r from-transparent via-border-strong/20 to-transparent dark:via-dark-border-strong/20 mb-6"></div>
+            <h3 class="section-kicker mb-4">标签</h3>
+            <TagCloud tags={allTags} />
+          </div>
+        )}
+      </div>
+
+      <div class="w-full md:w-64 shrink-0 reveal-target" style="transition-delay: 0.12s">
+        <Sidebar categories={categories} recentPosts={sidebarPosts} />
+      </div>
+    </div>
+  </section>
+
+  <!-- 分隔线 -->
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="h-px bg-gradient-to-r from-transparent via-border-strong/30 to-transparent dark:via-dark-border-strong/30"></div>
+  </div>
+
+  <!-- 技术日报 -->
+  <section class="max-w-4xl mx-auto px-6 py-14 reveal-target">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="section-kicker">技术日报</h2>
+      <a href="https://ekegukeku64-blip.github.io/tech-daily/" target="_blank" rel="noopener" class="text-xs text-accent dark:text-dark-accent hover:text-accent-hover dark:hover:text-dark-accent-hover transition-colors font-serif">
+        查看全部 &rarr;
+      </a>
+    </div>
+    <div id="tech-daily-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="col-span-3 text-center py-8 text-sm text-text-muted/50 dark:text-dark-text-muted/50 font-serif">加载中...</div>
+    </div>
+    <a href="https://ekegukeku64-blip.github.io/tech-daily/" target="_blank" rel="noopener" class="mt-8 block text-center text-sm text-accent dark:text-dark-accent hover:text-accent-hover dark:hover:text-dark-accent-hover transition-colors">
+      前往技术日报站 &rarr;
+    </a>
+  </section>
+
+  </div>
+  <!-- 水感内容区结束 -->
+
+<script is:inline define:vars={{ postsMeta, base: import.meta.env.BASE_URL }}>
+  document.addEventListener('astro:page-load', () => {
+    const likes = JSON.parse(localStorage.getItem('blog_likes') || '{}');
+    const hotSection = document.getElementById('hot-recommend');
+    const hotPosts = document.getElementById('hot-posts');
+    if (!hotSection || !hotPosts) return;
+    const liked = postsMeta
+      .filter(p => (likes[p.slug] || 0) > 0)
+      .sort((a, b) => (likes[b.slug] || 0) - (likes[a.slug] || 0))
+      .slice(0, 3);
+    if (liked.length === 0) return;
+    hotSection.classList.remove('hidden');
+    hotPosts.innerHTML = liked.map(post => `
+      <a href="${base}blog/${post.slug}" class="group block p-4 hover:bg-surface-raised/50 dark:hover:bg-dark-surface-raised/50 transition-colors rounded-lg">
+        <span class="text-[11px] text-accent dark:text-dark-accent font-mono">${likes[post.slug]} likes</span>
+        <h3 class="mt-1 font-display text-base font-bold text-text dark:text-dark-text leading-snug group-hover:text-accent dark:group-hover:text-dark-accent transition-colors">${post.title}</h3>
+        <p class="mt-1 text-sm text-text-secondary dark:text-dark-text-secondary line-clamp-2">${post.description}</p>
+      </a>
+    `).join('');
+  });
+</script>
+
+<script is:inline>
+document.addEventListener('astro:page-load', async () => {
+  const grid = document.getElementById('tech-daily-grid');
+  if (!grid) return;
+  try {
+    const resp = await fetch('https://ekegukeku64-blip.github.io/tech-daily/sitemap-0.xml');
+    const xml = await resp.text();
+    const matches = [...xml.matchAll(/<loc>(https:\/\/[^<]*daily-tech-(\d{4}-\d{2}-\d{2})[^<]*)<\/loc>/g)];
+    matches.sort((a, b) => b[2].localeCompare(a[2]));
+    const links = matches.slice(0, 3).map(m => ({ url: m[1], date: m[2] }));
+    if (links.length === 0) {
+      grid.innerHTML = '<div class="col-span-3 text-center py-8 text-sm text-text-muted/50 dark:text-dark-text-muted/50 font-serif">暂无内容</div>';
+      return;
+    }
+    grid.innerHTML = links.map(({ url, date }) => `
+      <a href="${url}" target="_blank" rel="noopener" class="group block card-flat p-5">
+        <time class="text-[11px] text-[#d6dae1] font-mono">${date}</time>
+        <h3 class="mt-2 font-display text-base font-bold text-[#F5F5F4] leading-snug group-hover:text-[#7a95af] transition-colors duration-200">
+          技术日报 · ${date.slice(5)}
+        </h3>
+        <p class="mt-1.5 text-sm text-[#d6dae1] line-clamp-2 leading-relaxed">
+          GitHub 热门项目 + HN 技术圈每日动态
+        </p>
+      </a>
+    `).join('');
+  } catch {
+    grid.innerHTML = '<div class="col-span-3 text-center py-8 text-sm text-text-muted/50 dark:text-dark-text-muted/50 font-serif">日报暂不可用</div>';
+  }
+});
+</script>
+
+<script is:inline>
+document.addEventListener('astro:page-load', () => {
+  const quoteEl = document.getElementById('daily-quote-text');
+  const authorEl = document.getElementById('daily-quote-author');
+  if (!quoteEl) return;
+  const quotes = [
+    { text: '博学之，审问之，慎思之，明辨之，笃行之。', author: '《中庸》' },
+    { text: '路漫漫其修远兮，吾将上下而求索。', author: '屈原' },
+    { text: '学而不思则罔，思而不学则殆。', author: '孔子' },
+    { text: '千里之行，始于足下。', author: '老子' },
+    { text: '知之者不如好之者，好之者不如乐之者。', author: '孔子' },
+    { text: '不积跬步，无以至千里。', author: '荀子' },
+    { text: '业精于勤，荒于嬉；行成于思，毁于随。', author: '韩愈' },
+    { text: '三人行，必有我师焉。', author: '孔子' },
+    { text: '天行健，君子以自强不息。', author: '《周易》' },
+    { text: '纸上得来终觉浅，绝知此事要躬行。', author: '陆游' },
+    { text: '读书破万卷，下笔如有神。', author: '杜甫' },
+    { text: '宝剑锋从磨砺出，梅花香自苦寒来。', author: '《警世贤文》' },
+    { text: '世上无难事，只怕有心人。', author: '谚语' },
+    { text: '黑发不知勤学早，白首方悔读书迟。', author: '颜真卿' },
+    { text: '少年易老学难成，一寸光阴不可轻。', author: '朱熹' },
+  ];
+  const dayIndex = new Date().getDate() % quotes.length;
+  const q = quotes[dayIndex];
+  quoteEl.textContent = `「${q.text}」`;
+  authorEl.textContent = `— ${q.author}`;
+});
+</script>
+</BaseLayout>

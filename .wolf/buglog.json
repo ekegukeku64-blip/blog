@@ -1,0 +1,26 @@
+[
+  {
+    "id": "bug-001",
+    "timestamp": "2026-06-08T01:04:00+08:00",
+    "error_message": "微信扫码不支持也不显示 — 微信内置浏览器不显示 QR 码图片/扫码无法识别",
+    "file": "src/pages/tools/qrcode.astro",
+    "root_cause": "微信浏览器不支持 data: URL 显示图片；外部 api.qrserver.com 生成的 QR 码微信扫码无法识别",
+    "fix": "改用 qrcode.toString({ type: 'svg' }) 生成 SVG 直接 innerHTML 插入 DOM，不走任何 URL",
+    "tags": ["wechat", "qrcode", "svg", "compatibility"],
+    "related_bugs": [],
+    "occurrences": 3,
+    "last_seen": "2026-06-08T01:04:00+08:00"
+  },
+  {
+    "id": "bug-002",
+    "timestamp": "2026-06-08T18:39:00+08:00",
+    "error_message": "右侧玻璃卡片点击后看不到波纹",
+    "file": "src/styles/global.css",
+    "root_cause": "初版 click-wave 波纹 opacity、尺寸和层级都过低，叠在深色玻璃卡片背景里肉眼几乎不可见",
+    "fix": "提高波纹 z-index、尺寸、透明度、发光层和动画时长，同时保持 pointer-events none 与圆角裁切",
+    "tags": ["ui", "interaction", "ripple", "visibility"],
+    "related_bugs": [],
+    "occurrences": 1,
+    "last_seen": "2026-06-08T18:39:00+08:00"
+  }
+]

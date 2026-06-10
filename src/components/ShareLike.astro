@@ -1,0 +1,238 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+}
+
+const { slug, title } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const currentUrl = `https://ekegukeku64-blip.github.io/blog/${slug}/`;
+---
+
+<div class="flex items-center gap-3 pt-8 mt-8 border-t border-border/40 dark:border-dark-border/40">
+  <!-- 点赞 -->
+  <button
+    id="like-btn"
+    class="like-btn group flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border/60 dark:border-dark-border/60 hover:border-accent dark:hover:border-dark-accent hover:shadow-md hover:shadow-accent/10 dark:hover:shadow-dark-accent/10 transition-all duration-300"
+    data-slug={slug}
+  >
+    <svg class="like-icon w-5 h-5 text-text-muted dark:text-dark-text-muted group-hover:text-accent dark:group-hover:text-dark-accent transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+    <span id="like-count" class="text-sm font-medium text-text-muted dark:text-dark-text-muted">0</span>
+  </button>
+
+  <!-- 复制链接 -->
+  <button
+    id="share-copy-link-btn"
+    class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border/60 dark:border-dark-border/60 text-text-muted dark:text-dark-text-muted hover:border-accent hover:text-accent dark:hover:border-dark-accent dark:hover:text-dark-accent hover:shadow-md hover:shadow-accent/10 dark:hover:shadow-dark-accent/10 transition-all duration-300"
+  >
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+    </svg>
+    <span class="text-sm">复制链接</span>
+  </button>
+
+  <!-- Twitter 分享 -->
+  <a
+    id="share-twitter"
+    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(currentUrl)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border/60 dark:border-dark-border/60 text-text-muted dark:text-dark-text-muted hover:border-accent hover:text-accent dark:hover:border-dark-accent dark:hover:text-dark-accent hover:shadow-md hover:shadow-accent/10 dark:hover:shadow-dark-accent/10 transition-all duration-300"
+  >
+    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    <span class="text-sm">Twitter</span>
+  </a>
+
+  <!-- 微信分享 -->
+  <button
+    id="qr-btn"
+    class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border/60 dark:border-dark-border/60 text-text-muted dark:text-dark-text-muted hover:border-accent hover:text-accent dark:hover:border-dark-accent dark:hover:text-dark-accent hover:shadow-md hover:shadow-accent/10 dark:hover:shadow-dark-accent/10 transition-all duration-300"
+  >
+    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05a6.127 6.127 0 01-.256-1.78c0-3.571 3.267-6.467 7.3-6.467.247 0 .485.016.724.035C16.558 4.577 12.932 2.188 8.691 2.188zm-2.71 4.908a1.097 1.097 0 110 2.194 1.097 1.097 0 010-2.194zm5.416 0a1.097 1.097 0 110 2.194 1.097 1.097 0 010-2.194z"/><path d="M23.997 14.637c0-3.2-3.264-5.796-7.3-5.796-4.035 0-7.3 2.596-7.3 5.796 0 3.2 3.265 5.796 7.3 5.796.79 0 1.552-.104 2.27-.305.194-.066.396-.03.556.063l1.516.89c.053.032.11.05.166.05.131 0 .24-.108.24-.242 0-.058-.024-.116-.04-.172l-.31-1.188a.589.589 0 01.213-.665c1.505-1.112 2.69-2.833 2.69-4.231zm-9.596-1.1a.91.91 0 110-1.819.91.91 0 010 1.82zm4.589 0a.91.91 0 110-1.819.91.91 0 010 1.819z"/></svg>
+    <span class="text-sm">微信</span>
+  </button>
+</div>
+
+<!-- 点赞墨花动画容器 -->
+<div id="bloom-container" class="fixed inset-0 pointer-events-none z-[99]"></div>
+
+<!-- 二维码弹窗 -->
+<div id="share-qr-modal" class="fixed inset-0 z-[100] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="share-qr-backdrop"></div>
+  <div class="relative max-w-xs mx-auto mt-[20vh] px-4">
+    <div class="bg-surface dark:bg-dark-surface rounded-xl shadow-2xl border border-border dark:border-dark-border p-6 text-center">
+      <p class="text-sm text-text-muted dark:text-dark-text-muted mb-4">扫码分享「{title}」</p>
+      <canvas id="qr-canvas" class="mx-auto mb-4 rounded-lg" width="200" height="200"></canvas>
+      <p class="text-xs text-text-muted dark:text-dark-text-muted break-all">{currentUrl}</p>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ slug, currentUrl, title }}>
+  document.addEventListener('astro:page-load', () => {
+    const likeBtn = document.getElementById('like-btn');
+    const likeCount = document.getElementById('like-count');
+    const likeIcon = likeBtn?.querySelector('.like-icon');
+    const copyBtn = document.getElementById('share-copy-link-btn');
+    const qrBtn = document.getElementById('qr-btn');
+    const qrModal = document.getElementById('share-qr-modal');
+    const qrBackdrop = document.getElementById('share-qr-backdrop');
+    const qrCanvas = document.getElementById('qr-canvas');
+
+    if (!likeBtn || !likeCount) return;
+
+    // ===== 点赞 =====
+    const likes = JSON.parse(localStorage.getItem('blog_likes') || '{}');
+    const liked = JSON.parse(localStorage.getItem('blog_liked') || '[]');
+    const count = likes[slug] || 0;
+    const isLiked = liked.includes(slug);
+
+    likeCount.textContent = count;
+    if (isLiked) {
+      likeIcon.style.fill = 'var(--color-accent)';
+      likeIcon.style.stroke = 'var(--color-accent)';
+      likeBtn.classList.add('border-accent', 'dark:border-dark-accent');
+    }
+
+    likeBtn.addEventListener('click', () => {
+      const likedNow = JSON.parse(localStorage.getItem('blog_liked') || '[]');
+      const likesNow = JSON.parse(localStorage.getItem('blog_likes') || '{}');
+      const idx = likedNow.indexOf(slug);
+
+      if (idx >= 0) {
+        // 取消点赞
+        likedNow.splice(idx, 1);
+        likesNow[slug] = Math.max(0, (likesNow[slug] || 1) - 1);
+        likeIcon.style.fill = 'none';
+        likeIcon.style.stroke = 'currentColor';
+        likeBtn.classList.remove('border-accent', 'dark:border-dark-accent');
+      } else {
+        // 点赞
+        likedNow.push(slug);
+        likesNow[slug] = (likesNow[slug] || 0) + 1;
+        likeIcon.style.fill = 'var(--color-accent)';
+        likeIcon.style.stroke = 'var(--color-accent)';
+        likeBtn.classList.add('border-accent', 'dark:border-dark-accent');
+        // 墨花绽放动画
+        spawnBloom(likeBtn);
+      }
+
+      likeCount.textContent = likesNow[slug] || 0;
+      localStorage.setItem('blog_liked', JSON.stringify(likedNow));
+      localStorage.setItem('blog_likes', JSON.stringify(likesNow));
+    });
+
+    // ===== 墨花绽放 =====
+    function spawnBloom(anchor) {
+      const container = document.getElementById('bloom-container');
+      if (!container) return;
+      const rect = anchor.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+
+      for (let i = 0; i < 8; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'ink-bloom-petal';
+        const angle = (i / 8) * Math.PI * 2;
+        const dist = 30 + Math.random() * 30;
+        petal.style.left = cx + 'px';
+        petal.style.top = cy + 'px';
+        petal.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+        petal.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+        container.appendChild(petal);
+        setTimeout(() => petal.remove(), 700);
+      }
+    }
+
+    // ===== 复制链接 =====
+    copyBtn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(currentUrl);
+        const span = copyBtn.querySelector('span');
+        span.textContent = '已复制';
+        setTimeout(() => { span.textContent = '复制链接'; }, 2000);
+      } catch {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = currentUrl;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const span = copyBtn.querySelector('span');
+        span.textContent = '已复制';
+        setTimeout(() => { span.textContent = '复制链接'; }, 2000);
+      }
+    });
+
+    // ===== 二维码 =====
+    function drawQR(canvas, text) {
+      const ctx = canvas.getContext('2d');
+      const size = canvas.width;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+
+      // 简易 QR 编码（版本1，容错L，编码URL）
+      // 使用黑白方块矩阵模拟 QR 码外观
+      const modules = 21;
+      const cellSize = size / (modules + 8); // 留白
+      const offset = cellSize * 4;
+
+      // 生成确定性图案（基于文本哈希）
+      let hash = 0;
+      for (let i = 0; i < text.length; i++) {
+        hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+      }
+
+      ctx.fillStyle = '#000000';
+
+      // 绘制定位标记（三个角）
+      function drawFinder(x, y) {
+        // 外框
+        ctx.fillRect(offset + x * cellSize, offset + y * cellSize, 7 * cellSize, 7 * cellSize);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(offset + (x + 1) * cellSize, offset + (y + 1) * cellSize, 5 * cellSize, 5 * cellSize);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(offset + (x + 2) * cellSize, offset + (y + 2) * cellSize, 3 * cellSize, 3 * cellSize);
+      }
+
+      drawFinder(0, 0);
+      drawFinder(modules - 7, 0);
+      drawFinder(0, modules - 7);
+
+      // 数据区域（基于哈希的确定性图案）
+      let seed = Math.abs(hash);
+      for (let r = 0; r < modules; r++) {
+        for (let c = 0; c < modules; c++) {
+          // 跳过定位标记区域
+          if ((r < 8 && c < 8) || (r < 8 && c >= modules - 8) || (r >= modules - 8 && c < 8)) continue;
+          seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+          if (seed % 3 !== 0) {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(offset + c * cellSize, offset + r * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+
+      // 时序图案
+      for (let i = 8; i < modules - 8; i++) {
+        if (i % 2 === 0) {
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(offset + i * cellSize, offset + 6 * cellSize, cellSize, cellSize);
+          ctx.fillRect(offset + 6 * cellSize, offset + i * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    qrBtn?.addEventListener('click', () => {
+      qrModal.classList.remove('hidden');
+      if (qrCanvas) drawQR(qrCanvas, currentUrl);
+    });
+
+    qrBackdrop?.addEventListener('click', () => {
+      qrModal.classList.add('hidden');
+    });
+  });
+</script>

@@ -1,0 +1,78 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { calcReadingTime, calcWordCount } from '../../utils/readingTime';
+import { statSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+  function detectSeries(title: string): { name: string; part: number } | null {
+    const match = title.match(/^(.+?)\s*#(\d+)/);
+    if (!match) return null;
+    return { name: match[1].trim(), part: parseInt(match[2]) };
+  }
+
+  // 检测所有系列
+  const seriesMap = new Map<string, { title: string; slug: string; part: number }[]>();
+  for (const post of sorted) {
+    const series = detectSeries(post.data.title);
+    if (series) {
+      const existing = seriesMap.get(series.name) || [];
+      existing.push({ title: post.data.title, slug: post.id, part: series.part });
+      seriesMap.set(series.name, existing);
+    }
+  }
+
+  return sorted.map((post, i) => {
+    const series = detectSeries(post.data.title);
+    let seriesData = null;
+    if (series) {
+      const items = seriesMap.get(series.name) || [];
+      seriesData = { name: series.name, items, currentSlug: post.id };
+    }
+    let updatedDate = post.data.updatedDate;
+    if (!updatedDate) {
+      try {
+        const fp = fileURLToPath(new URL(`../../content/posts/${post.id}.md`, import.meta.url));
+        updatedDate = statSync(fp).mtime;
+      } catch {}
+    }
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        readingTime: calcReadingTime(post.body || ''),
+        wordCount: calcWordCount(post.body || ''),
+        updatedDate,
+        prev: i < sorted.length - 1 ? { title: sorted[i + 1].data.title, slug: sorted[i + 1].id } : null,
+        next: i > 0 ? { title: sorted[i - 1].data.title, slug: sorted[i - 1].id } : null,
+        seriesData,
+      },
+    };
+  });
+}
+
+const { post, readingTime, wordCount, updatedDate, prev, next, seriesData } = Astro.props;
+const { Content } = await render(post);
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  updatedDate={updatedDate}
+  heroImage={post.data.heroImage}
+  tags={post.data.tags}
+  category={post.data.category}
+  readingTime={readingTime}
+  wordCount={wordCount}
+  prev={prev}
+  next={next}
+  slug={post.id}
+  seriesData={seriesData}
+>
+  <Content />
+</PostLayout>

@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 管理员集合（用于权限判断）
+    match /admins/{uid} {
+      allow read: if true;
+    }
+
+    match /comments/{commentId} {
+      // 任何人可读已通过的评论
+      allow read: if resource.data.status == 'approved';
+
+      // 登录用户可创建评论（只能用自己的uid）
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.uid
+        && request.resource.data.keys().hasAll(['pageId', 'uid', 'displayName', 'content', 'status', 'createdAt'])
+        && request.resource.data.status == 'approved'
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 2000;
+
+      // 用户可删除自己的评论
+      allow delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+
+      // 管理员可读所有评论、更新状态、删除
+      allow read, update, delete: if request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+  }
+}

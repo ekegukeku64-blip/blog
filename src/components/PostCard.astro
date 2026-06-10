@@ -1,0 +1,89 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  heroImage?: string;
+  tags: string[];
+  category: string;
+  slug: string;
+  featured?: boolean;
+  readingTime?: number;
+}
+
+const { title, description, pubDate, tags, category, slug, featured = false, readingTime } = Astro.props;
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+---
+
+<div class:list={['card-tilt-wrapper reveal-target blur-reveal', featured && 'md:col-span-2']}>
+  <article class="card card-tilt group relative overflow-hidden">
+    <a href={`${import.meta.env.BASE_URL}blog/${slug}/`} class="block p-5">
+      <div class="flex items-center gap-2 text-xs mb-2.5">
+        <span class="seal">{category}</span>
+        <time datetime={pubDate.toISOString()} class="font-mono text-[11px] text-[#d6dae1]">{formatDate(pubDate)}</time>
+        {readingTime && <span class="text-[#d6dae1]/40">·</span>}
+        {readingTime && <span class="text-[#d6dae1]">{readingTime} 分钟</span>}
+      </div>
+      <h3 class="font-display font-bold text-[1.05rem] leading-snug mb-2 text-[#F5F5F4] group-hover:text-[#7a95af] transition-colors duration-200">
+        {title}
+      </h3>
+      <p class="text-sm text-[#d6dae1] line-clamp-2 leading-relaxed">
+        {description}
+      </p>
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-1.5 mt-3">
+          {tags.slice(0, 3).map((tag) => (
+            <span class="text-[11px] px-2.5 py-1 text-[#d6dae1] bg-[#0F172A]/30 backdrop-blur-sm border border-white/[0.04] rounded-md font-sans hover:text-[#7a95af] hover:scale-105 hover:border-white/[0.10] transition-all duration-300 cursor-default">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+      {featured && (
+        <span class="inline-block mt-3 px-2 py-0.5 text-[10px] font-bold text-[#7a95af] border border-[#7a95af]/30 rounded font-sans tracking-wide">精选</span>
+      )}
+    </a>
+  </article>
+</div>
+
+<script>
+  const MAX_TILT = 1.5;
+
+  function initTilt(wrapper: Element) {
+    const card = wrapper.querySelector('.card-tilt') as HTMLElement;
+    if (!card) return;
+
+    wrapper.addEventListener('mousemove', (e: Event) => {
+      const me = e as MouseEvent;
+      const rect = wrapper.getBoundingClientRect();
+      const x = (me.clientX - rect.left) / rect.width;
+      const y = (me.clientY - rect.top) / rect.height;
+
+      const tiltX = (y - 0.5) * 2 * MAX_TILT;
+      const tiltY = (x - 0.5) * -2 * MAX_TILT;
+      const shadowX = (x - 0.5) * -12;
+      const shadowY = (y - 0.5) * -12 + 6;
+
+      card.style.setProperty('--tilt-x', `${tiltY}deg`);
+      card.style.setProperty('--tilt-y', `${tiltX}deg`);
+      card.style.setProperty('--tilt-shadow-x', `${shadowX}px`);
+      card.style.setProperty('--tilt-shadow-y', `${shadowY}px`);
+      card.style.setProperty('--spotlight-x', `${x * 100}%`);
+      card.style.setProperty('--spotlight-y', `${y * 100}%`);
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+      card.style.setProperty('--tilt-x', '0deg');
+      card.style.setProperty('--tilt-y', '0deg');
+      card.style.setProperty('--tilt-shadow-x', '0px');
+      card.style.setProperty('--tilt-shadow-y', '6px');
+      card.style.setProperty('--spotlight-x', '50%');
+      card.style.setProperty('--spotlight-y', '50%');
+    });
+  }
+
+  document.querySelectorAll('.card-tilt-wrapper').forEach(initTilt);
+</script>

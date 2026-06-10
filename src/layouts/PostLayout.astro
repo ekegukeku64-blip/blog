@@ -1,0 +1,200 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TagCloud from '../components/TagCloud.astro';
+import Comment from '../components/Comment.astro';
+import PostNav from '../components/PostNav.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
+import ShareLike from '../components/ShareLike.astro';
+import PostStamp from '../components/PostStamp.astro';
+import ImageLightbox from '../components/ImageLightbox.astro';
+import FocusMode from '../components/FocusMode.astro';
+import CopyLink from '../components/CopyLink.astro';
+import ShareQR from '../components/ShareQR.astro';
+import AuthorCard from '../components/AuthorCard.astro';
+import Bookmarks from '../components/Bookmarks.astro';
+import FontSizeControl from '../components/FontSizeControl.astro';
+import SeriesNav from '../components/SeriesNav.astro';
+import { formatWordCount } from '../utils/readingTime';
+
+interface SeriesItem {
+  title: string;
+  slug: string;
+  part: number;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  tags: string[];
+  category: string;
+  readingTime?: number;
+  wordCount?: number;
+  prev?: { title: string; slug: string } | null;
+  next?: { title: string; slug: string } | null;
+  slug?: string;
+  seriesData?: { name: string; items: SeriesItem[]; currentSlug: string } | null;
+}
+
+const { title, description, pubDate, updatedDate, heroImage, tags, category, readingTime, wordCount, prev = null, next = null, slug = '', seriesData = null } = Astro.props;
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<BaseLayout title={title} description={description} image={heroImage}>
+  <Fragment slot="head">
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content={pubDate.toISOString()} />
+    {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
+    <meta property="article:author" content="又逢雨季" />
+    {tags.map(tag => <meta property="article:tag" content={tag} />)}
+    <meta name="keywords" content={tags.join(', ')} />
+    {heroImage && <meta name="twitter:image" content={new URL(`${import.meta.env.BASE_URL}${heroImage.replace(/^\//, '')}`, Astro.site)} />}
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": title,
+      "description": description,
+      "datePublished": pubDate.toISOString(),
+      ...(updatedDate ? { "dateModified": updatedDate.toISOString() } : {}),
+      "author": { "@type": "Person", "name": "又逢雨季" },
+      "url": `${Astro.site}${slug}/`,
+      ...(heroImage ? { "image": `${Astro.site}${heroImage.replace(/^\//, '')}` } : {}),
+      "keywords": tags.join(", ")
+    })} />
+  </Fragment>
+  <article class="max-w-3xl mx-auto px-6 pt-16 pb-10">
+    <!-- Header: centered typography -->
+    <header class="text-center mb-10" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 2rem;">
+      <a href={`${import.meta.env.BASE_URL}category/${category}`} class="inline-block text-[11px] tracking-[0.35em] uppercase text-[#a8afba] hover:text-[#7a95af] transition-colors mb-6 font-sans">
+        {category}
+      </a>
+
+      <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-5 text-[#F5F5F4] blur-reveal" style="font-family: 'Noto Serif SC', serif;">
+        {title}
+      </h1>
+
+      {description && (
+        <p class="text-base text-[#d6dae1] mb-5 leading-relaxed" style="font-family: 'Noto Serif SC', serif;">{description}</p>
+      )}
+
+      <div class="flex items-center justify-center gap-3 text-xs text-[#a8afba] flex-wrap" style="letter-spacing: 0.05em;">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+        {wordCount && <span>· {formatWordCount(wordCount)} 字</span>}
+        {readingTime && <span>· 约 {readingTime} 分钟阅读</span>}
+        <span>· <span id="page-view-count">0</span> 次阅读</span>
+        {updatedDate && <span>· 更新于 {formatDate(updatedDate)}</span>}
+      </div>
+
+      <div class="flex items-center justify-center gap-2 mt-4">
+        <CopyLink />
+        <ShareQR />
+        <Bookmarks />
+        <FontSizeControl />
+      </div>
+    </header>
+
+    <!-- Series Navigation -->
+    {seriesData && (
+      <SeriesNav seriesName={seriesData.name} items={seriesData.items} currentSlug={seriesData.currentSlug} />
+    )}
+
+    <!-- Content with TOC -->
+    <div class="flex gap-10">
+      <div class="prose flex-1 min-w-0">
+        <slot />
+      </div>
+
+      <!-- TOC Sidebar -->
+      <aside id="toc-sidebar" class="hidden xl:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto">
+        <div class="pl-4 border-l border-white/[0.08]">
+          <p class="text-xs font-medium text-[#a8afba] mb-4 uppercase tracking-wider">目录</p>
+          <nav id="toc-nav" class="space-y-1.5"></nav>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Tags -->
+    {tags.length > 0 && (
+      <div class="mt-14 pt-8 border-t border-white/[0.05]">
+        <TagCloud tags={tags} />
+      </div>
+    )}
+
+    <!-- 作者卡片 -->
+    <div class="mt-14 pt-8 border-t border-white/[0.05]">
+      <AuthorCard />
+    </div>
+
+    <!-- Share & Like -->
+    <ShareLike slug={slug} title={title} />
+
+    <!-- Related Posts -->
+    <RelatedPosts currentSlug={slug} tags={tags} />
+
+    <!-- Prev/Next Navigation -->
+    <PostNav prev={prev} next={next} />
+
+    <!-- 个人印章 -->
+    <PostStamp />
+
+    <!-- Comments -->
+    <div class="mt-10 pt-8 border-t border-white/[0.05]">
+      <Comment />
+    </div>
+  </article>
+
+  <ImageLightbox />
+  <FocusMode />
+
+  <script is:inline>
+    document.addEventListener('astro:page-load', () => {
+      const prose = document.querySelector('.prose');
+      const tocNav = document.getElementById('toc-nav');
+      const tocSidebar = document.getElementById('toc-sidebar');
+      if (!prose || !tocNav || !tocSidebar) return;
+
+      const headings = prose.querySelectorAll('h2, h3');
+      if (headings.length < 3) { tocSidebar.style.display = 'none'; return; }
+
+      tocSidebar.style.display = '';
+      tocNav.innerHTML = '';
+
+      headings.forEach((h, i) => {
+        if (!h.id) h.id = 'heading-' + i;
+        const a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        a.className = 'block text-xs leading-relaxed transition-colors ' +
+          (h.tagName === 'H3' ? 'pl-3 ' : '') +
+          'text-[#a8afba] hover:text-[#7a95af]';
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        tocNav.appendChild(a);
+      });
+
+      // Highlight active heading on scroll
+      const tocLinks = tocNav.querySelectorAll('a');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(a => {
+              const match = a.getAttribute('href') === '#' + id;
+              a.classList.toggle('text-[#7a95af]', match);
+              a.classList.toggle('font-medium', match);
+            });
+          }
+        });
+      }, { rootMargin: '-80px 0px -70% 0px' });
+
+      headings.forEach(h => observer.observe(h));
+    });
+  </script>
+</BaseLayout>

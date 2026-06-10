@@ -1,0 +1,37 @@
+---
+// 图片灯箱 — 点击文章图片放大查看
+---
+
+<div id="lightbox" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/80 backdrop-blur-sm cursor-zoom-out" onclick="this.classList.add('hidden');this.classList.remove('flex')">
+  <img id="lightbox-img" class="max-w-[90vw] max-h-[90vh] rounded-lg shadow-2xl object-contain" />
+  <button class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors" onclick="document.getElementById('lightbox').classList.add('hidden');document.getElementById('lightbox').classList.remove('flex')">
+    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</div>
+
+<script is:inline>
+  document.addEventListener('astro:page-load', () => {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    if (!lightbox || !lightboxImg) return;
+
+    document.querySelectorAll('.prose img').forEach(img => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.classList.remove('hidden');
+        lightbox.classList.add('flex');
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+      }
+    });
+  });
+</script>

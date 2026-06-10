@@ -1,0 +1,36 @@
+---
+// 阅读进度条 — 朱砂色，仅文章页激活
+---
+
+<div id="reading-progress" class="fixed top-0 left-0 h-[3px] z-[100] w-0 transition-[width] duration-100 ease-out bg-accent dark:bg-dark-accent" style="display:none"></div>
+
+<script is:inline>
+  document.addEventListener('astro:page-load', () => {
+    const bar = document.getElementById('reading-progress');
+    if (!bar) return;
+
+    // 清理旧监听器
+    if (window.__rpHandler) {
+      window.removeEventListener('scroll', window.__rpHandler);
+    }
+
+    const prose = document.querySelector('.prose');
+    if (!prose) {
+      bar.style.display = 'none';
+      bar.style.width = '0%';
+      return;
+    }
+
+    bar.style.display = 'block';
+
+    window.__rpHandler = function () {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min(scrollTop / docHeight * 100, 100) : 0;
+      bar.style.width = progress + '%';
+    };
+
+    window.addEventListener('scroll', window.__rpHandler, { passive: true });
+    window.__rpHandler();
+  });
+</script>

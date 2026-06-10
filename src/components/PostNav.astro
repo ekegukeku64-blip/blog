@@ -1,0 +1,57 @@
+---
+// 上下篇导航
+interface Props {
+  prev: { title: string; slug: string } | null;
+  next: { title: string; slug: string } | null;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="mt-14 pt-8 border-t border-border/40 dark:border-dark-border/40">
+    <div class="flex items-center gap-2 mb-6">
+      <svg class="w-5 h-5 text-accent/60 dark:text-dark-accent/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <h3 class="font-display text-sm font-semibold tracking-widest text-text-muted dark:text-dark-text-muted">继续阅读</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {prev && (
+        <a
+          href={`${import.meta.env.BASE_URL}blog/${prev.slug}`}
+          class="group block p-5 border border-border/40 dark:border-dark-border/40
+                 hover:border-accent/60 dark:hover:border-dark-accent/60
+                 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5 dark:hover:shadow-dark-accent/5
+                 transition-all duration-300 rounded-xl bg-gradient-to-br from-surface/50 to-surface-alt/30 dark:from-dark-surface/50 dark:to-dark-surface-alt/30"
+        >
+          <span class="text-xs text-text-muted dark:text-dark-text-muted font-display">
+            &larr; 上一篇
+          </span>
+          <p class="mt-2 font-display text-lg font-bold text-text dark:text-dark-text leading-snug
+                    group-hover:text-accent dark:group-hover:text-dark-accent transition-colors">
+            {prev.title}
+          </p>
+        </a>
+      )}
+      {!prev && <div />}
+      {next && (
+        <a
+          href={`${import.meta.env.BASE_URL}blog/${next.slug}`}
+          class="group block p-5 border border-border/40 dark:border-dark-border/40
+                 hover:border-accent/60 dark:hover:border-dark-accent/60
+                 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5 dark:hover:shadow-dark-accent/5
+                 transition-all duration-300 text-right rounded-xl bg-gradient-to-br from-surface/50 to-surface-alt/30 dark:from-dark-surface/50 dark:to-dark-surface-alt/30"
+        >
+          <span class="text-xs text-text-muted dark:text-dark-text-muted font-display">
+            下一篇 &rarr;
+          </span>
+          <p class="mt-2 font-display text-lg font-bold text-text dark:text-dark-text leading-snug
+                    group-hover:text-accent dark:group-hover:text-dark-accent transition-colors">
+            {next.title}
+          </p>
+        </a>
+      )}
+    </div>
+  </nav>
+)}

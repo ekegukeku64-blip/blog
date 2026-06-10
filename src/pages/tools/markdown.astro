@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Markdown 预览" description="在线 Markdown 实时预览工具">
+  <div class="max-w-5xl mx-auto px-6 py-12">
+    <div class="mb-8">
+      <a href={`${import.meta.env.BASE_URL}tools/`} class="text-sm text-accent dark:text-dark-accent hover:underline mb-4 inline-block">&larr; 所有工具</a>
+      <span class="inline-block px-3 py-1 text-xs font-sans tracking-widest text-accent dark:text-dark-accent border border-accent/30 dark:border-dark-accent/30 mb-4">TOOLS</span>
+      <h1 class="font-display text-3xl font-bold text-text dark:text-dark-text">Markdown 预览</h1>
+      <p class="text-text-muted dark:text-dark-text-muted mt-2 font-serif">实时渲染 Markdown</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-text dark:text-dark-text mb-2">Markdown</label>
+        <textarea id="input" class="w-full h-[500px] bg-surface-alt dark:bg-dark-surface-alt border border-border/40 dark:border-dark-border/40 rounded-xl p-4 font-mono text-sm text-text dark:text-dark-text resize-y focus:outline-none focus:border-accent dark:focus:border-dark-accent focus:ring-2 focus:ring-accent/10 dark:focus:ring-dark-accent/10 transition-all"># Hello World
+
+这是一段 **Markdown** 文本。
+
+## 列表
+- 项目一
+- 项目二
+- 项目三
+
+## 代码
+```js
+console.log('Hello!');
+```
+
+> 引用文字
+
+[链接](https://example.com)</textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-text dark:text-dark-text mb-2">预览</label>
+        <div id="preview" class="w-full h-[500px] bg-surface dark:bg-dark-surface border border-border/40 dark:border-dark-border/40 rounded-xl p-6 overflow-y-auto prose shadow-sm"></div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    const input = document.getElementById('input');
+    const preview = document.getElementById('preview');
+
+    function esc(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderInline(text) {
+      return text
+        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+    }
+
+    function renderMd(md) {
+      // Extract and protect code blocks
+      const codeBlocks = [];
+      md = md.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+        const idx = codeBlocks.length;
+        codeBlocks.push(`<pre><code class="language-${lang}">${esc(code.trimEnd())}</code></pre>`);
+        return `\x00CODE${idx}\x00`;
+      });
+
+      const lines = md.split('\n');
+      const result = [];
+      let inList = null; // 'ul' | 'ol' | null
+      let inBlockquote = false;
+      let paragraphLines = [];
+
+      function flushParagraph() {
+        if (paragraphLines.length) {
+          result.push('<p>' + renderInline(paragraphLines.join('<br>')) + '</p>');
+          paragraphLines = [];
+        }
+      }
+
+      function flushList() {
+        if (inList) {
+          result.push(`</${inList}>`);
+          inList = null;
+        }
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block placeholder
+        if (/^\x00CODE\d+\x00$/.test(line.trim())) {
+          flushParagraph();
+          flushList();
+          result.push(codeBlocks[parseInt(line.match(/\d+/)[0])]);
+          continue;
+        }
+
+        // Empty line
+        if (line.trim() === '') {
+          flushParagraph();
+          continue;
+        }
+
+        // Heading
+        const hMatch = line.match(/^(#{1,6})\s+(.+)/);
+        if (hMatch) {
+          flushParagraph();
+          flushList();
+          const level = hMatch[1].length;
+          result.push(`<h${level}>${renderInline(hMatch[2])}</h${level}>`);
+          continue;
+        }
+
+        // Horizontal rule
+        if (/^(-{3,}|\*{3,})$/.test(line.trim())) {
+          flushParagraph();
+          flushList();
+          result.push('<hr>');
+          continue;
+        }
+
+        // Blockquote
+        const bqMatch = line.match(/^>\s?(.*)/);
+        if (bqMatch) {
+          flushParagraph();
+          flushList();
+          const html = '<blockquote>' + renderInline(bqMatch[1]) + '</blockquote>';
+          // Merge consecutive blockquotes
+          const last = result[result.length - 1];
+          if (last && last.startsWith('<blockquote>') && last.endsWith('</blockquote>')) {
+            result[result.length - 1] = last.replace('</blockquote>', '<br>') + renderInline(bqMatch[1]) + '</blockquote>';
+          } else {
+            result.push(html);
+          }
+          continue;
+        }
+
+        // Unordered list
+        const ulMatch = line.match(/^[\-\*]\s+(.+)/);
+        if (ulMatch) {
+          flushParagraph();
+          if (inList !== 'ul') { flushList(); result.push('<ul>'); inList = 'ul'; }
+          result.push('<li>' + renderInline(ulMatch[1]) + '</li>');
+          continue;
+        }
+
+        // Ordered list
+        const olMatch = line.match(/^(\d+)\.\s+(.+)/);
+        if (olMatch) {
+          flushParagraph();
+          if (inList !== 'ol') { flushList(); result.push('<ol>'); inList = 'ol'; }
+          result.push('<li>' + renderInline(olMatch[2]) + '</li>');
+          continue;
+        }
+
+        // Regular paragraph line
+        flushList();
+        paragraphLines.push(renderInline(line));
+      }
+
+      flushParagraph();
+      flushList();
+
+      // Restore code blocks (handles edge case where code placeholder was in a paragraph)
+      let html = result.join('');
+      codeBlocks.forEach((block, i) => {
+        html = html.replace(`\x00CODE${i}\x00`, block);
+      });
+
+      return html || '<p></p>';
+    }
+
+    function update() {
+      preview.innerHTML = renderMd(input.value);
+    }
+
+    input.addEventListener('input', update);
+    update();
+  </script>
+</BaseLayout>

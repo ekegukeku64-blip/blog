@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="墨迹 - Entrance">
+  <main class="entrance-container">
+    <div class="bg-layer">
+      <video
+        id="entrance-video"
+        class="bg-media"
+        src={`${import.meta.env.BASE_URL}maple.mp4`}
+        autoplay
+        loop
+        muted
+        playsinline>
+      </video>
+    </div>
+
+    <div class="fog-veil" aria-hidden="true"></div>
+
+    <div class="content-layer">
+      <h1 class="blur-reveal title">墨迹</h1>
+      <p class="blur-reveal subtitle">一个不装成熟的个人空间</p>
+
+      <a href={`${import.meta.env.BASE_URL}home/`} class="blur-reveal enter-btn">
+        Enter Room
+      </a>
+    </div>
+  </main>
+
+  <script is:inline>
+    const v = document.getElementById('entrance-video');
+    if (v) {
+      const tryPlay = () => v.play().catch(() => {});
+      tryPlay();
+      document.addEventListener('click', () => tryPlay(), { once: true });
+      document.addEventListener('touchstart', () => tryPlay(), { once: true });
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .entrance-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #070A13;
+  }
+
+  .entrance-container::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 90%;
+    background: linear-gradient(to top,
+      rgba(5,7,13,0.9) 0%,
+      rgba(5,7,13,0.6) 28%,
+      rgba(5,7,13,0.3) 52%,
+      rgba(5,7,13,0.08) 74%,
+      transparent 100%);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .bg-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.38;
+    filter: saturate(0.85);
+    transform: scale(1.06);
+  }
+
+  .fog-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 40%, transparent 35%, rgba(7,10,19,0.55) 100%);
+    pointer-events: none;
+  }
+
+  .content-layer {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 6rem;
+  }
+
+  .title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 5rem;
+    font-weight: 700;
+    color: rgba(242, 238, 234, 0.68);
+    margin: 0;
+    letter-spacing: 0.14em;
+    text-shadow: 0 0 120px rgba(122, 149, 175, 0.18), 0 0 40px rgba(200, 180, 140, 0.12);
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: rgba(175, 168, 158, 0.55);
+    letter-spacing: 0.28em;
+    margin-top: 1.2rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .enter-btn {
+    padding: 0.9rem 3rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    color: rgba(210, 202, 192, 0.58);
+    text-decoration: none;
+    text-transform: uppercase;
+    background: rgba(14, 18, 28, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 100px;
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .enter-btn::after {
+    content: "";
+    position: absolute;
+    top: calc(100% + 2rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(122, 149, 175, 0.12), rgba(122, 149, 175, 0.01), transparent);
+    pointer-events: none;
+  }
+
+  .enter-btn:hover {
+    color: rgba(245, 245, 244, 0.8);
+    background: rgba(30, 40, 55, 0.4);
+    border-color: rgba(180, 155, 120, 0.25);
+    box-shadow: 0 0 40px -10px rgba(180, 155, 120, 0.08);
+    transform: scale(1.02);
+  }
+
+  .enter-btn:active {
+    transform: scale(0.94) translateY(2px) !important;
+    transition: transform 0.05s ease-out !important;
+  }
+
+  .blur-reveal {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(20px);
+    animation: blurFadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .title { animation-delay: 0.2s; }
+  .subtitle { animation-delay: 0.4s; }
+  .enter-btn { animation-delay: 0.8s; }
+
+  @keyframes blurFadeIn {
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .title { font-size: 3rem; }
+    .content-layer { margin-top: 3rem; }
+  }
+</style>

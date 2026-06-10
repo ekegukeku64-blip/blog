@@ -1,0 +1,320 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="管理面板" description="博客后台管理">
+  <div class="max-w-4xl mx-auto px-6 py-16">
+    <div id="admin-gate" class="text-center py-20">
+      <svg class="w-16 h-16 mx-auto mb-4 text-text-muted dark:text-dark-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+      <p class="text-text-muted dark:text-dark-text-muted mb-4">请先登录</p>
+      <div class="flex justify-center gap-3">
+        <button id="admin-login-google" class="px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text hover:bg-accent/10 dark:hover:bg-dark-accent/10 transition-colors">
+          Google 登录
+        </button>
+        <button id="admin-login-github" class="px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text hover:bg-accent/10 dark:hover:bg-dark-accent/10 transition-colors">
+          GitHub 登录
+        </button>
+      </div>
+    </div>
+
+    <div id="admin-no-access" class="hidden text-center py-20">
+      <p class="text-red-500">无权限访问。请使用管理员账号登录。</p>
+    </div>
+
+    <div id="admin-panel" class="hidden">
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="font-display text-2xl font-bold text-text dark:text-dark-text">管理面板</h1>
+        <span id="admin-user-info" class="text-sm text-text-muted dark:text-dark-text-muted"></span>
+      </div>
+
+      <!-- 统计 -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
+          <p id="stat-total" class="text-2xl font-bold text-text dark:text-dark-text">-</p>
+          <p class="text-xs text-text-muted dark:text-dark-text-muted">全部评论</p>
+        </div>
+        <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
+          <p id="stat-approved" class="text-2xl font-bold text-green-500">-</p>
+          <p class="text-xs text-text-muted dark:text-dark-text-muted">已通过</p>
+        </div>
+        <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
+          <p id="stat-rejected" class="text-2xl font-bold text-red-500">-</p>
+          <p class="text-xs text-text-muted dark:text-dark-text-muted">已拒绝</p>
+        </div>
+      </div>
+
+      <!-- 筛选 -->
+      <div class="flex gap-2 mb-6">
+        <button data-filter="all" class="filter-btn px-4 py-2 text-sm rounded-lg bg-accent text-white">全部</button>
+        <button data-filter="approved" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">已通过</button>
+        <button data-filter="rejected" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">已拒绝</button>
+      </div>
+
+      <!-- 评论列表 -->
+      <div id="admin-comments" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <style>
+    .admin-comment {
+      background: var(--color-surface-alt);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    :root.dark .admin-comment {
+      background: var(--color-dark-surface-alt);
+    }
+    .admin-comment-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .admin-comment-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .admin-comment-avatar {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .admin-comment-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .admin-comment-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text);
+    }
+    :root.dark .admin-comment-name {
+      color: var(--color-dark-text);
+    }
+    .admin-comment-page {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+    :root.dark .admin-comment-page {
+      color: var(--color-dark-text-muted);
+    }
+    .admin-comment-time {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+    .admin-comment-body {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      margin-bottom: 0.75rem;
+    }
+    :root.dark .admin-comment-body {
+      color: var(--color-dark-text);
+    }
+    .admin-comment-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .admin-comment-actions button {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .admin-comment-actions button:hover {
+      opacity: 0.8;
+    }
+    .btn-approve {
+      background: #22c55e;
+      color: white;
+    }
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-delete {
+      background: transparent;
+      color: #ef4444;
+      border: 1px solid #ef4444;
+    }
+    .status-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+    .status-approved {
+      background: #22c55e20;
+      color: #22c55e;
+    }
+    .status-rejected {
+      background: #ef444420;
+      color: #ef4444;
+    }
+  </style>
+</BaseLayout>
+
+<script>
+  import {
+    onAuth, loginWithGoogle, loginWithGithub,
+    db, collection, query, orderBy, getDocs,
+    doc, updateDoc, deleteDoc,
+    type Comment,
+  } from '../lib/firebase'
+  import { ADMIN_UIDS } from '../lib/adminUids'
+
+  let allComments: (Comment & { id: string })[] = []
+  let currentFilter = 'all'
+
+  function formatDate(ts: any) {
+    if (!ts) return ''
+    const d = ts.toDate ? ts.toDate() : new Date(ts)
+    return d.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
+
+  function escapeHtml(str: string) {
+    const div = document.createElement('div')
+    div.textContent = str
+    return div.innerHTML
+  }
+
+  function renderStats(comments: (Comment & { id: string })[]) {
+    const total = comments.length
+    const approved = comments.filter(c => c.status === 'approved').length
+    const rejected = comments.filter(c => c.status === 'rejected').length
+    const el = (id: string) => document.getElementById(id)
+    if (el('stat-total')) el('stat-total')!.textContent = String(total)
+    if (el('stat-approved')) el('stat-approved')!.textContent = String(approved)
+    if (el('stat-rejected')) el('stat-rejected')!.textContent = String(rejected)
+  }
+
+  function renderComments() {
+    const container = document.getElementById('admin-comments')
+    if (!container) return
+
+    const filtered = currentFilter === 'all'
+      ? allComments
+      : allComments.filter(c => c.status === currentFilter)
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<p class="text-center text-text-muted dark:text-dark-text-muted py-8">暂无评论</p>'
+      return
+    }
+
+    container.innerHTML = filtered.map(c => {
+      const avatarHtml = c.photoURL
+        ? `<img src="${c.photoURL}" alt="" />`
+        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--color-accent);color:white;font-size:0.7rem;font-weight:600">${escapeHtml(c.displayName).charAt(0).toUpperCase()}</div>`
+      const statusClass = c.status === 'approved' ? 'status-approved' : 'status-rejected'
+      const statusText = c.status === 'approved' ? '已通过' : '已拒绝'
+      return `
+        <div class="admin-comment">
+          <div class="admin-comment-header">
+            <div class="admin-comment-meta">
+              <div class="admin-comment-avatar">${avatarHtml}</div>
+              <span class="admin-comment-name">${escapeHtml(c.displayName)}</span>
+              <span class="status-badge ${statusClass}">${statusText}</span>
+            </div>
+            <span class="admin-comment-time">${formatDate(c.createdAt)}</span>
+          </div>
+          <p class="admin-comment-page">页面: ${escapeHtml(c.pageId)}</p>
+          <div class="admin-comment-body">${escapeHtml(c.content).replace(/\n/g, '<br>')}</div>
+          <div class="admin-comment-actions">
+            ${c.status !== 'approved' ? `<button class="btn-approve" data-id="${c.id}" data-action="approve">通过</button>` : ''}
+            ${c.status !== 'rejected' ? `<button class="btn-reject" data-id="${c.id}" data-action="reject">拒绝</button>` : ''}
+            <button class="btn-delete" data-id="${c.id}" data-action="delete">删除</button>
+          </div>
+        </div>
+      `
+    }).join('')
+
+    // 按钮事件
+    container.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id')!
+        const action = btn.getAttribute('data-action')!
+        if (action === 'delete' && !confirm('确定删除？')) return
+        try {
+          if (action === 'approve') await updateDoc(doc(db, 'comments', id), { status: 'approved' })
+          else if (action === 'reject') await updateDoc(doc(db, 'comments', id), { status: 'rejected' })
+          else if (action === 'delete') await deleteDoc(doc(db, 'comments', id))
+          await loadComments()
+        } catch (e) {
+          console.error(e)
+          alert('操作失败')
+        }
+      })
+    })
+  }
+
+  async function loadComments() {
+    const q = query(collection(db, 'comments'), orderBy('createdAt', 'desc'))
+    const snapshot = await getDocs(q)
+    allComments = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Comment & { id: string }))
+    renderStats(allComments)
+    renderComments()
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const gate = document.getElementById('admin-gate')
+    const noAccess = document.getElementById('admin-no-access')
+    const panel = document.getElementById('admin-panel')
+    const userInfo = document.getElementById('admin-user-info')
+    const loginGoogle = document.getElementById('admin-login-google')
+    const loginGithub = document.getElementById('admin-login-github')
+
+    if (!gate || !panel) return
+
+    loginGoogle?.addEventListener('click', async () => {
+      try { await loginWithGoogle() } catch (e) { console.error(e) }
+    })
+    loginGithub?.addEventListener('click', async () => {
+      try { await loginWithGithub() } catch (e) { console.error(e) }
+    })
+
+    // 筛选按钮
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.getAttribute('data-filter') || 'all'
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('bg-accent', 'text-white')
+          b.classList.add('bg-surface-alt', 'dark:bg-dark-surface-alt', 'text-text', 'dark:text-dark-text')
+        })
+        btn.classList.remove('bg-surface-alt', 'dark:bg-dark-surface-alt', 'text-text', 'dark:text-dark-text')
+        btn.classList.add('bg-accent', 'text-white')
+        renderComments()
+      })
+    })
+
+    onAuth(async (user) => {
+      if (!user) {
+        gate.classList.remove('hidden')
+        noAccess?.classList.add('hidden')
+        panel.classList.add('hidden')
+        return
+      }
+
+      if (!ADMIN_UIDS.includes(user.uid)) {
+        gate.classList.add('hidden')
+        noAccess?.classList.remove('hidden')
+        panel.classList.add('hidden')
+        return
+      }
+
+      gate.classList.add('hidden')
+      noAccess?.classList.add('hidden')
+      panel.classList.remove('hidden')
+      if (userInfo) userInfo.textContent = `管理员: ${user.displayName || user.email}`
+
+      await loadComments()
+    })
+  })
+</script>

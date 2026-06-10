@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d2ff"/>
+      <stop offset="100%" style="stop-color:#3a7bd5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="50" y="50" width="1100" height="530" rx="20" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.3"/>
+  <text x="600" y="280" text-anchor="middle" fill="white" font-family="sans-serif" font-size="48" font-weight="bold">
+    成长记录 #11
+  </text>
+  <text x="600" y="350" text-anchor="middle" fill="#8892b0" font-family="sans-serif" font-size="28">
+    成长记录 #11：代码改了一行，心情好了一天
+  </text>
+  <text x="600" y="500" text-anchor="middle" fill="#495670" font-family="sans-serif" font-size="20">
+    每一天都在往前走
+  </text>
+</svg>

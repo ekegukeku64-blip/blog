@@ -1,0 +1,21 @@
+---
+// 页面加载进度条 — 顶部细线
+---
+
+<div id="page-progress" class="fixed top-0 left-0 w-full h-0.5 z-[9999] pointer-events-none">
+  <div id="page-progress-bar" class="h-full bg-accent dark:bg-dark-accent transition-all duration-200 ease-out" style="width: 0%"></div>
+</div>
+
+<script is:inline>
+  document.addEventListener('astro:page-load', () => {
+    const bar = document.getElementById('page-progress-bar');
+    if (!bar) return;
+
+    // 模拟加载进度
+    bar.style.width = '30%';
+    setTimeout(() => { bar.style.width = '70%'; }, 100);
+    setTimeout(() => { bar.style.width = '100%'; }, 300);
+    setTimeout(() => { bar.style.opacity = '0'; }, 500);
+    setTimeout(() => { bar.style.width = '0%'; bar.style.opacity = '1'; }, 700);
+  });
+</script>
