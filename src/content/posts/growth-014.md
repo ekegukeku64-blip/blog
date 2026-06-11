@@ -5,7 +5,7 @@ pubDate: 2026-06-11
 heroImage: "/hero/growth-014.svg"
 category: 成长记录
 tags: ["成长", "随笔"]
-draft: false
+draft: true
 ---
 
 （开头：用一两句话引入今天想聊的事。不用太正式，就像跟朋友说话一样。）
