@@ -205,13 +205,7 @@
   function formatCommentTime(ts: any) {
     if (!ts) return ''
     const d = ts.toDate ? ts.toDate() : new Date(ts)
-    const now = new Date()
-    const diff = now.getTime() - d.getTime()
-    if (diff < 60000) return '刚刚'
-    if (diff < 3600000) return Math.floor(diff / 60000) + ' 分钟前'
-    if (diff < 86400000) return Math.floor(diff / 3600000) + ' 小时前'
-    if (diff < 604800000) return Math.floor(diff / 86400000) + ' 天前'
-    return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })
+    return d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
   }
 
   function escapeHtml(str: string) {
