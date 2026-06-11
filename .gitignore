@@ -27,3 +27,4 @@ pnpm-debug.log*
 *.png
 !public/hero/*.png
 dist_old/
+.git.bak/

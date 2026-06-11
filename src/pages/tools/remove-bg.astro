@@ -98,9 +98,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     import { removeBackground } from '@imgly/background-removal';
 
     const uploadZone = document.getElementById('upload-zone')!;
-    const fileInput = document.getElementById('file-input');
-    const editor = document.getElementById('editor');
-    const canvas = document.getElementById('canvas');
+    const fileInput = document.getElementById('file-input') as HTMLInputElement;
+    const editor = document.getElementById('editor') as HTMLElement;
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 
     let mode = 'eraser';
