@@ -202,7 +202,7 @@
   let currentUser: any = null
   let unsubscribe: (() => void) | null = null
 
-  function formatDate(ts: any) {
+  function formatCommentTime(ts: any) {
     if (!ts) return ''
     const d = ts.toDate ? ts.toDate() : new Date(ts)
     const now = new Date()
@@ -241,7 +241,7 @@
           <div class="comment-meta">
             <div class="comment-avatar">${avatarHtml}</div>
             <span class="comment-author">${escapeHtml(c.displayName)}</span>
-            <span class="comment-time">${formatDate(c.createdAt)}</span>
+            <span class="comment-time">${formatCommentTime(c.createdAt)}</span>
           </div>
           <div class="comment-body">${escapeHtml(c.content).replace(/\n/g, '<br>')}</div>
           ${deleteBtn}
