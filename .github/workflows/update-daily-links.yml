@@ -12,7 +12,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: pages
+  group: daily-links
   cancel-in-progress: true
 
 jobs:
