@@ -106,6 +106,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       <img id="global-bg-poster" class="global-bg-video" src={`${import.meta.env.BASE_URL}maple.jpg`} alt="" />
       <video id="global-bg-video" class="global-bg-video"
         poster={`${import.meta.env.BASE_URL}maple.jpg`}
+        preload="metadata"
         loop muted playsinline style="display:none">
       </video>
     </div>
