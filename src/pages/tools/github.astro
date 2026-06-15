@@ -115,7 +115,9 @@ const base = import.meta.env.BASE_URL;
 .markdown-body hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 2em 0; }
 </style>
 
-<script is:inline>
+<script>
+import { marked } from 'marked';
+
 function parseRepoUrl(raw) {
   raw = raw.trim();
   const match = raw.match(/github\.com\/([^/]+)\/([^/\s#?]+)/);
@@ -123,35 +125,6 @@ function parseRepoUrl(raw) {
   const parts = raw.split('/');
   if (parts.length === 2 && parts[0] && parts[1]) return { owner: parts[0], repo: parts[1] };
   return null;
-}
-
-function renderMarkdown(md) {
-  let html = md;
-  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-    const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return `<pre><code>${escaped}</code></pre>`;
-  });
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  html = html.replace(/!\[([^\]]*)\]\((\/[^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />');
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />');
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  html = html.replace(/^---$/gm, '<hr />');
-  html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
-  html = html.replace(/\n\n/g, '</p><p>');
-  html = '<p>' + html + '</p>';
-  html = html.replace(/<p>\s*<\/p>/g, '');
-  html = html.replace(/<p>(<[hul])/g, '$1');
-  html = html.replace(/(<\/[hul][^>]*>)\s*<\/p>/g, '$1');
-  return html;
 }
 
 async function loadRepo(repo, owner, repoName) {
@@ -186,7 +159,7 @@ async function loadRepo(repo, owner, repoName) {
     (_, alt, path) => `![${alt}](https://cdn.jsdelivr.net/gh/${owner}/${repoName}@${usedBranch}${path})`
   );
 
-  const html = renderMarkdown(readmeText);
+  const html = marked.parse(readmeText) as string;
 
   document.getElementById('repo-name').textContent = `${owner}/${repoName}`;
   document.getElementById('repo-meta').innerHTML = `

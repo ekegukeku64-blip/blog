@@ -44,35 +44,103 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   </div>
 
   <script is:inline>
+    function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // LCS table for word-level diff
+    function lcsTable(a, b) {
+      const m = a.length, n = b.length;
+      const dp = Array.from({ length: m + 1 }, () => new Uint16Array(n + 1));
+      for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+          dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+      return dp;
+    }
+
+    function backtrack(dp, a, b, i, j) {
+      if (i === 0 && j === 0) return [];
+      if (i > 0 && j > 0 && a[i-1] === b[j-1])
+        return [...backtrack(dp, a, b, i-1, j-1), { type: 'same', val: a[i-1] }];
+      if (i > 0 && (j === 0 || dp[i-1][j] >= dp[i][j-1]))
+        return [...backtrack(dp, a, b, i-1, j), { type: 'del', val: a[i-1] }];
+      return [...backtrack(dp, a, b, i, j-1), { type: 'add', val: b[j-1] }];
+    }
+
+    function wordDiff(oldText, newText) {
+      const oldWords = oldText.split(/(\s+)/g);
+      const newWords = newText.split(/(\s+)/g);
+      const dp = lcsTable(oldWords, newWords);
+      const diff = backtrack(dp, oldWords, newWords, oldWords.length, newWords.length);
+
+      // Merge consecutive same-type tokens
+      const merged = [];
+      for (const token of diff) {
+        const last = merged[merged.length - 1];
+        if (last && last.type === token.type) last.val += token.val;
+        else merged.push({ type: token.type, val: token.val });
+      }
+      return merged;
+    }
+
+    function renderWordDiff(diff) {
+      return diff.map(d => {
+        if (d.type === 'del') return `<del class="bg-red-500/25 text-red-300 px-0.5 rounded-sm">${esc(d.val)}</del>`;
+        if (d.type === 'add') return `<ins class="bg-green-500/25 text-green-300 px-0.5 rounded-sm">${esc(d.val)}</ins>`;
+        return esc(d.val);
+      }).join('');
+    }
+
     document.getElementById('btn-diff').addEventListener('click', () => {
       const a = document.getElementById('text-a').value.split('\n');
       const b = document.getElementById('text-b').value.split('\n');
       const result = document.getElementById('diff-result');
 
-      // Simple line-by-line diff
-      const maxLen = Math.max(a.length, b.length);
+      // LCS for line matching
+      const dp = lcsTable(a, b);
+      const lineDiff = backtrack(dp, a, b, a.length, b.length);
+
       let html = '';
-
-      for (let i = 0; i < maxLen; i++) {
-        const lineA = a[i];
-        const lineB = b[i];
-
-        if (lineA === undefined) {
-          html += `<div class="bg-green-500/10 border-l-2 border-green-500 px-2 py-0.5"><span class="text-green-600 dark:text-green-400">+ </span>${esc(lineB)}</div>`;
-        } else if (lineB === undefined) {
-          html += `<div class="bg-red-500/10 border-l-2 border-red-500 px-2 py-0.5"><span class="text-red-600 dark:text-red-400">- </span>${esc(lineA)}</div>`;
-        } else if (lineA !== lineB) {
-          html += `<div class="bg-red-500/10 border-l-2 border-red-500 px-2 py-0.5"><span class="text-red-600 dark:text-red-400">- </span>${esc(lineA)}</div>`;
-          html += `<div class="bg-green-500/10 border-l-2 border-green-500 px-2 py-0.5"><span class="text-green-600 dark:text-green-400">+ </span>${esc(lineB)}</div>`;
+      for (const token of lineDiff) {
+        const v = esc(token.val);
+        if (token.type === 'add') {
+          html += `<div class="bg-green-500/10 border-l-2 border-green-500/60 px-3 py-0.5"><span class="text-green-500 dark:text-green-400 font-bold select-none">+ </span>${v}</div>`;
+        } else if (token.type === 'del') {
+          html += `<div class="bg-red-500/10 border-l-2 border-red-500/60 px-3 py-0.5"><span class="text-red-500 dark:text-red-400 font-bold select-none">- </span>${v}</div>`;
         } else {
-          html += `<div class="px-2 py-0.5 text-text-muted dark:text-dark-text-muted">  ${esc(lineA)}</div>`;
+          html += `<div class="px-3 py-0.5 text-text-muted/70 dark:text-dark-text-muted/70"><span class="select-none">  </span>${v}</div>`;
+        }
+      }
+
+      // If lines match 1:1 but differ, try word-level diff
+      if (a.length === b.length && a.length > 0) {
+        // Check if it's a per-line modification scenario
+        const hasSameCount = lineDiff.filter(d => d.type === 'same').length;
+        const hasModifications = a.some((line, i) => line !== b[i]);
+        if (hasSameCount === 0 && hasModifications) {
+          html = '';
+          for (let i = 0; i < a.length; i++) {
+            if (a[i] !== b[i]) {
+              const wd = wordDiff(a[i], b[i]);
+              html += `<div class="bg-red-500/10 border-l-2 border-red-500/60 px-3 py-0.5 flex"><span class="text-red-500 dark:text-red-400 font-bold select-none shrink-0">- </span><span>${renderWordDiff(wd.filter(d => d.type !== 'add'))}</span></div>`;
+              html += `<div class="bg-green-500/10 border-l-2 border-green-500/60 px-3 py-0.5 flex"><span class="text-green-500 dark:text-green-400 font-bold select-none shrink-0">+ </span><span>${renderWordDiff(wd.filter(d => d.type !== 'del'))}</span></div>`;
+            } else {
+              html += `<div class="px-3 py-0.5 text-text-muted/70 dark:text-dark-text-muted/70"><span class="select-none">  </span>${esc(a[i])}</div>`;
+            }
+          }
         }
       }
 
       result.innerHTML = html || '<span class="text-text-muted dark:text-dark-text-muted">两段文本完全相同</span>';
-    });
 
-    function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      // Stats
+      const added = lineDiff.filter(d => d.type === 'add').length;
+      const removed = lineDiff.filter(d => d.type === 'del').length;
+      if (added || removed) {
+        const stat = document.createElement('div');
+        stat.className = 'mt-3 flex gap-4 text-xs';
+        stat.innerHTML = `<span class="text-green-500">+${added} 行新增</span><span class="text-red-500">-${removed} 行删除</span>`;
+        result.appendChild(stat);
+      }
+    });
 
     // Auto-run on load
     document.getElementById('btn-diff').click();

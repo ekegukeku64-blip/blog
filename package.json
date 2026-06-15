@@ -23,6 +23,7 @@
     "astro": "^6.3.6",
     "astro-icon": "^1.1.5",
     "firebase": "^12.14.0",
+    "marked": "^18.0.5",
     "pagefind": "^1.5.2",
     "qrcode": "^1.5.4",
     "sharp": "^0.34.5",

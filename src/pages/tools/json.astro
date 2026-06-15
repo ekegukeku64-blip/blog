@@ -17,7 +17,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           <label class="text-sm font-medium text-text dark:text-dark-text">输入 JSON</label>
           <button id="btn-clear" class="text-xs text-text-muted hover:text-accent dark:text-dark-text-muted dark:hover:text-dark-accent transition-colors">清空</button>
         </div>
-        <textarea id="input" class="w-full h-80 bg-surface-alt dark:bg-dark-surface-alt border border-border/40 dark:border-dark-border/40 rounded-xl p-4 font-mono text-sm text-text dark:text-dark-text resize-none focus:outline-none focus:border-accent dark:focus:border-dark-accent focus:ring-2 focus:ring-accent/10 dark:focus:ring-dark-accent/10 transition-all" placeholder='{"key": "value"}'></textarea>
+        <textarea id="input" spellcheck="false" class="w-full h-80 bg-surface-alt dark:bg-dark-surface-alt border border-border/40 dark:border-dark-border/40 rounded-xl p-4 font-mono text-sm text-text dark:text-dark-text resize-none focus:outline-none focus:border-accent dark:focus:border-dark-accent focus:ring-2 focus:ring-accent/10 dark:focus:ring-dark-accent/10 transition-all" placeholder='{"key": "value"}'></textarea>
       </div>
       <div>
         <div class="flex items-center justify-between mb-2">
@@ -36,8 +36,19 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   <script is:inline>
     const input = document.getElementById('input');
-    const output = document.getElementById('output');
+    const output = document.getElementById('output') as HTMLTextAreaElement;
     const error = document.getElementById('error');
+
+    function tryFormat() {
+      try {
+        const obj = JSON.parse(input.value);
+        output.value = JSON.stringify(obj, null, 2);
+        error.classList.add('hidden');
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
 
     document.getElementById('btn-format').addEventListener('click', () => {
       try {
@@ -62,13 +73,27 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     });
 
     document.getElementById('btn-copy').addEventListener('click', () => {
-      navigator.clipboard.writeText(output.value);
+      navigator.clipboard.writeText(output.value).then(() => {
+        const btn = document.getElementById('btn-copy');
+        const orig = btn.textContent;
+        btn.textContent = '已复制 ✓';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      });
     });
 
     document.getElementById('btn-clear').addEventListener('click', () => {
       input.value = '';
       output.value = '';
       error.classList.add('hidden');
+    });
+
+    // Auto-format on paste
+    input.addEventListener('paste', () => {
+      setTimeout(() => {
+        if (input.value.trim().startsWith('{') || input.value.trim().startsWith('[')) {
+          tryFormat();
+        }
+      }, 50);
     });
   </script>
 </BaseLayout>
