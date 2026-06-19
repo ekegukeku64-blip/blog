@@ -15,7 +15,6 @@ const latestPost = sortedPosts[0];
       <video
         id="entrance-video"
         class="bg-media"
-        poster={`${import.meta.env.BASE_URL}maple.jpg`}
         preload="metadata"
         autoplay
         loop
@@ -57,6 +56,14 @@ const latestPost = sortedPosts[0];
   </main>
 
   <script is:inline>
+    { // === video autoplay ===
+    const ev = document.getElementById('entrance-video');
+    if (ev) {
+      ev.play().catch(() => {});
+      document.addEventListener('click', () => { ev.play().catch(() => {}); }, { once: true });
+    }
+    } // end video block
+
     { // === particle system — fireflies + maple leaves ===
     const canvas = document.getElementById('particle-canvas');
     if (canvas) {
@@ -152,8 +159,11 @@ const latestPost = sortedPosts[0];
         }
       }
 
-      for (let i = 0; i < 8; i++) fireflies.push(new Firefly());
-      for (let i = 0; i < 7; i++) leaves.push(new MapleLeaf());
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const ffCount = isMobile ? 3 : 8;
+      const leafCount = isMobile ? 2 : 7;
+      for (let i = 0; i < ffCount; i++) fireflies.push(new Firefly());
+      for (let i = 0; i < leafCount; i++) leaves.push(new MapleLeaf());
 
       let mouseX = -999, mouseY = -999;
       let canvasRect = canvas.getBoundingClientRect();
@@ -503,5 +513,18 @@ const latestPost = sortedPosts[0];
     .content-layer { margin-top: 3rem; }
     .recent-update { font-size: 0.7rem; white-space: normal; }
     .quote-text { font-size: 0.75rem; }
+    /* Mobile perf: drop SVG filter, use simpler shadow */
+    .enter-btn {
+      backdrop-filter: none;
+      box-shadow:
+        0 0 4px rgba(0,0,0,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 -1px 0 rgba(0,0,0,0.12),
+        0 0 16px rgba(122,149,175,0.08);
+    }
+    .enter-btn:hover { box-shadow: 0 0 8px rgba(0,0,0,0.12), 0 0 20px rgba(122,149,175,0.12); }
+    .btn-glass-overlay { display: none; }
+    .bg-media { opacity: 0.45; }
+    .fog-veil { background: radial-gradient(ellipse 70% 45% at 50% 40%, transparent 30%, rgba(7,10,19,0.6) 100%); }
   }
 </style>

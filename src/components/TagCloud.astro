@@ -15,8 +15,8 @@ const { tags, activeTag } = Astro.props;
         'px-3 py-1.5 text-sm font-medium transition-all duration-500 rounded-md',
         'font-serif',
         activeTag === tag
-          ? 'bg-[#7a95af]/20 text-[#7a95af] border border-[#7a95af]/30'
-          : 'text-[#d6dae1] bg-[#0F172A]/30 backdrop-blur-sm border border-white/[0.04] hover:text-[#F5F5F4] hover:border-white/[0.10] hover:-translate-y-0.5',
+          ? 'bg-accent/20 text-accent border border-accent/30'
+          : 'text-text-secondary bg-surface/30 backdrop-blur-sm border border-white/[0.04] hover:text-text hover:border-white/[0.10] hover:-translate-y-0.5',
       ]}
       style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)"
     >

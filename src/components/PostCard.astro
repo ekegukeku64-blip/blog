@@ -23,27 +23,27 @@ function formatDate(date: Date) {
     <a href={`${import.meta.env.BASE_URL}blog/${slug}/`} class="block p-5">
       <div class="flex items-center gap-2 text-xs mb-2.5">
         <span class="seal">{category}</span>
-        <time datetime={pubDate.toISOString()} class="font-mono text-[11px] text-[#d6dae1]">{formatDate(pubDate)}</time>
-        {readingTime && <span class="text-[#d6dae1]/40">·</span>}
-        {readingTime && <span class="text-[#d6dae1]">{readingTime} 分钟</span>}
+        <time datetime={pubDate.toISOString()} class="font-mono text-[11px] text-text-secondary">{formatDate(pubDate)}</time>
+        {readingTime && <span class="text-text-secondary/40">·</span>}
+        {readingTime && <span class="text-text-secondary">{readingTime} 分钟</span>}
       </div>
-      <h3 class="font-display font-bold text-[1.05rem] leading-snug mb-2 text-[#F5F5F4] group-hover:text-[#7a95af] transition-colors duration-200">
+      <h3 class="font-display font-bold text-[1.05rem] leading-snug mb-2 text-text group-hover:text-accent transition-colors duration-200">
         {title}
       </h3>
-      <p class="text-sm text-[#d6dae1] line-clamp-2 leading-relaxed">
+      <p class="text-sm text-text-secondary line-clamp-2 leading-relaxed">
         {description}
       </p>
       {tags.length > 0 && (
         <div class="flex flex-wrap gap-1.5 mt-3">
           {tags.slice(0, 3).map((tag) => (
-            <span class="text-[11px] px-2.5 py-1 text-[#d6dae1] bg-[#0F172A]/30 backdrop-blur-sm border border-white/[0.04] rounded-md font-sans hover:text-[#7a95af] hover:scale-105 hover:border-white/[0.10] transition-all duration-300 cursor-default">
+            <span class="text-[11px] px-2.5 py-1 text-text-secondary bg-surface/30 backdrop-blur-sm border border-white/[0.04] rounded-md font-sans hover:text-accent hover:scale-105 hover:border-white/[0.10] transition-all duration-300 cursor-default">
               #{tag}
             </span>
           ))}
         </div>
       )}
       {featured && (
-        <span class="inline-block mt-3 px-2 py-0.5 text-[10px] font-bold text-[#7a95af] border border-[#7a95af]/30 rounded font-sans tracking-wide">精选</span>
+        <span class="inline-block mt-3 px-2 py-0.5 text-[10px] font-bold text-accent border border-accent/30 rounded font-sans tracking-wide">精选</span>
       )}
     </a>
   </article>

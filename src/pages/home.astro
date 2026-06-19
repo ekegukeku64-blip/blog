@@ -121,12 +121,12 @@ if (streak === 0) {
       <a href={`${import.meta.env.BASE_URL}blog/${featuredPost.id}/`} class="group block card-flat p-6">
         <div class="flex items-center gap-2 mb-3">
           <span class="seal">{featuredPost.data.category}</span>
-          <time class="text-[11px] text-[#d6dae1] font-mono">{featuredPost.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+          <time class="text-[11px] text-text-secondary font-mono">{featuredPost.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
         </div>
-        <h3 class="font-display font-bold text-xl text-[#F5F5F4] group-hover:text-[#7a95af] transition-colors duration-200 leading-snug mb-2">
+        <h3 class="font-display font-bold text-xl text-text group-hover:text-accent transition-colors duration-200 leading-snug mb-2">
           {featuredPost.data.title}
         </h3>
-        <p class="text-sm text-[#d6dae1] line-clamp-2 leading-relaxed">
+        <p class="text-sm text-text-secondary line-clamp-2 leading-relaxed">
           {featuredPost.data.description}
         </p>
       </a>
@@ -171,7 +171,7 @@ if (streak === 0) {
           {categories.sort((a, b) => b.count - a.count).map((cat) => (
             <a
               href={`${import.meta.env.BASE_URL}blog/?category=${encodeURIComponent(cat.name)}`}
-              class="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-serif text-[#d6dae1] bg-[#0F172A]/30 backdrop-blur-sm border border-white/[0.04] rounded-md hover:text-[#F5F5F4] hover:border-white/[0.10] hover:-translate-y-0.5 transition-all duration-500"
+              class="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-serif text-text-secondary bg-surface/30 backdrop-blur-sm border border-white/[0.04] rounded-md hover:text-text hover:border-white/[0.10] hover:-translate-y-0.5 transition-all duration-500"
               style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)"
             >
               <span>{cat.name}</span>
@@ -312,11 +312,11 @@ document.addEventListener('astro:page-load', async () => {
     }
     grid.innerHTML = links.map(({ url, date }) => `
       <a href="${url}" target="_blank" rel="noopener" class="group block card-flat p-5">
-        <time class="text-[11px] text-[#d6dae1] font-mono">${date}</time>
-        <h3 class="mt-2 font-display text-base font-bold text-[#F5F5F4] leading-snug group-hover:text-[#7a95af] transition-colors duration-200">
+        <time class="text-[11px] text-text-secondary font-mono">${date}</time>
+        <h3 class="mt-2 font-display text-base font-bold text-text leading-snug group-hover:text-accent transition-colors duration-200">
           技术日报 · ${date.slice(5)}
         </h3>
-        <p class="mt-1.5 text-sm text-[#d6dae1] line-clamp-2 leading-relaxed">
+        <p class="mt-1.5 text-sm text-text-secondary line-clamp-2 leading-relaxed">
           GitHub 热门项目 + HN 技术圈每日动态
         </p>
       </a>
