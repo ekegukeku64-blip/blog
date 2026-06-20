@@ -28,9 +28,13 @@ jobs:
           python-version: '3.12'
 
       - name: 生成 GitHub 每日精选
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_daily_digest.py
 
       - name: 生成成长记录草稿
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_growth_draft.py
 
       - name: Check for changes

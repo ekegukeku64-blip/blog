@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """自动生成 GitHub 每日精选博客文章。
 
-从 GitHub Search API 获取最近 24 小时内新建的高星项目，
-生成一篇中文精选文章 + SVG 封面图。
+从 GitHub Search API 获取最近热度最高的新建开源项目，
+过滤垃圾/盗版/加密诈骗后，生成一篇中文精选文章 + SVG 封面图。
 
 用法:
     python scripts/generate_daily_digest.py          # 生成今天的文章
@@ -30,39 +30,202 @@ date_str = today.strftime("%Y-%m-%d")
 
 DRY_RUN = "--dry-run" in sys.argv
 
+# ── Spam detection ──────────────────────────────────────────────
+
+SPAM_PATTERNS = [
+    # Keyword-stuffed descriptions (repeated phrases)
+    (r"(\b\w+\b).*\1.*\1.*\1.*\1.*\1", "keyword_stuffing"),
+    # Crypto trading bots
+    (r"(?i)(trading\s*bot|arbitrage\s*bot|sniper\s*bot|meme[\s-]*coin)",
+     "crypto_bot"),
+    # Pirated software / warez
+    (r"(?i)(keygen|activator|crack|license\s*key|patcher|pre[\s-]*activated)",
+     "warez"),
+    # Roblox executors
+    (r"(?i)(roblox\s*(script|execut|hub)|blox\s*fruit)",
+     "roblox_executor"),
+    # Fake QuickBooks / cracked desktop software
+    (r"(?i)(quickbooks\s*desktop.*workflow|\b(lsfg|reiboot|tenorshare)\b)",
+     "fake_desktop_soft"),
+    # Crypto sportsbook / betting
+    (r"(?i)(crypto\s*sportsbook|world\s*cup.*bet|betting\s*platform)",
+     "crypto_betting"),
+    # Stock/template spam with no real description
+    (r"^(暂无描述)?$", "no_description"),
+    # Description too short + suspicious name pattern
+    (r"^[A-Z][a-z]+ [A-Z][a-z]+$", "suspicious_brief"),
+    # "Professional" seed phrase / wallet "toolkit" (usually scams)
+    (r"(?i)(seed\s*(phrase|generator)|mnemonic.*(generator|recovery|brute))",
+     "crypto_scam"),
+    # "Lossless Scaling" / game performance cracks
+    (r"(?i)(lossless\s*scaling.*activator|frame\s*generation.*keygen)",
+     "game_crack"),
+]
+
+SPAM_TOPIC_KEYWORDS = [
+    "polymarket", "pumpfun", "pump-fun", "sportsbook",
+    "trading-bot", "arbitrage", "sniper", "meme-coin",
+    "keygen", "activator", "cracked", "warez",
+    "roblox", "blox-fruit", "delta-exec",
+    "seed-phrase", "mnemonic", "brute-force",
+    "quickbooks", "lossless-scaling", "reiboot",
+]
+
+QUALITY_TOPICS = [
+    "ai", "agent", "llm", "ml", "framework", "tool", "sdk",
+    "rust", "python", "typescript", "go", "react", "vue",
+    "cli", "api", "server", "database", "compiler",
+    "language", "model", "inference", "training",
+    "web", "browser", "editor", "vscode", "plugin",
+    "open-source", "library", "utility",
+]
+
+
+def is_spam(repo: dict) -> tuple[bool, str]:
+    """Check if a repo looks like spam/scam. Returns (is_spam, reason)."""
+    name = repo.get("full_name", "").lower()
+    desc = (repo.get("description") or "暂无描述").lower()
+    topics = [t.lower() for t in repo.get("topics", [])]
+
+    # Check description patterns
+    for pattern, reason in SPAM_PATTERNS:
+        if re.search(pattern, desc):
+            return True, reason
+
+    # Check topic keywords
+    spam_score = 0
+    for kw in SPAM_TOPIC_KEYWORDS:
+        if kw in name or kw in desc:
+            spam_score += 1
+        for t in topics:
+            if kw in t:
+                spam_score += 1
+
+    if spam_score >= 3:
+        return True, "topic_spam_accumulated"
+
+    # Duplicate descriptions (exact match across repos)
+    # handled at the collection level
+
+    return False, ""
+
+
+def repo_quality_score(repo: dict) -> int:
+    """Higher score = more likely a quality project."""
+    score = 0
+    name = repo.get("full_name", "").lower()
+    desc = (repo.get("description") or "").lower()
+    lang = (repo.get("language") or "").lower()
+    topics = [t.lower() for t in repo.get("topics", [])]
+    stars = repo.get("stargazers_count", 0)
+
+    # Bonus for having a real description
+    if len(desc) > 30:
+        score += 2
+    # Bonus for quality topics
+    for kw in QUALITY_TOPICS:
+        if kw in name or kw in desc:
+            score += 1
+        for t in topics:
+            if kw in t:
+                score += 1
+    # Bonus for real language
+    if lang and lang != "未知":
+        score += 1
+    # Bonus for organic-looking star range
+    if 30 <= stars <= 5000:
+        score += 1
+
+    return score
+
+
+# ── GitHub API ──────────────────────────────────────────────────
+
+def github_api_headers() -> dict:
+    headers = {
+        "Accept": "application/vnd.github.v3+json",
+        "User-Agent": "blog-daily-digest",
+    }
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
 
 def github_search(query: str, per_page: int = 30) -> list[dict]:
-    """Call GitHub Search API."""
-    params = urllib.parse.urlencode({"q": query, "sort": "stars", "order": "desc", "per_page": per_page})
-    url = f"https://api.github.com/search/repositories?{params}"
-    req = urllib.request.Request(url, headers={"Accept": "application/vnd.github.v3+json", "User-Agent": "blog-daily-digest"})
+    url = f"https://api.github.com/search/repositories?{
+        urllib.parse.urlencode({
+            'q': query, 'sort': 'stars', 'order': 'desc',
+            'per_page': per_page
+        })
+    }"
+    req = urllib.request.Request(url, headers=github_api_headers())
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read())["items"]
     except Exception as e:
-        print(f"⚠️ GitHub API 请求失败: {e}")
+        print(f"  GitHub API error: {e}")
         return []
 
 
+# ── Trending fetch ──────────────────────────────────────────────
+
+
 def get_trending_repos() -> list[dict]:
-    """Fetch trending repos from the last 24 hours."""
-    yesterday = (today - timedelta(days=1)).strftime("%Y-%m-%d")
-    query = f"created:>{yesterday} stars:>20"
+    """Fetch trending repos, with spam filtering and weekend fallback."""
+    is_weekend = today.weekday() >= 5  # Saturday=5, Sunday=6
+
+    if is_weekend:
+        window_days = 3
+        min_stars = 50
+    else:
+        window_days = 1
+        min_stars = 30
+
+    since = (today - timedelta(days=window_days)).strftime("%Y-%m-%d")
+    query = f"created:>={since} stars:>={min_stars}"
+    print(f"  Query: {query} (weekend={is_weekend}, window={window_days}d)")
+
     repos = github_search(query, per_page=30)
 
-    if len(repos) < 6:
-        # Fallback: last 3 days, lower threshold
-        three_days_ago = (today - timedelta(days=3)).strftime("%Y-%m-%d")
-        query = f"created:>{three_days_ago} stars:>50"
-        extra = github_search(query, per_page=30)
+    # If results are thin, widen
+    if len(repos) < 15:
+        wider_since = (today - timedelta(days=window_days + 2)).strftime("%Y-%m-%d")
+        query2 = f"created:>={wider_since} stars:>={max(min_stars - 20, 20)}"
+        extra = github_search(query2, per_page=20)
         seen = {r["full_name"] for r in repos}
         for r in extra:
             if r["full_name"] not in seen:
                 repos.append(r)
 
-    # Sort by stars descending, take top 10
-    repos.sort(key=lambda r: r.get("stargazers_count", 0), reverse=True)
-    return repos[:10]
+    # Filter spam
+    filtered = []
+    seen_descs = {}
+    for r in repos:
+        spam, reason = is_spam(r)
+        if spam:
+            print(f"  Filtered: {r['full_name']} ({reason})")
+            continue
+        # Deduplicate by description
+        desc = (r.get("description") or "").strip()
+        if desc and desc in seen_descs:
+            print(f"  Filtered: {r['full_name']} (dup desc with "
+                  f"{seen_descs[desc]})")
+            continue
+        if desc:
+            seen_descs[desc] = r["full_name"]
+        filtered.append(r)
+
+    # Sort by quality score then stars, interleaved
+    for r in filtered:
+        r["_quality"] = repo_quality_score(r)
+    filtered.sort(key=lambda r: (r["_quality"], r.get(
+        "stargazers_count", 0)), reverse=True)
+
+    return filtered[:10]
+
+
+# ── Formatting ──────────────────────────────────────────────────
 
 
 def format_stars(n: int) -> str:
@@ -82,7 +245,6 @@ LANG_COLORS = {
 
 
 def generate_post(repos: list[dict]) -> str:
-    """Generate markdown blog post content."""
     repo_lines = []
     for i, repo in enumerate(repos, 1):
         name = repo["full_name"]
@@ -102,7 +264,7 @@ def generate_post(repos: list[dict]) -> str:
 
     repos_md = "\n\n".join(repo_lines)
 
-    content = f"""---
+    return f"""---
 title: "GitHub 每日精选 {date_str}"
 description: "今天 GitHub 上最火的开源项目，从 AI 工具到系统编程，每日精选不容错过。"
 pubDate: {date_str}
@@ -122,16 +284,13 @@ featured: false
 
 > 数据来源: GitHub Trending · 更新时间: {today.strftime("%Y-%m-%d %H:%M")} CST
 """
-    return content
 
 
 def generate_svg(repos: list[dict]) -> str:
-    """Generate SVG hero image."""
     hue = (today.timetuple().tm_yday * 37) % 360
     hue2 = (hue + 45) % 360
     day_label = today.strftime("%m.%d")
 
-    # Top 3 repo names for display
     top3 = []
     for r in repos[:3]:
         short = r["name"]
@@ -141,24 +300,25 @@ def generate_svg(repos: list[dict]) -> str:
 
     top3_text = " · ".join(top3) if top3 else "Loading..."
 
-    # Repo list lines (right side)
-    repo_y_start = 230
     repo_lines_svg = []
     for i, r in enumerate(repos[:6]):
-        y = repo_y_start + i * 34
+        y = 230 + i * 34
         name = r["name"][:20]
         stars = format_stars(r.get("stargazers_count", 0))
         lang = r.get("language") or "?"
         color = LANG_COLORS.get(lang, "#888")
-        repo_lines_svg.append(f'''
+        repo_lines_svg.append(f"""
     <circle cx="530" cy="{y - 4}" r="5" fill="{color}" opacity="0.8"/>
-    <text x="545" y="{y}" font-family="system-ui, sans-serif" font-size="14" fill="white" opacity="0.9">{name}</text>
-    <text x="780" y="{y}" font-family="system-ui, sans-serif" font-size="12" fill="white" opacity="0.5" text-anchor="end">⭐ {stars}</text>''')
+    <text x="545" y="{y}" font-family="system-ui, sans-serif" font-size="14"
+          fill="white" opacity="0.9">{name}</text>
+    <text x="780" y="{y}" font-family="system-ui, sans-serif" font-size="12"
+          fill="white" opacity="0.5" text-anchor="end">⭐ {stars}</text>""")
 
     repos_svg = "\n".join(repo_lines_svg)
 
-    svg = f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 506" width="900" height="506">
+    return f'''<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 506"
+     width="900" height="506">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="hsl({hue}, 60%, 18%)"/>
@@ -166,62 +326,69 @@ def generate_svg(repos: list[dict]) -> str:
     </linearGradient>
   </defs>
   <rect width="900" height="506" rx="16" fill="url(#bg)"/>
-  <!-- Decorative circles -->
   <circle cx="800" cy="50" r="120" fill="white" opacity="0.04"/>
   <circle cx="120" cy="460" r="80" fill="white" opacity="0.03"/>
-  <!-- Category badge -->
-  <rect x="120" y="30" width="100" height="28" rx="14" fill="hsl({hue}, 70%, 50%)" opacity="0.8"/>
-  <text x="170" y="49" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="white" text-anchor="middle">DAILY</text>
-  <!-- Date -->
-  <text x="130" y="110" font-family="system-ui, sans-serif" font-size="48" font-weight="700" fill="white" opacity="0.15">{day_label}</text>
-  <!-- Title -->
-  <text x="130" y="165" font-family="'Noto Serif SC', 'LXGW WenKai', Georgia, serif" font-size="36" font-weight="700" fill="white">GitHub 每日精选</text>
-  <!-- Subtitle (top 3) -->
-  <text x="130" y="210" font-family="system-ui, sans-serif" font-size="16" fill="white" opacity="0.6">{top3_text}</text>
-  <!-- Repo list -->
+  <rect x="120" y="30" width="100" height="28" rx="14"
+        fill="hsl({hue}, 70%, 50%)" opacity="0.8"/>
+  <text x="170" y="49" font-family="system-ui, sans-serif" font-size="12"
+        font-weight="600" fill="white" text-anchor="middle">DAILY</text>
+  <text x="130" y="110" font-family="system-ui, sans-serif" font-size="48"
+        font-weight="700" fill="white" opacity="0.15">{day_label}</text>
+  <text x="130" y="165"
+        font-family="'Noto Serif SC', 'LXGW WenKai', Georgia, serif"
+        font-size="36" font-weight="700" fill="white">GitHub 每日精选</text>
+  <text x="130" y="210" font-family="system-ui, sans-serif" font-size="16"
+        fill="white" opacity="0.6">{top3_text}</text>
   {repos_svg}
-  <!-- Bottom line -->
-  <line x1="130" y1="466" x2="850" y2="466" stroke="white" stroke-width="1" opacity="0.1"/>
-  <text x="130" y="490" font-family="system-ui, sans-serif" font-size="11" fill="white" opacity="0.3">github.com/trending · {date_str}</text>
+  <line x1="130" y1="466" x2="850" y2="466" stroke="white"
+        stroke-width="1" opacity="0.1"/>
+  <text x="130" y="490" font-family="system-ui, sans-serif" font-size="11"
+        fill="white" opacity="0.3">github.com/trending · {date_str}</text>
 </svg>'''
-    return svg
+
+
+# ── Main ────────────────────────────────────────────────────────
 
 
 def main():
-    print(f"📡 正在获取 GitHub Trending ({date_str})...")
+    print(f"  GitHub Daily Digest ({date_str})")
+
+    # Skip if today's file already exists (avoid Actions conflict)
+    post_path = os.path.join(POSTS_DIR, f"daily-{date_str}.md")
+    if os.path.exists(post_path):
+        print(f"  Post already exists: {post_path}, skipping.")
+        return
+
+    print(f"  Fetching trending repos...")
 
     repos = get_trending_repos()
     if not repos:
-        print("❌ 未获取到 trending 项目，跳过生成。")
+        print("  No repos found, skipping.")
         return
 
-    print(f"✅ 获取到 {len(repos)} 个项目:")
-    for r in repos[:5]:
-        print(f"   ⭐ {format_stars(r['stargazers_count']):>6}  {r['full_name']}")
-
-    # Generate post
-    post_content = generate_post(repos)
-    filename = f"daily-{date_str}.md"
-    filepath = os.path.join(POSTS_DIR, filename)
+    print(f"  {len(repos)} repos selected:")
+    for r in repos:
+        print(f"     "
+              f"{format_stars(r['stargazers_count']):>6}  "
+              f"{r['full_name']}")
 
     if DRY_RUN:
-        print(f"\n--- DRY RUN: {filename} ---")
-        print(post_content[:500])
-        print("...")
+        print(f"\n  --- DRY RUN: daily-{date_str}.md ---")
+        print(generate_post(repos)[:500])
+        print("  ...")
         return
 
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(post_content)
-    print(f"📝 文章: src/content/posts/{filename}")
+    with open(post_path, "w", encoding="utf-8") as f:
+        f.write(generate_post(repos))
+    print(f"  Post: src/content/posts/daily-{date_str}.md")
 
-    # Generate SVG hero
-    svg_content = generate_svg(repos)
     svg_path = os.path.join(HERO_DIR, f"daily-{date_str}.svg")
+    os.makedirs(HERO_DIR, exist_ok=True)
     with open(svg_path, "w", encoding="utf-8") as f:
-        f.write(svg_content)
-    print(f"🎨 SVG 封面: public/hero/daily-{date_str}.svg")
+        f.write(generate_svg(repos))
+    print(f"  SVG:  public/hero/daily-{date_str}.svg")
 
-    print(f"\n✨ 今日 GitHub 精选已生成！共 {len(repos)} 个项目。")
+    print(f"  Done! {len(repos)} projects.")
 
 
 if __name__ == "__main__":
