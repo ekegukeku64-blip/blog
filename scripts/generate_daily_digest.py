@@ -47,14 +47,18 @@ def github_search(query: str, per_page: int = 30) -> list[dict]:
 def get_trending_repos() -> list[dict]:
     """Fetch trending repos from the last 24 hours."""
     yesterday = (today - timedelta(days=1)).strftime("%Y-%m-%d")
-    query = f"created:>{yesterday} stars:>30"
-    repos = github_search(query, per_page=20)
+    query = f"created:>{yesterday} stars:>20"
+    repos = github_search(query, per_page=30)
 
-    if not repos:
-        # Fallback: last 3 days
+    if len(repos) < 6:
+        # Fallback: last 3 days, lower threshold
         three_days_ago = (today - timedelta(days=3)).strftime("%Y-%m-%d")
-        query = f"created:>{three_days_ago} stars:>80"
-        repos = github_search(query, per_page=20)
+        query = f"created:>{three_days_ago} stars:>50"
+        extra = github_search(query, per_page=30)
+        seen = {r["full_name"] for r in repos}
+        for r in extra:
+            if r["full_name"] not in seen:
+                repos.append(r)
 
     # Sort by stars descending, take top 10
     repos.sort(key=lambda r: r.get("stargazers_count", 0), reverse=True)
