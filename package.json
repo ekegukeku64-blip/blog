@@ -9,6 +9,11 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
+    "daily": "npm run daily:digest && npm run daily:growth",
+    "daily:digest": "py -3 scripts/generate_daily_digest.py",
+    "daily:growth": "py -3 scripts/generate_growth_draft.py",
+    "daily:dry": "py -3 scripts/generate_daily_digest.py --dry-run",
+    "indexnow": "bash scripts/submit-indexnow.sh",
     "astro": "astro"
   },
   "dependencies": {

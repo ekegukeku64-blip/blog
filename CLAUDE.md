@@ -29,11 +29,23 @@ blog/
 ## 常用命令
 
 ```bash
-npm run dev      # 启动开发服务器
-npm run build    # 构建（含 pagefind 索引）
-npm run preview  # 预览构建结果
-npm run daily    # 更新技术日报
+npm run dev          # 启动开发服务器
+npm run build        # 构建（含 pagefind 索引）
+npm run preview      # 预览构建结果
+npm run daily        # 本地手动补跑：技术日报 + 成长草稿（Windows 使用 py -3）
+npm run daily:dry    # 只预览今日技术日报，不写文件
+npm run indexnow     # 手动提交 sitemap URL 到 IndexNow
 ```
+
+## 自动更新
+
+博客日常更新不依赖打开 Claude Code。GitHub Actions 会在云端自动执行：
+
+- `Daily Auto Update`：每天北京时间 08:00 生成 GitHub 每日精选和成长记录草稿，若有变化会自动提交并触发部署。
+- `Update Daily Links`：每天定时重建站点，用于刷新静态内容和检查构建状态。
+- `Deploy to GitHub Pages`：推送到 `main` 后自动构建并部署。
+
+需要临时补跑时，在 GitHub Actions 页面手动触发 `workflow_dispatch`；本地的 `npm run daily` 只是备用入口。
 
 ## 自定义 Skills
 
