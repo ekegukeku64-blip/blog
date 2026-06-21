@@ -12,13 +12,6 @@ const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pu
 const featuredPost = sortedPosts.find(p => p.data.featured);
 const recentPosts = sortedPosts.filter(p => p !== featuredPost).slice(0, 6);
 
-const postsMeta = sortedPosts.map(p => ({
-  slug: p.id,
-  title: p.data.title,
-  description: p.data.description,
-  tags: p.data.tags?.slice(0, 3) || [],
-}));
-
 const categories = [...new Set(allPosts.map(p => p.data.category))].map(name => ({
   name,
   count: allPosts.filter(p => p.data.category === name).length,
@@ -39,6 +32,11 @@ const thisMonth = sortedPosts.filter(p => {
 }).length;
 const totalWords = allPosts.reduce((sum, p) => sum + (p.body?.length || 0), 0);
 const wordCount = totalWords > 10000 ? `${(totalWords / 10000).toFixed(1)}万` : `${totalWords}`;
+const focusCards = [
+  { label: 'AI 工具', text: '把试过的工具、提示词和踩坑写成人能看懂的记录。', href: `${import.meta.env.BASE_URL}blog/?category=${encodeURIComponent('AI工具')}` },
+  { label: '实用工具箱', text: '浏览器本地运行的小工具，解决格式转换、文本处理和图片问题。', href: `${import.meta.env.BASE_URL}tools/` },
+  { label: '成长日志', text: '记录非传统路线上的选择、试错和阶段性复盘。', href: `${import.meta.env.BASE_URL}growth/` },
+];
 
 let streak = 0;
 const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -72,14 +70,22 @@ if (streak === 0) {
   <!-- Hero -->
   <div class="hero-wrapper">
     <div class="hero-left-text home-stagger-left">
-      <p class="text-[11px] tracking-[0.35em] text-text-muted dark:text-dark-text-muted uppercase mb-8 font-sans">Personal notes / AI tools / real life</p>
+      <p class="text-[11px] tracking-[0.35em] text-text-muted dark:text-dark-text-muted uppercase mb-8 font-sans">AI tools / honest notes / useful experiments</p>
       <h1 class="hero-title font-display font-bold mb-6 text-text dark:text-dark-text blur-reveal">墨迹</h1>
-      <p class="max-w-md text-base font-serif leading-[1.9] text-text-secondary dark:text-dark-text-secondary mb-3">
-        一个不装成熟的个人空间，<br/>记录我怎么靠试错、AI 和一点点执行力往前走。
+      <p class="max-w-xl text-base md:text-lg font-serif leading-[1.9] text-text-secondary dark:text-dark-text-secondary mb-3">
+        一个把 AI 工具、真实试错和普通人能用的经验放在一起的个人空间。
       </p>
-      <p class="max-w-sm text-sm text-text-muted dark:text-dark-text-muted leading-relaxed mb-10 font-serif">
-        做过游戏，放下了；学过前端，停过；<br/>现在在玩 AI、写工具、做内容。
+      <p class="max-w-md text-sm text-text-muted dark:text-dark-text-muted leading-relaxed mb-8 font-serif">
+        我不装专家，只记录自己怎么靠一点执行力，把想法变成博客、工具和可复用的方法。
       </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-9">
+        {focusCards.map((card) => (
+          <a href={card.href} class="home-signal-card group">
+            <span>{card.label}</span>
+            <p>{card.text}</p>
+          </a>
+        ))}
+      </div>
       <div class="flex flex-wrap gap-4">
         <a href={`${import.meta.env.BASE_URL}blog/`} class="capsule-btn">
           开始阅读
@@ -140,30 +146,32 @@ if (streak === 0) {
 
   <!-- 最新文章 + 侧边栏 -->
   <section class="max-w-4xl mx-auto px-6 py-10">
-    <div class="flex items-center justify-between mb-6 reveal-target">
-      <h2 class="section-kicker">最新文章</h2>
-      <a href={`${import.meta.env.BASE_URL}blog/`} class="text-xs text-accent dark:text-dark-accent hover:text-accent-hover dark:hover:text-dark-accent-hover transition-colors font-serif">
-        查看全部 &rarr;
-      </a>
-    </div>
     <div class="flex flex-col md:flex-row gap-10">
-      <div class="flex-1 min-w-0">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {recentPosts.map((post, i) => (
-            <div class="reveal-target" style={`transition-delay: ${(i % 4) * 0.06}s`}>
-              <PostCard
-                title={post.data.title}
-                description={post.data.description}
-                pubDate={post.data.pubDate}
-                heroImage={post.data.heroImage}
-                tags={post.data.tags}
-                category={post.data.category}
-                slug={post.id}
-                readingTime={calcReadingTime(post.body || '')}
-                featured={post === featuredPost}
-              />
-            </div>
-          ))}
+      <div class="flex-1 min-w-0 space-y-10">
+        <div>
+          <div class="flex items-center justify-between mb-6 reveal-target">
+            <h2 class="section-kicker">最新文章</h2>
+            <a href={`${import.meta.env.BASE_URL}blog/`} class="text-xs text-accent dark:text-dark-accent hover:text-accent-hover dark:hover:text-dark-accent-hover transition-colors font-serif">
+              查看全部 &rarr;
+            </a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {recentPosts.map((post, i) => (
+              <div class="reveal-target" style={`transition-delay: ${(i % 4) * 0.06}s`}>
+                <PostCard
+                  title={post.data.title}
+                  description={post.data.description}
+                  pubDate={post.data.pubDate}
+                  heroImage={post.data.heroImage}
+                  tags={post.data.tags}
+                  category={post.data.category}
+                  slug={post.id}
+                  readingTime={calcReadingTime(post.body || '')}
+                  featured={post === featuredPost}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         <!-- 分类 -->
@@ -273,28 +281,6 @@ if (streak === 0) {
 
   </div>
   <!-- 水感内容区结束 -->
-
-<script is:inline define:vars={{ postsMeta, base: import.meta.env.BASE_URL }}>
-  document.addEventListener('astro:page-load', () => {
-    const likes = JSON.parse(localStorage.getItem('blog_likes') || '{}');
-    const hotSection = document.getElementById('hot-recommend');
-    const hotPosts = document.getElementById('hot-posts');
-    if (!hotSection || !hotPosts) return;
-    const liked = postsMeta
-      .filter(p => (likes[p.slug] || 0) > 0)
-      .sort((a, b) => (likes[b.slug] || 0) - (likes[a.slug] || 0))
-      .slice(0, 3);
-    if (liked.length === 0) return;
-    hotSection.classList.remove('hidden');
-    hotPosts.innerHTML = liked.map(post => `
-      <a href="${base}blog/${post.slug}" class="group block p-4 hover:bg-surface-raised/50 dark:hover:bg-dark-surface-raised/50 transition-colors rounded-lg">
-        <span class="text-[11px] text-accent dark:text-dark-accent font-mono">${likes[post.slug]} likes</span>
-        <h3 class="mt-1 font-display text-base font-bold text-text dark:text-dark-text leading-snug group-hover:text-accent dark:group-hover:text-dark-accent transition-colors">${post.title}</h3>
-        <p class="mt-1 text-sm text-text-secondary dark:text-dark-text-secondary line-clamp-2">${post.description}</p>
-      </a>
-    `).join('');
-  });
-</script>
 
 <script is:inline>
 document.addEventListener('astro:page-load', async () => {

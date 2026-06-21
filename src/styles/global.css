@@ -674,7 +674,6 @@ header { view-transition-name: header; }
 }
 
 /* 卡片仅保留 opacity 过渡（scroll reveal），位移由 JS 物理引擎驱动 */
-.card.reveal-target,
 .card-flat.reveal-target {
   transition: opacity 0.8s var(--interactive-ease);
 }
@@ -845,6 +844,40 @@ header.header-hidden { transform: translateY(-100%); }
 }
 .capsule-btn:hover::before { opacity: 1; }
 .capsule-btn:active { transform: scale(0.97); }
+
+.home-signal-card {
+  display: block;
+  min-height: 8.25rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.035);
+  transition: transform 0.45s var(--interactive-ease), border-color 0.45s var(--interactive-ease), background 0.45s var(--interactive-ease);
+}
+
+.home-signal-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(122, 149, 175, 0.22);
+  background: linear-gradient(145deg, rgba(122, 149, 175, 0.08), rgba(255, 255, 255, 0.018));
+}
+
+.home-signal-card span {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-signal-card p {
+  color: var(--color-text-muted);
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  line-height: 1.75;
+}
 
 /* ========== Sidebar ========== */
 .sidebar-header {
