@@ -125,6 +125,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <Analytics />
     <script is:inline>
       { // block scope for is:inline scripts
+      // === Background video: lazy load on interaction ===
       const gv = document.getElementById('global-bg-video');
       const poster = document.getElementById('global-bg-poster');
       if (gv && poster) {
@@ -151,84 +152,22 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
           });
         }
       }
-      // === video mouse parallax + scroll speed ===
-      function initVideoInteraction() {
-        const bgLayer = document.querySelector('.global-bg-layer');
-        const bgVideo = document.getElementById('global-bg-video');
-        if (!bgLayer || !bgVideo) return;
-        if (document.body.classList.contains('page-entrance')) return;
-        let videoRAF = null;
-        let targetPX = 0, targetPY = 0, currentPX = 0, currentPY = 0;
-        const onMove = (e) => {
-          targetPX = (e.clientX / window.innerWidth - 0.5) * -14;
-          targetPY = (e.clientY / window.innerHeight - 0.5) * -10;
-        };
-        const onScroll = () => {
-          const scrollY = window.scrollY;
-          const maxScroll = document.body.scrollHeight - window.innerHeight || 1;
-          const pct = Math.min(scrollY / maxScroll, 1);
-          if (bgVideo.playbackRate !== undefined) {
-            bgVideo.playbackRate = 0.85 + pct * 0.3;
-          }
-        };
-        const tick = () => {
-          currentPX += (targetPX - currentPX) * 0.02;
-          currentPY += (targetPY - currentPY) * 0.02;
-          bgLayer.style.transform = `translate(${currentPX.toFixed(1)}px, ${currentPY.toFixed(1)}px)`;
-          videoRAF = requestAnimationFrame(tick);
-        };
-        document.addEventListener('mousemove', onMove, { passive: true });
-        window.addEventListener('scroll', onScroll, { passive: true });
-        videoRAF = requestAnimationFrame(tick);
-        document.addEventListener('astro:before-swap', () => {
-          cancelAnimationFrame(videoRAF);
-          document.removeEventListener('mousemove', onMove);
-          window.removeEventListener('scroll', onScroll);
-        }, { once: true });
-      }
-      if (document.body.classList.contains('page-entrance')) {
-        document.addEventListener('astro:after-swap', () => {
-          if (!document.body.classList.contains('page-entrance')) initVideoInteraction();
-        });
-      } else {
-        initVideoInteraction();
-      }
-      // === internal cursor glow ===
-      function initInternalGlow() {
-        const glow = document.getElementById('internal-cursor-glow');
-        if (!glow) return;
-        if (document.body.classList.contains('page-entrance')) {
-          glow.style.display = 'none';
-          return;
-        }
-        let rafId = null;
-        document.addEventListener('mousemove', (e) => {
-          if (rafId) return;
-          rafId = requestAnimationFrame(() => {
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
-            glow.style.opacity = '1';
-            rafId = null;
-          });
-        }, { passive: true });
-        document.addEventListener('mouseleave', () => {
-          glow.style.opacity = '0';
-        });
-      }
-      initInternalGlow();
-      document.addEventListener('astro:after-swap', initInternalGlow);
       } // end block scope
     </script>
     <script is:inline>
-      function initScrollReveal() {
+      function initReveal() {
+        // Unified scroll reveal for both .reveal-target and .blur-reveal
         let staggerIdx = 0;
         let staggerTimer = null;
-        const observer = new IntersectionObserver((entries, observer) => {
+        const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
               const delay = staggerIdx * 60;
               setTimeout(() => {
                 entry.target.classList.add('is-revealed');
+                if (entry.target.classList.contains('blur-reveal')) {
+                  entry.target.classList.add('is-focused');
+                }
               }, delay);
               staggerIdx++;
               clearTimeout(staggerTimer);
@@ -236,15 +175,14 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
               observer.unobserve(entry.target);
             }
           });
-        }, { root: null, rootMargin: '0px 0px -30px 0px', threshold: 0.08 });
+        }, { rootMargin: '0px 0px -30px 0px', threshold: 0.08 });
 
-        // Observe elements with .reveal-target class + prose content elements
-        document.querySelectorAll('.reveal-target').forEach(el => {
-          el.classList.remove('is-revealed');
+        document.querySelectorAll('.reveal-target, .blur-reveal').forEach(el => {
+          el.classList.remove('is-revealed', 'is-focused');
           observer.observe(el);
         });
 
-        // Auto-tag prose elements inside post content for scroll reveal
+        // Prose content auto-reveal
         document.querySelectorAll('.prose p, .prose h2, .prose h3, .prose pre, .prose blockquote, .prose ul, .prose ol').forEach(el => {
           el.classList.add('reveal-target');
           el.classList.remove('is-revealed');
@@ -252,83 +190,9 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
         });
       }
 
-      initScrollReveal();
-      document.addEventListener('astro:page-load', initScrollReveal);
+      initReveal();
+      document.addEventListener('astro:page-load', initReveal);
     </script>
-    <script is:inline>
-      function initMagneticElements() {
-        document.querySelectorAll('nav a, nav button, .magnetic').forEach(magnet => {
-          magnet.addEventListener('mousemove', (e) => {
-            const rect = magnet.getBoundingClientRect();
-            const x = (e.clientX - rect.left) - rect.width / 2;
-            const y = (e.clientY - rect.top) - rect.height / 2;
-            magnet.style.transition = 'none';
-            magnet.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-          });
-          magnet.addEventListener('mouseleave', () => {
-            magnet.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-            magnet.style.transform = 'translate(0px, 0px)';
-          });
-        });
-      }
-      initMagneticElements();
-      document.addEventListener('astro:page-load', initMagneticElements);
-    </script>
-    <script is:inline>
-      function initBlurReveal() {
-        let delayCount = 0;
-        let delayTimer = null;
-
-        const observer = new IntersectionObserver((entries, observer) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const delay = delayCount * 100;
-              setTimeout(() => {
-                entry.target.classList.add('is-focused');
-              }, 100 + delay);
-              delayCount++;
-              clearTimeout(delayTimer);
-              delayTimer = setTimeout(() => { delayCount = 0; }, 150);
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
-
-        document.querySelectorAll('.blur-reveal').forEach(el => {
-          el.classList.remove('is-focused');
-          observer.observe(el);
-        });
-      }
-      initBlurReveal();
-      document.addEventListener('astro:page-load', initBlurReveal);
-    </script>
-    <script is:inline>
-      function initPageClickWave() {
-        window.__pageClickWaveLayer = document.getElementById('page-click-wave');
-        if (window.__pageClickWaveReady) return;
-        window.__pageClickWaveReady = true;
-
-        document.addEventListener('pointerdown', (event) => {
-          const layer = window.__pageClickWaveLayer;
-          if (!layer) return;
-          layer.style.setProperty('--page-wave-x', `${event.clientX}px`);
-          layer.style.setProperty('--page-wave-y', `${event.clientY}px`);
-          layer.classList.remove('is-waving');
-          void layer.offsetWidth;
-          layer.classList.add('is-waving');
-        }, { passive: true });
-
-        document.addEventListener('animationend', (event) => {
-          if (event.animationName === 'waterDropRing') {
-            window.__pageClickWaveLayer?.classList.remove('is-waving');
-          }
-        });
-      }
-
-      initPageClickWave();
-      document.addEventListener('astro:page-load', initPageClickWave);
-    </script>
-    <div id="page-click-wave" class="page-click-wave" aria-hidden="true"></div>
     <!-- 全局胶片颗粒 -->
     <svg class="global-film-grain" aria-hidden="true" preserveAspectRatio="none">
       <defs>
@@ -336,7 +200,5 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       </defs>
       <rect width="100%" height="100%" filter="url(#global-grain-noise)" opacity="0.04"/>
     </svg>
-    <!-- 内页鼠标微光 -->
-    <div class="internal-cursor-glow" id="internal-cursor-glow" aria-hidden="true"></div>
   </body>
 </html>

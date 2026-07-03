@@ -27,7 +27,7 @@ const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {sortedTags.map(([tag, count]) => (
         <a
-          href={`${import.meta.env.BASE_URL}tags/${tag}/`}
+          href={`${import.meta.env.BASE_URL}tag/${tag}/`}
           class="group flex items-center justify-between px-5 py-4 border border-border/60 dark:border-dark-border/60 rounded-xl shadow-sm hover:border-accent dark:hover:border-dark-accent hover:bg-surface-alt/50 dark:hover:bg-dark-surface-alt/50 hover:shadow-lg hover:shadow-accent/5 dark:hover:shadow-dark-accent/5 transition-all duration-300 bg-gradient-to-br from-surface/50 to-surface-alt/30 dark:from-dark-surface/50 dark:to-dark-surface-alt/30"
         >
           <span class="font-serif font-medium text-text dark:text-dark-text group-hover:text-accent dark:group-hover:text-dark-accent transition-colors">

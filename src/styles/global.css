@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  --font-serif: "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
   --font-display: "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
   --font-sans: "Inter", "-apple-system", "PingFang SC", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
@@ -101,7 +101,6 @@ main {
 
 /* 入口页隐藏全局元素（入口有自己的胶片颗粒和光效） */
 .page-entrance .global-film-grain { display: none; }
-.page-entrance .internal-cursor-glow { display: none; }
 
 
 /* ========== 水感内容区 — 透过水面看文字 ========== */
@@ -269,8 +268,7 @@ button:active,
   transition: all 0.08s ease-out !important;
 }
 
-nav a, nav button, .magnetic {
-  will-change: transform;
+nav a, nav button {
   position: relative;
   z-index: 50;
 }
@@ -298,95 +296,6 @@ nav a, button {
   position: relative;
 }
 
-.page-click-wave {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* ── Water droplet ripple ── */
-.page-click-wave::before {
-  content: "";
-  position: absolute;
-  left: var(--page-wave-x, 50vw);
-  top: var(--page-wave-y, 50vh);
-  width: 14px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0);
-  background: radial-gradient(
-    circle,
-    rgba(230, 232, 240, 0.45) 0%,
-    rgba(175, 180, 200, 0.14) 60%,
-    transparent 100%
-  );
-}
-
-.page-click-wave::after {
-  content: "";
-  position: absolute;
-  left: var(--page-wave-x, 50vw);
-  top: var(--page-wave-y, 50vh);
-  width: 120px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.03);
-  border: 1.2px solid rgba(175, 185, 200, 0.38);
-  background: transparent;
-}
-
-.page-click-wave.is-waving::before {
-  animation: waterDropImpact 340ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-
-.page-click-wave.is-waving::after {
-  animation: waterDropRing 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-
-@keyframes waterDropImpact {
-  0% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(0);
-  }
-  25% {
-    opacity: 0.35;
-    transform: translate(-50%, -50%) scale(1.4);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.8);
-  }
-}
-
-@keyframes waterDropRing {
-  0% {
-    opacity: 0.45;
-    transform: translate(-50%, -50%) scale(0.03);
-    border-width: 1.2px;
-    box-shadow:
-      0 0 0 0 rgba(170, 178, 200, 0.20),
-      0 0 0 0 rgba(170, 178, 200, 0.07);
-  }
-  30% {
-    opacity: 0.22;
-    border-width: 0.7px;
-    box-shadow:
-      0 0 0 6px rgba(170, 178, 200, 0.09),
-      0 0 0 18px rgba(170, 178, 200, 0.035);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.6);
-    border-width: 0.3px;
-    box-shadow:
-      0 0 0 24px rgba(170, 178, 200, 0),
-      0 0 0 60px rgba(170, 178, 200, 0);
-  }
-}
 
 @media (max-width: 768px) {
   .hero-wrapper {
@@ -529,9 +438,13 @@ nav a, button {
   color: var(--color-text);
 }
 
-.prose h1 { font-size: 2.25rem; }
+.prose h1 {
+  font-size: 2.75rem;
+  letter-spacing: 0.04em;
+}
 .prose h2 {
-  font-size: 1.75rem;
+  font-size: 2rem;
+  letter-spacing: 0.03em;
   padding-bottom: 0.5rem;
 }
 .prose h2::after {
@@ -543,7 +456,7 @@ nav a, button {
   background: linear-gradient(90deg, var(--color-accent), transparent);
   opacity: 0.25;
 }
-.prose h3 { font-size: 1.375rem; }
+.prose h3 { font-size: 1.5rem; letter-spacing: 0.02em; }
 
 .prose p { margin-bottom: 1.6em; }
 
@@ -809,8 +722,9 @@ header.header-hidden { transform: translateY(-100%); }
 .hero-title {
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
   line-height: 0.95;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-wrap: balance;
 }
 
@@ -993,39 +907,6 @@ header.header-hidden { transform: translateY(-100%); }
   50% { transform: translateY(8px); opacity: 0.28; }
 }
 
-/* ========== Custom Cursor ========== */
-body, a, button, .glass-container, .card, .card-flat, .capsule-btn, .card-tilt-wrapper {
-  cursor: auto;
-}
-
-.custom-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  background-color: rgba(245, 245, 244, 0.6);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999999;
-  will-change: transform;
-  transition: width 0.4s var(--interactive-ease),
-              height 0.4s var(--interactive-ease),
-              background-color 0.4s var(--interactive-ease),
-              border 0.4s var(--interactive-ease);
-}
-
-.custom-cursor.hover-active {
-  display: none;
-}
-
-@media (hover: none) {
-  body, a, button, .glass-container, .card, .card-flat, .capsule-btn, .card-tilt-wrapper {
-    cursor: auto !important;
-  }
-  .custom-cursor { display: none; }
-}
-
 /* ========== 全局胶片颗粒 ========== */
 .global-film-grain {
   position: fixed;
@@ -1034,21 +915,6 @@ body, a, button, .glass-container, .card, .card-flat, .capsule-btn, .card-tilt-w
   height: 100%;
   z-index: 9990;
   pointer-events: none;
-}
-
-/* ========== 内页鼠标微光 ========== */
-.internal-cursor-glow {
-  position: fixed;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(180, 170, 150, 0.04) 0%, rgba(160, 150, 130, 0.015) 35%, transparent 70%);
-  pointer-events: none;
-  z-index: 9991;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: left, top;
 }
 
 /* ========== 全局暗角 (vignette) ========== */
@@ -1098,8 +964,5 @@ body::after {
   .page-enter { animation: none; }
   header { transition: none; }
   html { scroll-behavior: auto; }
-  .custom-cursor { display: none; }
-  .click-wave::after,
-  .page-click-wave::after { animation: none !important; opacity: 0 !important; }
-  body, a, button, .glass-container, .card, .card-flat, .capsule-btn, .card-tilt-wrapper { cursor: auto !important; }
+  .click-wave::after { animation: none !important; opacity: 0 !important; }
 }
