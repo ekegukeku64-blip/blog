@@ -14,6 +14,7 @@ import AuthorCard from '../components/AuthorCard.astro';
 import Bookmarks from '../components/Bookmarks.astro';
 import FontSizeControl from '../components/FontSizeControl.astro';
 import SeriesNav from '../components/SeriesNav.astro';
+import PostAISummary from '../components/PostAISummary.astro';
 import { formatWordCount } from '../utils/readingTime';
 import { getCollection } from 'astro:content';
 
@@ -37,9 +38,10 @@ interface Props {
   next?: { title: string; slug: string } | null;
   slug?: string;
   seriesData?: { name: string; items: SeriesItem[]; currentSlug: string } | null;
+  body?: string;
 }
 
-const { title, description, pubDate, updatedDate, heroImage, tags, category, readingTime, wordCount, prev = null, next = null, slug = '', seriesData = null } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, category, readingTime, wordCount, prev = null, next = null, slug = '', seriesData = null, body = '' } = Astro.props;
 
 // 所有文章数据，用于内链预览
 const allPostsForPreview = await getCollection('posts', ({ data }) => !data.draft);
@@ -155,6 +157,11 @@ function formatDate(date: Date) {
 
     <!-- Share & Like -->
     <ShareLike slug={slug} title={title} />
+
+    <!-- AI Summary -->
+    {body && body.length > 100 && (
+      <PostAISummary content={body} slug={slug} />
+    )}
 
     <!-- Related Posts -->
     <RelatedPosts currentSlug={slug} tags={tags} />

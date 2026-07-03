@@ -1,0 +1,148 @@
+---
+interface Props {
+  content: string;
+  slug?: string;
+}
+
+const { content, slug = '' } = Astro.props;
+const contentStr = content.replace(/[#*`\[\]()>|\\]/g, '').slice(0, 8000); // 清理 markdown 符号，限制长度
+---
+
+<!-- 内容数据，供客户端 JS 读取 -->
+<script id="ai-summary-data" type="application/json" set:html={JSON.stringify({ content: contentStr, slug })}></script>
+
+<div id="ai-summary-root" class="mt-12 pt-8 border-t border-white/[0.05] reveal-target">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2.5">
+      <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-accent/15 text-accent text-xs font-bold font-sans">AI</span>
+      <h3 class="font-display text-sm font-bold text-text tracking-wide">文章总结</h3>
+    </div>
+    <span id="ai-summary-status" class="text-[11px] text-text-muted font-serif hidden"></span>
+  </div>
+
+  <div id="ai-summary-body" class="relative">
+    <button id="ai-summary-btn" class="w-full group relative overflow-hidden px-5 py-4 rounded-xl border border-dashed border-white/[0.08] bg-surface/20 hover:bg-surface/40 hover:border-accent/30 transition-all duration-500 cursor-pointer text-left" style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent/60 animate-pulse" style="animation-duration: 1.8s;"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-accent/40 animate-pulse" style="animation-duration: 1.8s; animation-delay: 0.3s;"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-accent/20 animate-pulse" style="animation-duration: 1.8s; animation-delay: 0.6s;"></span>
+        </div>
+        <span class="text-sm text-text-secondary font-serif group-hover:text-text transition-colors duration-300">点击生成文章摘要</span>
+      </div>
+    </button>
+
+    <div id="ai-summary-result" class="hidden">
+      <div id="ai-summary-text" class="text-sm text-text-secondary font-serif leading-[2] p-5 rounded-xl bg-surface/10 border border-white/[0.05]"></div>
+      <div id="ai-summary-actions" class="flex items-center gap-3 mt-3 hidden">
+        <button id="ai-summary-regenerate" class="text-xs text-text-muted hover:text-accent transition-colors font-serif cursor-pointer">重新生成</button>
+        <span class="text-text-muted/20">·</span>
+        <span id="ai-summary-word-count" class="text-[11px] text-text-muted/50 font-mono"></span>
+      </div>
+    </div>
+
+    <div id="ai-summary-loading" class="hidden absolute inset-0 flex items-center justify-center bg-surface/60 backdrop-blur-sm rounded-xl">
+      <div class="flex items-center gap-2.5">
+        <div class="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+        <span class="text-xs text-text-muted font-serif">生成中...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { summarize } from '../utils/summarize';
+
+  const root = document.getElementById('ai-summary-root') as HTMLElement;
+  const btn = document.getElementById('ai-summary-btn') as HTMLButtonElement;
+  const result = document.getElementById('ai-summary-result') as HTMLElement;
+  const resultText = document.getElementById('ai-summary-text') as HTMLElement;
+  const loading = document.getElementById('ai-summary-loading') as HTMLElement;
+  const status = document.getElementById('ai-summary-status') as HTMLElement;
+  const actions = document.getElementById('ai-summary-actions') as HTMLElement;
+  const regenerate = document.getElementById('ai-summary-regenerate') as HTMLButtonElement;
+  const wordCount = document.getElementById('ai-summary-word-count') as HTMLElement;
+
+  // content from embedded JSON script
+  const dataEl = document.getElementById('ai-summary-data') as HTMLScriptElement;
+  const DATA = dataEl ? JSON.parse(dataEl.textContent || '{}') : { content: '', slug: '' };
+  const CONTENT = (DATA.content || '') as string;
+  const STORAGE_KEY = 'ai-summary-' + (DATA.slug || window.location.pathname.replace(/\/blog\/(.+?)\/?$/, '$1'));
+  const MIN_CHARS = 200;
+
+  function typewriter(el: HTMLElement, text: string, speed = 18) {
+    el.textContent = '';
+    let i = 0;
+    function tick() {
+      if (i < text.length) {
+        const chunk = Math.min(3, text.length - i);
+        el.textContent += text.slice(i, i + chunk);
+        i += chunk;
+        requestAnimationFrame(tick);
+      }
+    }
+    tick();
+  }
+
+  function generate() {
+    if (CONTENT.length < MIN_CHARS) {
+      resultText.textContent = '文章内容太短，无需总结。';
+      result.classList.remove('hidden');
+      btn.classList.add('hidden');
+      return;
+    }
+
+    loading.classList.remove('hidden');
+    btn.classList.add('hidden');
+    result.classList.add('hidden');
+    status.classList.remove('hidden');
+    status.textContent = '提取式摘要 · 本地运行';
+
+    // Simulate processing delay for UX (usually <50ms)
+    setTimeout(() => {
+      try {
+        const sentences = summarize(CONTENT);
+        const summary = sentences.join('');
+        const display = summary.length > 600 ? summary.slice(0, 597) + '...' : summary;
+        const words = display.length;
+
+        resultText.textContent = '';
+        typewriter(resultText, display, 12);
+
+        loading.classList.add('hidden');
+        result.classList.remove('hidden');
+        actions.classList.remove('hidden');
+        wordCount.textContent = `约 ${words} 字`;
+
+        // Cache
+        try { localStorage.setItem(STORAGE_KEY, display); } catch {}
+      } catch (e) {
+        loading.classList.add('hidden');
+        btn.classList.remove('hidden');
+        status.textContent = '生成失败，请重试';
+        console.error('AI summary error:', e);
+      }
+    }, 400);
+  }
+
+  // Check cache
+  const cached = (() => {
+    try { return localStorage.getItem(STORAGE_KEY); } catch { return null; }
+  })();
+
+  if (cached) {
+    resultText.textContent = cached;
+    wordCount.textContent = `约 ${cached.length} 字`;
+    result.classList.remove('hidden');
+    btn.classList.add('hidden');
+    actions.classList.remove('hidden');
+    status.classList.remove('hidden');
+    status.textContent = '提取式摘要 · 本地运行';
+  }
+
+  btn.addEventListener('click', generate);
+  regenerate.addEventListener('click', () => {
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    generate();
+  });
+</script>
