@@ -156,7 +156,7 @@ if (streak === 0) {
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             {recentPosts.map((post, i) => (
-              <div class="reveal-target" style={`transition-delay: ${(i % 4) * 0.06}s`}>
+              <div class:list={['reveal-target', i === 0 && 'md:col-span-2']} style={`transition-delay: ${(i % 4) * 0.06}s`}>
                 <PostCard
                   title={post.data.title}
                   description={post.data.description}
@@ -166,10 +166,25 @@ if (streak === 0) {
                   category={post.data.category}
                   slug={post.id}
                   readingTime={calcReadingTime(post.body || '')}
-                  featured={post === featuredPost}
+                  featured={i === 0 || post === featuredPost}
                 />
               </div>
             ))}
+            {featuredPost && !recentPosts.find(p => p === featuredPost) && (
+              <div class="reveal-target" style="transition-delay: 0s">
+                <PostCard
+                  title={featuredPost.data.title}
+                  description={featuredPost.data.description}
+                  pubDate={featuredPost.data.pubDate}
+                  heroImage={featuredPost.data.heroImage}
+                  tags={featuredPost.data.tags}
+                  category={featuredPost.data.category}
+                  slug={featuredPost.id}
+                  readingTime={calcReadingTime(featuredPost.body || '')}
+                  featured={true}
+                />
+              </div>
+            )}
           </div>
         </div>
 
