@@ -5,6 +5,9 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/noto-serif-sc/400.css';
+import '@fontsource/noto-serif-sc/600.css';
+import '@fontsource/noto-serif-sc/700.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BackToTop from '../components/BackToTop.astro';
@@ -141,15 +144,79 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
             }).catch(() => {});
           };
           window.addEventListener('load', () => {
-            // 等用户开始滚动或点击后才加载视频
             const trigger = () => { setTimeout(loadVideo, 2000); };
             window.addEventListener('scroll', trigger, { once: true, passive: true });
             document.addEventListener('click', trigger, { once: true });
-            // 兜底：20 秒后还没交互就加载
             setTimeout(() => loadVideo(), 20000);
           });
         }
       }
+      // === video mouse parallax + scroll speed ===
+      function initVideoInteraction() {
+        const bgLayer = document.querySelector('.global-bg-layer');
+        const bgVideo = document.getElementById('global-bg-video');
+        if (!bgLayer || !bgVideo) return;
+        if (document.body.classList.contains('page-entrance')) return;
+        let videoRAF = null;
+        let targetPX = 0, targetPY = 0, currentPX = 0, currentPY = 0;
+        const onMove = (e) => {
+          targetPX = (e.clientX / window.innerWidth - 0.5) * -14;
+          targetPY = (e.clientY / window.innerHeight - 0.5) * -10;
+        };
+        const onScroll = () => {
+          const scrollY = window.scrollY;
+          const maxScroll = document.body.scrollHeight - window.innerHeight || 1;
+          const pct = Math.min(scrollY / maxScroll, 1);
+          if (bgVideo.playbackRate !== undefined) {
+            bgVideo.playbackRate = 0.85 + pct * 0.3;
+          }
+        };
+        const tick = () => {
+          currentPX += (targetPX - currentPX) * 0.02;
+          currentPY += (targetPY - currentPY) * 0.02;
+          bgLayer.style.transform = `translate(${currentPX.toFixed(1)}px, ${currentPY.toFixed(1)}px)`;
+          videoRAF = requestAnimationFrame(tick);
+        };
+        document.addEventListener('mousemove', onMove, { passive: true });
+        window.addEventListener('scroll', onScroll, { passive: true });
+        videoRAF = requestAnimationFrame(tick);
+        document.addEventListener('astro:before-swap', () => {
+          cancelAnimationFrame(videoRAF);
+          document.removeEventListener('mousemove', onMove);
+          window.removeEventListener('scroll', onScroll);
+        }, { once: true });
+      }
+      if (document.body.classList.contains('page-entrance')) {
+        document.addEventListener('astro:after-swap', () => {
+          if (!document.body.classList.contains('page-entrance')) initVideoInteraction();
+        });
+      } else {
+        initVideoInteraction();
+      }
+      // === internal cursor glow ===
+      function initInternalGlow() {
+        const glow = document.getElementById('internal-cursor-glow');
+        if (!glow) return;
+        if (document.body.classList.contains('page-entrance')) {
+          glow.style.display = 'none';
+          return;
+        }
+        let rafId = null;
+        document.addEventListener('mousemove', (e) => {
+          if (rafId) return;
+          rafId = requestAnimationFrame(() => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+            glow.style.opacity = '1';
+            rafId = null;
+          });
+        }, { passive: true });
+        document.addEventListener('mouseleave', () => {
+          glow.style.opacity = '0';
+        });
+      }
+      initInternalGlow();
+      document.addEventListener('astro:after-swap', initInternalGlow);
       } // end block scope
     </script>
     <script is:inline>
@@ -262,5 +329,14 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       document.addEventListener('astro:page-load', initPageClickWave);
     </script>
     <div id="page-click-wave" class="page-click-wave" aria-hidden="true"></div>
+    <!-- 全局胶片颗粒 -->
+    <svg class="global-film-grain" aria-hidden="true" preserveAspectRatio="none">
+      <defs>
+        <filter id="global-grain-noise"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+      </defs>
+      <rect width="100%" height="100%" filter="url(#global-grain-noise)" opacity="0.04"/>
+    </svg>
+    <!-- 内页鼠标微光 -->
+    <div class="internal-cursor-glow" id="internal-cursor-glow" aria-hidden="true"></div>
   </body>
 </html>

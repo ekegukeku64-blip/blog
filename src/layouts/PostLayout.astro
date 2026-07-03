@@ -74,12 +74,12 @@ function formatDate(date: Date) {
         {category}
       </a>
 
-      <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-5 text-text blur-reveal" style="font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;">
+      <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-5 text-text blur-reveal" style="font-family: var(--font-display);">
         {title}
       </h1>
 
       {description && (
-        <p class="text-base text-text-secondary mb-5 leading-relaxed" style="font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;">{description}</p>
+        <p class="text-base text-text-secondary mb-5 leading-relaxed" style="font-family: var(--font-serif);">{description}</p>
       )}
 
       <div class="flex items-center justify-center gap-3 text-xs text-text-muted flex-wrap" style="letter-spacing: 0.05em;">

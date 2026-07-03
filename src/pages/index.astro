@@ -5,7 +5,6 @@ import { getCollection } from 'astro:content';
 const allPosts = await getCollection('posts', ({ data }) => !data.draft);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const latestPost = sortedPosts[0];
-
 ---
 
 <BaseLayout title="墨迹 - Entrance">
@@ -28,12 +27,35 @@ const latestPost = sortedPosts[0];
 
     <div class="fog-veil" aria-hidden="true"></div>
 
-    <!-- SVG filters -->
-    <svg class="hidden"><defs><filter id="btn-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="turbulence"/><feGaussianBlur in="turbulence" stdDeviation="2" result="blurredNoise"/><feDisplacementMap in="SourceGraphic" in2="blurredNoise" scale="70" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="4" result="finalBlur"/><feComposite in="finalBlur" in2="finalBlur" operator="over"/></filter></defs></svg>
+    <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+
+    <svg class="film-grain" aria-hidden="true" preserveAspectRatio="none">
+      <defs>
+        <filter id="grain-noise"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+      </defs>
+      <rect width="100%" height="100%" filter="url(#grain-noise)" opacity="0.04"/>
+    </svg>
+
+    <!-- SVG filters (glass button) -->
+    <svg class="hidden">
+      <defs>
+        <filter id="btn-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="turbulence"/><feGaussianBlur in="turbulence" stdDeviation="2" result="blurredNoise"/><feDisplacementMap in="SourceGraphic" in2="blurredNoise" scale="70" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="4" result="finalBlur"/><feComposite in="finalBlur" in2="finalBlur" operator="over"/></filter>
+      </defs>
+    </svg>
 
     <div class="content-layer">
-      <h1 class="ink-title">
-        <span class="ink-char" style="animation-delay:0.1s">墨</span><span class="ink-char" style="animation-delay:0.4s">迹</span>
+
+      <div class="ink-blooms" aria-hidden="true">
+        <span class="ink-bloom ink-bloom--a"></span>
+        <span class="ink-bloom ink-bloom--b"></span>
+      </div>
+
+      <h1 class="editorial-title" aria-label="墨迹">
+        <span class="editorial-line" aria-hidden="true"></span>
+        <span class="editorial-chars">
+          <span class="editorial-char" style="--s:0" data-depth="0.7">墨</span><!--
+       --><span class="editorial-char" style="--s:1" data-depth="0.35">迹</span>
+        </span>
       </h1>
       <p class="blur-reveal subtitle">一个不装成熟的个人空间</p>
 
@@ -49,6 +71,12 @@ const latestPost = sortedPosts[0];
       )}
     </div>
 
+    <div class="right-accent" aria-hidden="true">
+      <div class="right-accent-line"></div>
+      <div class="right-accent-line right-accent-line--mid"></div>
+      <div class="right-accent-line right-accent-line--short"></div>
+    </div>
+
     <div class="bottom-quote" id="bottom-quote">
       <p class="quote-text" id="quote-text"></p>
       <p class="quote-author" id="quote-author"></p>
@@ -56,6 +84,12 @@ const latestPost = sortedPosts[0];
   </main>
 
   <script is:inline>
+    { // === time-based color temperature ===
+    const hour = new Date().getHours();
+    const phase = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : hour < 22 ? 'evening' : 'night';
+    document.documentElement.setAttribute('data-time', phase);
+    } // end time block
+
     { // === video autoplay ===
     const ev = document.getElementById('entrance-video');
     if (ev) {
@@ -171,6 +205,7 @@ const latestPost = sortedPosts[0];
 
       const updateCanvasRect = () => { canvasRect = canvas.getBoundingClientRect(); };
 
+      const titleChars = document.querySelectorAll('.editorial-char');
       const onMouseMove = (e) => {
         mouseX = e.clientX - canvasRect.left;
         mouseY = e.clientY - canvasRect.top;
@@ -183,11 +218,32 @@ const latestPost = sortedPosts[0];
               const py = (e.clientY / window.innerHeight - 0.5) * -12;
               bgMedia.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) scale(1.06)`;
             }
+            const gl = document.getElementById('cursor-glow');
+            if (gl) {
+              gl.style.left = e.clientX + 'px';
+              gl.style.top = e.clientY + 'px';
+              gl.style.opacity = '1';
+            }
+            titleChars.forEach(el => {
+              const depth = parseFloat(el.getAttribute('data-depth')) || 0;
+              const dx = (e.clientX / window.innerWidth - 0.5) * -28 * depth;
+              const dy = (e.clientY / window.innerHeight - 0.5) * -20 * depth;
+              el.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
+              el.style.transition = 'none';
+            });
             parallaxPending = false;
           });
         }
       };
-      const onMouseLeave = () => { mouseX = -999; mouseY = -999; };
+      const onMouseLeave = () => {
+        mouseX = -999; mouseY = -999;
+        const gl = document.getElementById('cursor-glow');
+        if (gl) gl.style.opacity = '0';
+        titleChars.forEach(el => {
+          el.style.transform = 'translate3d(0, 0, 0)';
+          el.style.transition = 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
+        });
+      };
 
       document.addEventListener('mousemove', onMouseMove, { passive: true });
       document.addEventListener('mouseleave', onMouseLeave);
@@ -315,44 +371,142 @@ const latestPost = sortedPosts[0];
     background: radial-gradient(ellipse 60% 50% at 50% 40%, transparent 35%, rgba(7,10,19,0.55) 100%);
   }
 
+  .cursor-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(180, 155, 115, 0.065) 0%, rgba(160, 140, 100, 0.025) 35%, transparent 70%);
+    pointer-events: none;
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: left, top;
+  }
+
+  .film-grain {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 8;
+    pointer-events: none;
+  }
+
   .content-layer {
     position: relative; z-index: 10;
-    display: flex; flex-direction: column; align-items: center; text-align: center;
+    display: flex; flex-direction: column; align-items: flex-start; text-align: left;
     margin-top: 6rem;
+    margin-left: 8vw;
   }
 
-  /* ── Ink bleed title ── */
-  .ink-title {
-    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    font-size: 5rem;
-    font-weight: 700;
+  /* ── Ink bloom ambient light spots ── */
+  .ink-blooms {
+    position: absolute;
+    inset: -120px -200px;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .ink-bloom {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0;
+    animation: bloomDrift var(--drift-dur, 14s) var(--drift-delay, 0s) ease-in-out infinite;
+  }
+
+  .ink-bloom--a {
+    width: 280px; height: 200px;
+    top: 10%; left: 15%;
+    background: radial-gradient(ellipse, rgba(160, 140, 100, 0.12) 0%, rgba(122, 149, 175, 0.04) 45%, transparent 70%);
+    --drift-dur: 16s;
+    animation-delay: 1.8s;
+  }
+
+  .ink-bloom--b {
+    width: 320px; height: 240px;
+    top: 25%; right: 10%;
+    background: radial-gradient(ellipse, rgba(140, 150, 180, 0.10) 0%, rgba(160, 140, 100, 0.03) 40%, transparent 70%);
+    --drift-dur: 19s;
+    animation-delay: 0s;
+  }
+
+  @keyframes bloomDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+    25% { transform: translate(40px, -18px) scale(1.08); opacity: 0.55; }
+    50% { transform: translate(-15px, -30px) scale(0.92); opacity: 0.30; }
+    75% { transform: translate(-35px, 10px) scale(1.05); opacity: 0.50; }
+  }
+
+  /* ── Editorial stagger reveal title ── */
+  .editorial-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     margin: 0;
-    letter-spacing: 0.14em;
-    color: rgba(242, 238, 234, 0.68);
+    position: relative;
   }
 
-  .ink-char {
+  .editorial-title::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 320px;
+    height: 220px;
+    background: radial-gradient(ellipse, rgba(200, 180, 140, 0.10) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    pointer-events: none;
+    animation: titleGlow 7s ease-in-out infinite;
+  }
+
+  @keyframes titleGlow {
+    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.95); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+  }
+
+  .editorial-chars {
+    display: flex;
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 10vw, 6.5rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(242, 238, 234, 0.84);
+    line-height: 1.1;
+  }
+
+  .editorial-char {
     display: inline-block;
-    animation: inkBleed 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    clip-path: inset(0 100% 0 0);
-    text-shadow: 0 0 80px rgba(200, 180, 140, 0.55), 0 0 30px rgba(122, 149, 175, 0.45);
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(28px);
+    will-change: transform;
+    animation: editorialReveal 1.3s calc(0.2s + var(--s) * 0.28s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  @keyframes inkBleed {
-    0% {
-      clip-path: inset(0 100% 0 0);
-      text-shadow: 0 0 80px rgba(200, 180, 140, 0.55), 0 0 30px rgba(122, 149, 175, 0.45);
-      filter: blur(4px);
-    }
-    55% {
-      text-shadow: 0 0 50px rgba(200, 180, 140, 0.35), 0 0 18px rgba(122, 149, 175, 0.3);
-      filter: blur(1px);
-    }
-    100% {
-      clip-path: inset(0 0 0 0);
-      text-shadow: 0 0 120px rgba(122, 149, 175, 0.18), 0 0 40px rgba(200, 180, 140, 0.12);
+  .editorial-line {
+    display: block;
+    width: 0;
+    height: 1px;
+    background: rgba(122, 149, 175, 0.45);
+    margin-bottom: 0.8rem;
+    animation: lineExpand 0.9s 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes editorialReveal {
+    to {
+      opacity: 1;
       filter: blur(0);
+      transform: translateY(0);
     }
+  }
+
+  @keyframes lineExpand {
+    to { width: 70px; }
   }
 
   .subtitle {
@@ -445,6 +599,36 @@ const latestPost = sortedPosts[0];
     pointer-events: none;
   }
 
+  /* ── Right decorative accent ── */
+  .right-accent {
+    position: absolute;
+    right: 6vw;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+    pointer-events: none;
+    opacity: 0;
+    animation: fadeInUp 0.8s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .right-accent-line {
+    width: 1px;
+    height: 160px;
+    background: linear-gradient(to bottom, transparent, rgba(122, 149, 175, 0.12), transparent);
+  }
+
+  .right-accent-line--mid {
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, rgba(122, 149, 175, 0.08), transparent);
+  }
+
+  .right-accent-line--short {
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, rgba(122, 149, 175, 0.05), transparent);
+  }
+
   /* ── Bottom quote ── */
   .bottom-quote {
     position: absolute; bottom: 1.5rem; left: 0; right: 0;
@@ -453,7 +637,7 @@ const latestPost = sortedPosts[0];
   }
 
   .quote-text {
-    font-family: 'PingFang SC', 'Microsoft YaHei', serif;
+    font-family: var(--font-serif);
     font-size: 0.85rem;
     color: rgba(168, 175, 186, 0.28);
     letter-spacing: 0.1em;
@@ -508,9 +692,36 @@ const latestPost = sortedPosts[0];
     }
   }
 
+  /* ── Time-aware color temperature ── */
+  [data-time="morning"] .cursor-glow {
+    background: radial-gradient(circle, rgba(190, 170, 125, 0.06) 0%, rgba(170, 155, 110, 0.022) 35%, transparent 70%);
+  }
+  [data-time="morning"] .editorial-title::before {
+    background: radial-gradient(ellipse, rgba(200, 185, 150, 0.09) 0%, transparent 70%);
+  }
+
+  [data-time="afternoon"] .cursor-glow {
+    background: radial-gradient(circle, rgba(200, 180, 130, 0.055) 0%, rgba(180, 160, 120, 0.02) 35%, transparent 70%);
+  }
+
+  [data-time="evening"] .cursor-glow {
+    background: radial-gradient(circle, rgba(170, 140, 105, 0.07) 0%, rgba(150, 125, 90, 0.028) 35%, transparent 70%);
+  }
+  [data-time="evening"] .editorial-title::before {
+    background: radial-gradient(ellipse, rgba(210, 170, 120, 0.12) 0%, transparent 70%);
+  }
+
+  [data-time="night"] .cursor-glow {
+    background: radial-gradient(circle, rgba(140, 145, 170, 0.055) 0%, rgba(120, 135, 160, 0.02) 35%, transparent 70%);
+  }
+  [data-time="night"] .editorial-title::before {
+    background: radial-gradient(ellipse, rgba(150, 155, 180, 0.08) 0%, transparent 70%);
+  }
+
   @media (max-width: 768px) {
-    .ink-title { font-size: 3rem; }
-    .content-layer { margin-top: 3rem; }
+    .editorial-chars { font-size: clamp(3rem, 12vw, 4rem); }
+    .content-layer { margin-top: 3rem; margin-left: 5vw; }
+    .right-accent { display: none; }
     .recent-update { font-size: 0.7rem; white-space: normal; }
     .quote-text { font-size: 0.75rem; }
     /* Mobile perf: drop SVG filter, use simpler shadow */

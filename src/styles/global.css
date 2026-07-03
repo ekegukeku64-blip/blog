@@ -2,7 +2,7 @@
 
 @theme {
   --font-serif: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
-  --font-display: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  --font-display: "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
   --font-sans: "Inter", "-apple-system", "PingFang SC", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
@@ -98,6 +98,10 @@ main {
 .page-entrance .global-bg-layer {
   display: none;
 }
+
+/* 入口页隐藏全局元素（入口有自己的胶片颗粒和光效） */
+.page-entrance .global-film-grain { display: none; }
+.page-entrance .internal-cursor-glow { display: none; }
 
 
 /* ========== 水感内容区 — 透过水面看文字 ========== */
@@ -1020,6 +1024,70 @@ body, a, button, .glass-container, .card, .card-flat, .capsule-btn, .card-tilt-w
     cursor: auto !important;
   }
   .custom-cursor { display: none; }
+}
+
+/* ========== 全局胶片颗粒 ========== */
+.global-film-grain {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9990;
+  pointer-events: none;
+}
+
+/* ========== 内页鼠标微光 ========== */
+.internal-cursor-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(180, 170, 150, 0.04) 0%, rgba(160, 150, 130, 0.015) 35%, transparent 70%);
+  pointer-events: none;
+  z-index: 9991;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: left, top;
+}
+
+/* ========== 全局暗角 (vignette) ========== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9992;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(5, 7, 13, 0.5) 100%);
+}
+
+/* ========== 底部流动暖光条 ========== */
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  z-index: 9993;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(200, 182, 142, 0.06) 15%,
+    rgba(180, 160, 120, 0.15) 35%,
+    rgba(160, 150, 130, 0.22) 50%,
+    rgba(180, 160, 120, 0.15) 65%,
+    rgba(200, 182, 142, 0.06) 85%,
+    transparent 100%);
+  animation: bottomLightDrift 8s ease-in-out infinite;
+  filter: blur(2px);
+}
+
+@keyframes bottomLightDrift {
+  0%, 100% { opacity: 0.3; }
+  25% { opacity: 0.7; }
+  50% { opacity: 0.4; }
+  75% { opacity: 0.8; }
 }
 
 /* ========== Reduced Motion ========== */

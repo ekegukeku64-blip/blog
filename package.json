@@ -13,6 +13,8 @@
     "daily:digest": "py -3 scripts/generate_daily_digest.py",
     "daily:growth": "py -3 scripts/generate_growth_draft.py",
     "daily:dry": "py -3 scripts/generate_daily_digest.py --dry-run",
+    "weekly": "py -3 scripts/generate_weekly_picks.py",
+    "weekly:dry": "py -3 scripts/generate_weekly_picks.py --dry-run",
     "indexnow": "bash scripts/submit-indexnow.sh",
     "astro": "astro"
   },
@@ -22,6 +24,7 @@
     "@astrojs/sitemap": "^3.7.2",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/noto-serif-sc": "^5.2.9",
     "@imgly/background-removal": "^1.7.0",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.3.6",
