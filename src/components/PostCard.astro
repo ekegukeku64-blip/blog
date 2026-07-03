@@ -47,9 +47,9 @@ function formatDate(date: Date) {
       {tags.length > 0 && (
         <div class="flex flex-wrap gap-1.5 mt-3">
           {tags.slice(0, 3).map((tag) => (
-            <span class="text-[11px] px-2.5 py-1 text-text-secondary bg-surface/30 backdrop-blur-sm border border-white/[0.04] rounded-md font-sans hover:text-accent hover:scale-105 hover:border-white/[0.10] transition-all duration-300 cursor-default">
+            <a href={`${import.meta.env.BASE_URL}tag/${tag}/`} class="text-[11px] px-2.5 py-1 text-text-secondary bg-surface/30 backdrop-blur-sm border border-white/[0.04] rounded-md font-sans hover:text-accent hover:scale-105 hover:border-white/[0.10] transition-all duration-300">
               #{tag}
-            </span>
+            </a>
           ))}
         </div>
       )}
