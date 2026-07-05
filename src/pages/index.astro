@@ -124,8 +124,17 @@ const latestPost = sortedPosts[0];
           this.phase = Math.random() * Math.PI * 2;
           this.pulse = 0.01 + Math.random() * 0.02;
           this.alpha = 0;
+          this.vx = 0; this.vy = 0;
         }
         update() {
+          if (this.vx || this.vy) {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vx *= 0.98;
+            this.vy *= 0.98;
+            this.alpha *= 0.97;
+            return;
+          }
           const dx = this.x - mouseX;
           const dy = this.y - mouseY;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -164,8 +173,18 @@ const latestPost = sortedPosts[0];
           this.rot = Math.random() * Math.PI * 2;
           this.rotSpeed = (Math.random() - 0.5) * 0.02;
           this.alpha = 0.15 + Math.random() * 0.35;
+          this.vx = 0; this.vy = 0;
         }
         update() {
+          if (this.vx || this.vy) {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vx *= 0.98;
+            this.vy *= 0.98;
+            this.alpha *= 0.97;
+            this.rot += this.rotSpeed * 3;
+            return;
+          }
           this.y += this.speed;
           this.x += Math.sin(this.phase) * this.sway;
           this.phase += 0.015;
@@ -198,6 +217,7 @@ const latestPost = sortedPosts[0];
       const leafCount = isMobile ? 2 : 7;
       for (let i = 0; i < ffCount; i++) fireflies.push(new Firefly());
       for (let i = 0; i < leafCount; i++) leaves.push(new MapleLeaf());
+      window.__particles = { fireflies, leaves, W: () => W, H: () => H };
 
       let mouseX = -999, mouseY = -999;
       let canvasRect = canvas.getBoundingClientRect();
@@ -293,15 +313,36 @@ const latestPost = sortedPosts[0];
     if (ael) ael.textContent = '— ' + q.author;
     } // end quote block
 
-    { // === enter transition ===
+    { // === enter transition with particle scatter ===
     const btn = document.getElementById('enter-btn');
     const root = document.getElementById('entrance-root');
+    const particles = window.__particles;
     if (btn && root) {
       const doEnter = (e) => {
         if (e) e.preventDefault();
         const href = btn.getAttribute('href');
         if (!href) return;
+
         root.classList.add('is-leaving');
+
+        // Scatter all particles outward
+        if (particles) {
+          particles.scattering = true;
+          const { fireflies, leaves } = particles;
+          fireflies.forEach(f => {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 4 + Math.random() * 8;
+            f.vx = Math.cos(angle) * speed;
+            f.vy = Math.sin(angle) * speed - 3;
+          });
+          leaves.forEach(l => {
+            const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
+            const speed = 5 + Math.random() * 10;
+            l.vx = Math.cos(angle) * speed;
+            l.vy = Math.sin(angle) * speed;
+          });
+        }
+
         document.removeEventListener('keydown', onKeyDown);
         setTimeout(() => { location.href = href; }, 800);
       };
@@ -312,6 +353,41 @@ const latestPost = sortedPosts[0];
       document.addEventListener('keydown', onKeyDown);
     }
     } // end transition block
+
+    { // === scroll parallax on entry bg ===
+    const bgMedia = document.querySelector('.bg-media');
+    if (bgMedia) {
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const y = window.scrollY;
+            bgMedia.style.transform = `translateY(${(y * 0.15).toFixed(1)}px) scale(1.06)`;
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+    } // end scroll parallax
+
+    { // === click ripple on entrance ===
+    const root = document.getElementById('entrance-root');
+    if (root) {
+      root.addEventListener('click', (e) => {
+        if (e.target.closest('a, button, .enter-btn')) return;
+        const ripple = document.createElement('div');
+        const size = 120 + Math.random() * 80;
+        ripple.style.cssText = `position:absolute;left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px;border-radius:50%;pointer-events:none;z-index:6;background:radial-gradient(circle,rgba(200,182,142,0.10) 0%,transparent 70%);transform:translate(-50%,-50%) scale(0);opacity:1;`;
+        root.appendChild(ripple);
+        const anim = ripple.animate([
+          { transform: 'translate(-50%,-50%) scale(0)', opacity: 0.6 },
+          { transform: 'translate(-50%,-50%) scale(1.5)', opacity: 0 },
+        ], { duration: 800, easing: 'cubic-bezier(0.16,1,0.3,1)' });
+        anim.onfinish = () => ripple.remove();
+      });
+    }
+    } // end click ripple
 
   </script>
 </BaseLayout>
@@ -332,7 +408,8 @@ const latestPost = sortedPosts[0];
 
   .entrance-container.is-leaving {
     opacity: 0;
-    filter: blur(8px) saturate(0.3);
+    filter: blur(12px) saturate(0.2) brightness(0.6);
+    transform: scale(1.05);
     pointer-events: none;
   }
 
@@ -397,8 +474,8 @@ const latestPost = sortedPosts[0];
   .content-layer {
     position: relative; z-index: 10;
     display: flex; flex-direction: column; align-items: flex-start; text-align: left;
-    margin-top: 6rem;
-    margin-left: 8vw;
+    margin-top: 18vh;
+    margin-left: 10vw;
   }
 
   /* ── Ink bloom ambient light spots ── */
@@ -720,7 +797,7 @@ const latestPost = sortedPosts[0];
 
   @media (max-width: 768px) {
     .editorial-chars { font-size: clamp(3rem, 12vw, 4rem); }
-    .content-layer { margin-top: 3rem; margin-left: 5vw; }
+    .content-layer { margin-top: 12vh; margin-left: 5vw; }
     .right-accent { display: none; }
     .recent-update { font-size: 0.7rem; white-space: normal; }
     .quote-text { font-size: 0.75rem; }

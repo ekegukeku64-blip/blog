@@ -3,7 +3,6 @@ interface Props {
   title: string;
   description: string;
   pubDate: Date;
-  heroImage?: string;
   tags: string[];
   category: string;
   slug: string;
@@ -11,26 +10,15 @@ interface Props {
   readingTime?: number;
 }
 
-const { title, description, pubDate, heroImage, tags, category, slug, featured = false, readingTime } = Astro.props;
+const { title, description, pubDate, tags, category, slug, featured = false, readingTime } = Astro.props;
 
 function formatDate(date: Date) {
   return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 ---
 
-<div class:list={['card-tilt-wrapper reveal-target blur-reveal', featured && 'md:col-span-2']}>
+<div class="card-tilt-wrapper reveal-target blur-reveal">
   <article class="card card-tilt group relative overflow-hidden">
-    {heroImage && (
-      <a href={`${import.meta.env.BASE_URL}blog/${slug}/`} class="block relative h-36 md:h-44 overflow-hidden">
-        <img
-          src={`${import.meta.env.BASE_URL}${heroImage.replace(/^\//, '')}`}
-          alt=""
-          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f17] via-transparent to-transparent"></div>
-      </a>
-    )}
     <a href={`${import.meta.env.BASE_URL}blog/${slug}/`} class="block p-5">
       <div class="flex items-center gap-2 text-xs mb-2.5">
         <span class="seal">{category}</span>
@@ -38,7 +26,7 @@ function formatDate(date: Date) {
         {readingTime && <span class="text-text-secondary/40">·</span>}
         {readingTime && <span class="text-text-secondary">{readingTime} 分钟</span>}
       </div>
-      <h3 class="font-display font-bold text-[1.05rem] leading-snug mb-2 text-text group-hover:text-accent transition-colors duration-200">
+      <h3 class="font-display font-bold leading-snug mb-2 text-text group-hover:text-accent transition-colors duration-200">
         {title}
       </h3>
       <p class="text-sm text-text-secondary line-clamp-2 leading-relaxed">
@@ -61,7 +49,8 @@ function formatDate(date: Date) {
 </div>
 
 <script>
-  const MAX_TILT = 1.5;
+  const MAX_TILT = 5.0;
+  const MAX_LIFT = 18;
 
   /** @param {HTMLElement} wrapper */
   function initTilt(wrapper) {
@@ -76,22 +65,34 @@ function formatDate(date: Date) {
 
       const tiltX = (y - 0.5) * 2 * MAX_TILT;
       const tiltY = (x - 0.5) * -2 * MAX_TILT;
-      const shadowX = (x - 0.5) * -12;
-      const shadowY = (y - 0.5) * -12 + 6;
+      const shadowX = (x - 0.5) * -20;
+      const shadowY = (y - 0.5) * -20 + 10;
+
+      // Lift: card rises toward center, stronger when cursor is centered
+      const dx = x - 0.5;
+      const dy = y - 0.5;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const lift = (1 - Math.min(dist * 1.4, 1)) * MAX_LIFT;
 
       card.style.setProperty('--tilt-x', `${tiltY}deg`);
       card.style.setProperty('--tilt-y', `${tiltX}deg`);
+      card.style.setProperty('--tilt-lift', `${-lift}px`);
       card.style.setProperty('--tilt-shadow-x', `${shadowX}px`);
       card.style.setProperty('--tilt-shadow-y', `${shadowY}px`);
+      card.style.setProperty('--tilt-shadow-blur', `${8 + lift * 1.5}px`);
+      card.style.setProperty('--tilt-shadow-spread', `${lift * 0.3}px`);
       card.style.setProperty('--spotlight-x', `${x * 100}%`);
       card.style.setProperty('--spotlight-y', `${y * 100}%`);
     });
 
     wrapper.addEventListener('mouseleave', () => {
-      card.style.setProperty('--tilt-x', '0deg');
-      card.style.setProperty('--tilt-y', '0deg');
-      card.style.setProperty('--tilt-shadow-x', '0px');
-      card.style.setProperty('--tilt-shadow-y', '6px');
+      card.style.removeProperty('--tilt-x');
+      card.style.removeProperty('--tilt-y');
+      card.style.removeProperty('--tilt-lift');
+      card.style.removeProperty('--tilt-shadow-x');
+      card.style.removeProperty('--tilt-shadow-y');
+      card.style.removeProperty('--tilt-shadow-blur');
+      card.style.removeProperty('--tilt-shadow-spread');
       card.style.setProperty('--spotlight-x', '50%');
       card.style.setProperty('--spotlight-y', '50%');
     });
@@ -99,3 +100,67 @@ function formatDate(date: Date) {
 
   document.querySelectorAll('.card-tilt-wrapper').forEach(initTilt);
 </script>
+
+<style>
+  .card-tilt-wrapper {
+    perspective: 800px;
+  }
+
+  .card-tilt {
+    position: relative;
+    transform:
+      rotateX(var(--tilt-y, 0deg))
+      rotateY(var(--tilt-x, 0deg))
+      translateY(var(--tilt-lift, 0px));
+    transition:
+      transform 0.15s cubic-bezier(0.03, 0.98, 0.53, 0.99),
+      border-color 0.4s ease,
+      box-shadow 0.4s ease;
+  }
+
+  .card-tilt-wrapper:hover .card-tilt {
+    border-color: rgba(200, 182, 142, 0.15);
+    box-shadow:
+      var(--tilt-shadow-x, 0px) var(--tilt-shadow-y, 6px) var(--tilt-shadow-blur, 12px) var(--tilt-shadow-spread, 0px) rgba(0,0,0,0.35),
+      0 0 30px rgba(200, 182, 142, 0.03),
+      inset 0 0 20px rgba(200, 182, 142, 0.02);
+  }
+
+  .card-tilt::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200, 182, 142, 0.25), transparent);
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-tilt-wrapper:hover .card-tilt::before {
+    width: 60%;
+  }
+
+  .card-tilt h3 {
+    font-size: 1.1rem;
+  }
+
+  .card-tilt::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle 120px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+      rgba(200, 182, 142, 0.035) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .card-tilt-wrapper:hover .card-tilt::after {
+    opacity: 1;
+  }
+</style>

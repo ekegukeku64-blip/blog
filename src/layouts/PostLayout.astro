@@ -49,7 +49,6 @@ const previewPosts = allPostsForPreview.map(p => ({
   slug: p.id,
   title: p.data.title,
   description: p.data.description,
-  heroImage: p.data.heroImage,
 }));
 
 function formatDate(date: Date) {
@@ -80,34 +79,21 @@ function formatDate(date: Date) {
     })} />
   </Fragment>
   <article class="max-w-3xl mx-auto px-6 pt-16 pb-10">
-    <!-- Hero image banner -->
-    {heroImage && (
-      <div class="mb-10 -mx-6 md:-mx-0 rounded-xl overflow-hidden border border-white/[0.06]">
-        <img
-          src={`${import.meta.env.BASE_URL}${heroImage.replace(/^\//, '')}`}
-          alt={title}
-          class="w-full h-auto max-h-[420px] object-cover"
-          loading="eager"
-          fetchpriority="high"
-        />
-      </div>
-    )}
-
     <!-- Header: centered typography -->
     <header class="text-center mb-10" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 2rem;">
-      <a href={`${import.meta.env.BASE_URL}category/${category}`} class="inline-block text-[11px] tracking-[0.35em] uppercase text-text-muted hover:text-accent transition-colors mb-6 font-sans">
+      <a href={`${import.meta.env.BASE_URL}category/${category}`} class="reveal-target inline-block text-[11px] tracking-[0.35em] uppercase text-text-muted hover:text-accent transition-colors mb-6 font-sans">
         {category}
       </a>
 
-      <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-5 text-text blur-reveal" style="font-family: var(--font-display); letter-spacing: 0.04em;">
+      <h1 class="reveal-target text-5xl md:text-6xl font-bold leading-tight mb-5 text-text" style="font-family: var(--font-display); letter-spacing: 0.04em;">
         {title}
       </h1>
 
       {description && (
-        <p class="text-base text-text-secondary mb-5 leading-relaxed" style="font-family: var(--font-serif);">{description}</p>
+        <p class="reveal-target text-base text-text-secondary mb-5 leading-relaxed" style="font-family: var(--font-serif);">{description}</p>
       )}
 
-      <div class="flex items-center justify-center gap-3 text-xs text-text-muted flex-wrap" style="letter-spacing: 0.05em;">
+      <div class="reveal-target flex items-center justify-center gap-3 text-xs text-text-muted flex-wrap" style="letter-spacing: 0.05em;">
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
         {wordCount && <span>· {formatWordCount(wordCount)} 字</span>}
         {readingTime && <span>· 约 {readingTime} 分钟阅读</span>}
@@ -136,7 +122,9 @@ function formatDate(date: Date) {
 
       <!-- TOC Sidebar -->
       <aside id="toc-sidebar" class="hidden xl:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto">
-        <div class="pl-4 border-l border-white/[0.08]">
+        <div class="pl-4 relative">
+          <div class="absolute left-0 top-0 bottom-0 w-px bg-white/[0.06]"></div>
+          <div id="toc-indicator" class="absolute left-0 w-px h-5 bg-gradient-to-b from-accent to-accent/40 transition-all duration-300 ease-out" style="top:1.5rem;opacity:0"></div>
           <p class="text-xs font-medium text-text-muted mb-4 uppercase tracking-wider">目录</p>
           <nav id="toc-nav" class="space-y-1.5"></nav>
         </div>
@@ -177,14 +165,9 @@ function formatDate(date: Date) {
 
     <!-- 内链预览卡片 -->
     <div id="link-preview" class="fixed z-[300] pointer-events-none opacity-0 scale-95 -translate-y-1 transition-all duration-200 ease-out" style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)">
-      <div class="bg-[#0a0f1a]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl overflow-hidden max-w-xs">
-        <div id="link-preview-img-wrap" class="h-24 bg-surface-alt overflow-hidden hidden">
-          <img id="link-preview-img" class="w-full h-full object-cover" alt="" loading="lazy" />
-        </div>
-        <div class="p-3.5">
-          <h4 id="link-preview-title" class="font-display text-sm font-bold text-text leading-snug line-clamp-2"></h4>
-          <p id="link-preview-desc" class="text-xs text-text-muted mt-1.5 line-clamp-2 leading-relaxed font-serif"></p>
-        </div>
+      <div class="bg-[#0a0f1a]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl overflow-hidden max-w-xs p-3.5">
+        <h4 id="link-preview-title" class="font-display text-sm font-bold text-text leading-snug line-clamp-2"></h4>
+        <p id="link-preview-desc" class="text-xs text-text-muted mt-1.5 line-clamp-2 leading-relaxed font-serif"></p>
       </div>
     </div>
 
@@ -201,8 +184,6 @@ function formatDate(date: Date) {
   document.addEventListener('astro:page-load', () => {
     const dataEl = document.getElementById('preview-data');
     const preview = document.getElementById('link-preview');
-    const previewImgWrap = document.getElementById('link-preview-img-wrap');
-    const previewImg = document.getElementById('link-preview-img');
     const previewTitle = document.getElementById('link-preview-title');
     const previewDesc = document.getElementById('link-preview-desc');
     if (!dataEl || !preview) return;
@@ -223,12 +204,6 @@ function formatDate(date: Date) {
         clearTimeout(hideTimer);
         previewTitle.textContent = post.title;
         previewDesc.textContent = post.description || '';
-        if (post.heroImage) {
-          previewImg.src = base + post.heroImage.replace(/^\//, '');
-          previewImgWrap.classList.remove('hidden');
-        } else {
-          previewImgWrap.classList.add('hidden');
-        }
 
         const rect = link.getBoundingClientRect();
         let left = rect.left;
@@ -257,6 +232,7 @@ function formatDate(date: Date) {
       const prose = document.querySelector('.prose');
       const tocNav = document.getElementById('toc-nav');
       const tocSidebar = document.getElementById('toc-sidebar');
+      const tocIndicator = document.getElementById('toc-indicator');
       if (!prose || !tocNav || !tocSidebar) return;
 
       const headings = prose.querySelectorAll('h2, h3');
@@ -280,17 +256,30 @@ function formatDate(date: Date) {
         tocNav.appendChild(a);
       });
 
-      // Highlight active heading on scroll
+      // Highlight active heading on scroll + move indicator
       const tocLinks = tocNav.querySelectorAll('a');
+      let activeId = '';
+
+      function updateIndicator(id) {
+        if (!tocIndicator) return;
+        if (!id) { tocIndicator.style.opacity = '0'; return; }
+        const link = tocNav.querySelector(`a[href="#${id}"]`);
+        if (link) {
+          tocIndicator.style.top = (link.offsetTop + link.offsetHeight / 2 - 10) + 'px';
+          tocIndicator.style.opacity = '1';
+        }
+      }
+
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            const id = entry.target.id;
+            activeId = entry.target.id;
             tocLinks.forEach(a => {
-              const match = a.getAttribute('href') === '#' + id;
+              const match = a.getAttribute('href') === '#' + activeId;
               a.classList.toggle('text-accent', match);
               a.classList.toggle('font-medium', match);
             });
+            updateIndicator(activeId);
           }
         });
       }, { rootMargin: '-80px 0px -70% 0px' });
@@ -308,6 +297,17 @@ function formatDate(date: Date) {
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.06);
       background: #282c34;
+    }
+    .code-block-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(122,149,175,0.15), transparent);
+      z-index: 1;
+      pointer-events: none;
     }
     .code-block-header {
       display: flex;
@@ -389,19 +389,19 @@ function formatDate(date: Date) {
 
       const btn = document.createElement('button');
       btn.className = 'code-block-copy';
-      btn.textContent = '复制';
+      btn.innerHTML = '<svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span>';
       btn.addEventListener('click', async () => {
         const code = pre.querySelector('code');
         const text = code ? code.textContent || '' : '';
         try {
           await navigator.clipboard.writeText(text);
-          btn.textContent = '已复制';
+          btn.querySelector('span').textContent = '已复制';
           btn.classList.add('copied');
           setTimeout(() => {
-            btn.textContent = '复制';
+            btn.querySelector('span').textContent = '复制';
             btn.classList.remove('copied');
           }, 2000);
-        } catch { btn.textContent = '失败'; }
+        } catch { btn.querySelector('span').textContent = '失败'; }
       });
       header.appendChild(btn);
 

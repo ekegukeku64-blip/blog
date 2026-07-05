@@ -7,15 +7,23 @@
 </div>
 
 <script is:inline>
+  let ppTimer = null;
   document.addEventListener('astro:page-load', () => {
     const bar = document.getElementById('page-progress-bar');
     if (!bar) return;
 
-    // 模拟加载进度
-    bar.style.width = '30%';
-    setTimeout(() => { bar.style.width = '70%'; }, 100);
-    setTimeout(() => { bar.style.width = '100%'; }, 300);
-    setTimeout(() => { bar.style.opacity = '0'; }, 500);
-    setTimeout(() => { bar.style.width = '0%'; bar.style.opacity = '1'; }, 700);
+    clearTimeout(ppTimer);
+    bar.style.opacity = '1';
+    // 先重置到0再开始动画，防止遗留上次的宽度
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    requestAnimationFrame(() => {
+      bar.style.transition = 'width 0.2s ease-out';
+      bar.style.width = '30%';
+      ppTimer = setTimeout(() => { bar.style.width = '70%'; }, 100);
+      ppTimer = setTimeout(() => { bar.style.width = '100%'; }, 300);
+      ppTimer = setTimeout(() => { bar.style.opacity = '0'; }, 500);
+      ppTimer = setTimeout(() => { bar.style.width = '0%'; bar.style.opacity = '1'; }, 700);
+    });
   });
 </script>

@@ -2,7 +2,22 @@
 // 阅读进度条 — 朱砂色，仅文章页激活
 ---
 
-<div id="reading-progress" class="fixed top-0 left-0 h-[3px] z-[100] w-0 transition-[width] duration-100 ease-out bg-accent dark:bg-dark-accent" style="display:none"></div>
+<div id="reading-progress" class="fixed top-0 left-0 h-[3px] z-[100]" style="display:none;width:0"></div>
+
+<style>
+  #reading-progress {
+    background: linear-gradient(90deg, #7a95af, #c8b68e, #7a95af);
+    background-size: 200% 100%;
+    animation: rp-shimmer 4s linear infinite;
+    box-shadow:
+      0 0 6px rgba(122,149,175,0.25),
+      0 0 14px rgba(200,182,142,0.08);
+  }
+  @keyframes rp-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
 
 <script is:inline>
   document.addEventListener('astro:page-load', () => {
