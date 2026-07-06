@@ -1,0 +1,75 @@
+/* ========== View Transitions ========== */
+::view-transition-old(root) {
+  animation: vt-out 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 0.55s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+::view-transition-image-pair(root) { isolation: isolate; }
+::view-transition-old(root),
+::view-transition-new(root) {
+  background: #070a13;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(1.02);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+header { view-transition-name: header; }
+::view-transition-old(header),
+::view-transition-new(header) { animation: none; }
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.10); }
+
+/* ========== Scroll Reveal ========== */
+.reveal-target {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s var(--interactive-ease),
+              transform 0.8s var(--interactive-ease);
+  will-change: opacity, transform;
+}
+
+.reveal-target.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 卡片仅保留 opacity 过渡（scroll reveal），位移由 JS 物理引擎驱动 */
+.card-flat.reveal-target {
+  transition: opacity 0.8s var(--interactive-ease);
+}
+
+.page-enter { animation: pageEnter 0.4s var(--ease-out-expo) both; }
+@keyframes pageEnter { from { opacity: 0; } to { opacity: 1; } }
+
+/* ========== Reduced Motion ========== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-target { opacity: 1; transform: none; transition: none; }
+  .scroll-indicator { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  .page-enter { animation: none; }
+  header { transition: none; }
+  html { scroll-behavior: auto; }
+  .click-wave::after { animation: none !important; opacity: 0 !important; }
+}

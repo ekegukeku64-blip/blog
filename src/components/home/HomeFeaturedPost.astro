@@ -1,0 +1,138 @@
+---
+interface Props {
+  post: {
+    id: string;
+    data: {
+      title: string;
+      description: string;
+      category: string;
+      pubDate: Date;
+    };
+  };
+}
+
+const { post } = Astro.props;
+---
+
+<section class="home-featured">
+  <a href={`${import.meta.env.BASE_URL}blog/${post.id}/`} class="home-featured-link">
+    <div class="home-featured-bg">
+      <div class="home-featured-overlay"></div>
+      <div class="home-featured-content">
+        <span class="home-featured-kicker">精选文章</span>
+        <h2 class="home-featured-title">{post.data.title}</h2>
+        <p class="home-featured-desc">{post.data.description}</p>
+        <div class="home-featured-meta">
+          <span class="seal">{post.data.category}</span>
+          <time class="home-featured-time">{post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+        </div>
+      </div>
+    </div>
+  </a>
+</section>
+
+<style>
+.home-featured {
+  position: relative;
+  width: 100%;
+  padding: 0 2rem 4rem;
+}
+
+.home-featured-link {
+  display: block;
+  text-decoration: none;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-featured-bg {
+  position: relative;
+  min-height: 380px;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: rgba(10, 14, 22, 0.3);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), border-color 0.6s, box-shadow 0.6s;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+.home-featured-bg:hover {
+  border-color: rgba(200,182,142,0.12);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(200,182,142,0.05);
+}
+.home-featured-bg:hover {
+  transform: translateY(-3px);
+  border-color: rgba(122,149,175,0.15);
+}
+
+.home-featured-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 80% at 20% 50%, rgba(200,182,142,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 80% 30%, rgba(122,149,175,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.home-featured-content {
+  position: relative;
+  padding: 4rem 3.5rem;
+  max-width: 640px;
+}
+
+.home-featured-kicker {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(122, 149, 175, 0.5);
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+.home-featured-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.home-featured-desc {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: rgba(168, 175, 186, 0.7);
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.home-featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.home-featured-time {
+  font-size: 0.75rem;
+  color: rgba(168, 175, 186, 0.4);
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 900px) {
+  .home-featured-content {
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-featured { padding: 0 1.25rem 3rem; }
+}
+</style>

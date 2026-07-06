@@ -12,6 +12,23 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# generated caches
+__pycache__/
+*.pyc
+test-results/
+
+# local AI/project artifacts
+BLOG_PROMPT.md
+HANDOVER.md
+.wolf/capture.mjs
+.wolf/designqc-captures/
+.wolf/*.png
+.wolf/*.jpg
+.wolf/*.jpeg
+
+dist2/
+dist-new/
+test_write/
 
 # environment variables
 .env

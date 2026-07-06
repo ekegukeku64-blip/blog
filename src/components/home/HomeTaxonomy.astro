@@ -1,0 +1,135 @@
+---
+interface Props {
+  categories: { name: string; count: number }[];
+  tags: string[];
+}
+
+const { categories, tags } = Astro.props;
+const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
+---
+
+<section class="home-tax">
+  <div class="home-tax-inner">
+    {sortedCategories.length > 0 && (
+      <div class="home-tax-group">
+        <span class="home-tax-label">分类</span>
+        <div class="home-tax-items">
+          {sortedCategories.map((cat) => (
+            <a href={`${import.meta.env.BASE_URL}blog/?category=${encodeURIComponent(cat.name)}`}
+              class="home-tax-chip">
+              {cat.name}
+              <span>{cat.count}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+    {tags.length > 0 && (
+      <div class="home-tax-group">
+        <span class="home-tax-label">标签</span>
+        <div class="home-tax-items">
+          {tags.slice(0, 20).map((tag) => (
+            <a href={`${import.meta.env.BASE_URL}tag/${tag}/`}
+              class="home-tax-tag">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+.home-tax {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+.home-tax-inner {
+  padding: 2rem 2.5rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 1.25rem;
+  background: rgba(10, 14, 22, 0.25);
+  backdrop-filter: blur(12px) saturate(110%);
+  -webkit-backdrop-filter: blur(12px) saturate(110%);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.02);
+}
+
+.home-tax-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 0.75rem 0;
+}
+.home-tax-group + .home-tax-group {
+  border-top: 1px solid rgba(255,255,255,0.03);
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+}
+
+.home-tax-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(168, 175, 186, 0.3);
+  min-width: 3rem;
+  padding-top: 0.2rem;
+}
+
+.home-tax-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.home-tax-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-family: var(--font-serif);
+  color: rgba(168, 175, 186, 0.7);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  background: rgba(255,255,255,0.02);
+}
+.home-tax-chip:hover {
+  border-color: rgba(200,182,142,0.2);
+  color: var(--color-text);
+  background: linear-gradient(135deg, rgba(200,182,142,0.08), rgba(122,149,175,0.04));
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.home-tax-chip span:last-child {
+  font-size: 0.6rem;
+  opacity: 0.3;
+}
+
+.home-tax-tag {
+  display: inline-block;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.7rem;
+  color: rgba(168, 175, 186, 0.45);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  background: rgba(255,255,255,0.015);
+}
+.home-tax-tag:hover {
+  color: var(--color-accent);
+  border-color: rgba(200,182,142,0.15);
+  background: rgba(200,182,142,0.04);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .home-tax { padding-left: 1.25rem; padding-right: 1.25rem; }
+}
+</style>

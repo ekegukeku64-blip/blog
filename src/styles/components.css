@@ -1,0 +1,274 @@
+/* ========== 按压反馈 ========== */
+nav a:active,
+button:active,
+.card:active,
+.card-flat:active {
+  transform: translateY(0px) scale(0.98) !important;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.03),
+              0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.08s ease-out !important;
+}
+
+nav a, nav button {
+  position: relative;
+  z-index: 50;
+}
+
+/* ========== Blur Reveal ========== */
+.blur-reveal {
+  opacity: 0;
+  filter: blur(16px);
+  transform: translateY(24px) scale(0.98);
+  transition: opacity 1.2s var(--interactive-ease),
+              filter 1.2s var(--interactive-ease),
+              transform 1.2s var(--interactive-ease);
+  will-change: opacity, filter, transform;
+}
+
+.blur-reveal.is-focused {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+}
+
+nav a, button {
+  overflow: hidden;
+  position: relative;
+}
+
+/* ========== Cards — 沉静容器 ========== */
+.card {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.04),
+              0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.07),
+              0 16px 40px rgba(0, 0, 0, 0.6);
+}
+.card:active {
+  transform: translateY(0) scale(0.98);
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out,
+              border-color 0.08s ease-out;
+}
+
+/* ========== 3D Tilt Card ========== */
+.card-tilt-wrapper {
+  perspective: 800px;
+}
+
+.card-tilt {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg))
+             scale(var(--tilt-scale, 1));
+  box-shadow: var(--tilt-shadow-x, 0) var(--tilt-shadow-y, 6px) 40px rgba(0, 0, 0, 0.45),
+              inset 0 0 30px rgba(255, 255, 255, 0.04);
+  will-change: transform, box-shadow;
+}
+
+.card-tilt::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--spotlight-opacity, 0);
+  background: radial-gradient(
+    circle 350px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    rgba(122, 149, 175, 0.22) 0%,
+    rgba(122, 149, 175, 0.1) 25%,
+    rgba(100, 130, 160, 0.04) 50%,
+    transparent 68%
+  );
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--spotlight-opacity, 0);
+  border: 1px solid rgba(122, 149, 175, 0.2);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-tilt > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card-tilt-wrapper:hover .card-tilt {
+  --tilt-scale: 1.01;
+  --spotlight-opacity: 1;
+}
+
+.card.card-tilt:hover {
+  transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg))
+             scale(var(--tilt-scale, 1));
+}
+.card.card-tilt:active {
+  transform: scale(0.97);
+  transition: transform 0.06s ease-out;
+}
+
+.card-flat {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.04),
+              0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.card-flat:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.07),
+              0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+
+/* ========== Seal ========== */
+.seal {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.seal-solid {
+  background: var(--color-accent);
+  color: var(--color-surface);
+  border-color: var(--color-accent);
+}
+
+/* ========== Section Kicker ========== */
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+.section-kicker::before {
+  content: "";
+  width: 2rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-text-muted), transparent);
+  opacity: 0.25;
+}
+
+/* ========== Header ========== */
+header { transition: transform 0.4s var(--ease-out-expo); }
+header.header-hidden { transform: translateY(-100%); }
+
+.header-glass {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.logo-text:hover {
+  text-shadow: 0 0 30px rgba(160, 185, 210, 0.3),
+               0 0 60px rgba(140, 160, 200, 0.12);
+}
+
+/* 入口页：导航栏悬浮在视频上方 */
+.page-entrance header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.page-entrance .header-glass {
+  background: transparent;
+  backdrop-filter: none;
+  border-color: transparent;
+}
+
+/* ── Mobile menu transition ── */
+#mobile-menu {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#mobile-menu.mobile-menu-open {
+  max-height: 30rem;
+  opacity: 1;
+}
+
+/* Hamburger → X */
+#mobile-menu-toggle svg {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#mobile-menu-toggle.menu-open svg {
+  transform: rotate(90deg);
+}
+#mobile-menu-toggle .menu-line {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease;
+  transform-origin: center;
+}
+#mobile-menu-toggle.menu-open .menu-line-1 {
+  transform: translateY(5px) rotate(45deg);
+}
+#mobile-menu-toggle.menu-open .menu-line-2 {
+  opacity: 0;
+}
+#mobile-menu-toggle.menu-open .menu-line-3 {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+/* ========== Code Copy ========== */
+.code-copy-wrapper { position: relative; }
+.code-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out-expo);
+  cursor: pointer;
+}
+.code-copy-wrapper:hover .code-copy-btn { opacity: 1; }
+.code-copy-btn:hover { background: rgba(255, 255, 255, 0.10); }
+.code-copy-btn.copied { color: var(--color-accent); border-color: var(--color-accent); }
+
+
+/* ========== Hero — 衬线体大字 ========== */
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.08em;
+  text-wrap: balance;
+}
