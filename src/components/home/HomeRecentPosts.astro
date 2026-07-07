@@ -21,7 +21,10 @@ const { posts } = Astro.props;
 
 <section class="home-posts">
   <div class="home-posts-header">
-    <h2 class="section-kicker">最新文章</h2>
+    <div>
+      <h2 class="section-kicker">最新文章</h2>
+      <p class="home-posts-subtitle">最近写下的工具实验、踩坑记录和阶段复盘。</p>
+    </div>
     <a href={`${import.meta.env.BASE_URL}blog/`} class="home-posts-all">
       查看全部 &rarr;
     </a>
@@ -61,9 +64,19 @@ const { posts } = Astro.props;
 
 .home-posts-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.home-posts-subtitle {
+  margin-top: 0.8rem;
+  max-width: 28rem;
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: rgba(214, 218, 225, 0.64);
 }
 
 .home-posts-all {
@@ -73,14 +86,19 @@ const { posts } = Astro.props;
   font-family: var(--font-serif);
   transition: color 0.3s;
 }
-.home-posts-all:hover {
+.home-posts-all:hover,
+.home-posts-all:focus-visible {
   color: var(--color-accent);
 }
 
 .home-grid-2col {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.home-grid-2col > .reveal-target:nth-child(even) {
+  transform: translateY(1.25rem);
 }
 
 .home-empty {
@@ -92,6 +110,9 @@ const { posts } = Astro.props;
 @media (max-width: 900px) {
   .home-grid-2col {
     grid-template-columns: 1fr;
+  }
+  .home-grid-2col > .reveal-target:nth-child(even) {
+    transform: none;
   }
 }
 

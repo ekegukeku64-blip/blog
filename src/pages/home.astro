@@ -61,16 +61,114 @@ if (streak === 0) {
 ---
 
 <BaseLayout title="首页" description="墨迹 — AI 工具、真实试错和普通人能用的经验">
-  <HomeHero
-    focusCards={focusCards}
-    postCount={allPosts.length}
-    thisMonth={thisMonth}
-    wordCount={wordCount}
-    streak={streak}
-  />
-  {featuredPost && <HomeFeaturedPost post={featuredPost} />}
-  <HomeRecentPosts posts={recentPosts} />
-  <HomeTaxonomy categories={categories} tags={allTags} />
-  <HomeTechDaily />
-  <HomeFootnote />
+  <main class="home-page">
+    <div class="home-page-orbit home-page-orbit--cold"></div>
+    <div class="home-page-orbit home-page-orbit--warm"></div>
+    <div class="home-page-spine"></div>
+    <div class="home-section-stack">
+      <HomeHero
+        focusCards={focusCards}
+        postCount={allPosts.length}
+        thisMonth={thisMonth}
+        wordCount={wordCount}
+        streak={streak}
+      />
+      {featuredPost && <HomeFeaturedPost post={featuredPost} />}
+      <HomeRecentPosts posts={recentPosts} />
+      <HomeTaxonomy categories={categories} tags={allTags} />
+      <HomeTechDaily />
+      <HomeFootnote />
+    </div>
+  </main>
 </BaseLayout>
+
+<style>
+.home-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-bottom: 2rem;
+}
+
+.home-page::before,
+.home-page::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.home-page::before {
+  inset: 4rem 0 auto;
+  height: 42rem;
+  background:
+    radial-gradient(ellipse 42% 55% at 18% 10%, rgba(122, 149, 175, 0.16), transparent 68%),
+    radial-gradient(ellipse 28% 42% at 82% 18%, rgba(200, 182, 142, 0.08), transparent 72%);
+  opacity: 0.9;
+}
+
+.home-page::after {
+  right: -12rem;
+  top: 20rem;
+  width: 34rem;
+  height: 62rem;
+  border: 1px solid rgba(122, 149, 175, 0.08);
+  border-radius: 999px;
+  transform: rotate(18deg);
+  box-shadow: inset 0 0 80px rgba(122, 149, 175, 0.04);
+}
+
+.home-page-orbit {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 999px;
+  filter: blur(1px);
+}
+
+.home-page-orbit--cold {
+  left: -10rem;
+  top: 38rem;
+  width: 26rem;
+  height: 26rem;
+  border: 1px solid rgba(122, 149, 175, 0.10);
+  background: radial-gradient(circle, rgba(122, 149, 175, 0.05), transparent 62%);
+}
+
+.home-page-orbit--warm {
+  right: 8vw;
+  top: 74rem;
+  width: 16rem;
+  height: 16rem;
+  border: 1px solid rgba(200, 182, 142, 0.08);
+  background: radial-gradient(circle, rgba(200, 182, 142, 0.035), transparent 64%);
+}
+
+.home-page-spine {
+  position: absolute;
+  left: max(1.25rem, calc((100vw - 1200px) / 2 - 2.25rem));
+  top: 8rem;
+  bottom: 5rem;
+  width: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(180deg, transparent, rgba(122, 149, 175, 0.22), rgba(200, 182, 142, 0.16), transparent);
+}
+
+.home-section-stack {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .home-page-spine {
+    left: 0.75rem;
+    opacity: 0.45;
+  }
+
+  .home-page::after,
+  .home-page-orbit--warm {
+    display: none;
+  }
+}
+</style>

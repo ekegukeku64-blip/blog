@@ -17,11 +17,11 @@ nav a, nav button {
 /* ========== Blur Reveal ========== */
 .blur-reveal {
   opacity: 0;
-  filter: blur(16px);
+  filter: blur(4px);
   transform: translateY(24px) scale(0.98);
-  transition: opacity 1.2s var(--interactive-ease),
-              filter 1.2s var(--interactive-ease),
-              transform 1.2s var(--interactive-ease);
+  transition: opacity 1s var(--interactive-ease),
+              filter 1s var(--interactive-ease),
+              transform 1s var(--interactive-ease);
   will-change: opacity, filter, transform;
 }
 

@@ -28,6 +28,7 @@ document.addEventListener('astro:page-load', async () => {
     }
     grid.textContent = '';
     const fragment = document.createDocumentFragment();
+    const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     links.forEach(({ url, date }) => {
       const wrapper = document.createElement('div');
       wrapper.className = 'card-tilt-wrapper';
@@ -59,7 +60,9 @@ document.addEventListener('astro:page-load', async () => {
       fragment.append(wrapper);
     });
     grid.append(fragment);
-    document.querySelectorAll('#tech-daily-grid .card-tilt-wrapper').forEach(initTiltDaily);
+    if (!shouldReduceMotion) {
+      document.querySelectorAll('#tech-daily-grid .card-tilt-wrapper').forEach(initTiltDaily);
+    }
   } catch {
     grid.innerHTML = '<div class="col-span-3 text-center py-8 text-sm text-text-muted/50 font-serif">日报暂不可用</div>';
   }
@@ -92,13 +95,15 @@ function initTiltDaily(wrapper) {
 }
 
 .home-daily-inner {
-  padding: 2rem 2.5rem;
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 1.25rem;
-  background: rgba(10, 14, 22, 0.25);
-  backdrop-filter: blur(12px) saturate(110%);
-  -webkit-backdrop-filter: blur(12px) saturate(110%);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.02);
+  padding: 2.25rem 2.5rem;
+  border: 1px solid rgba(122,149,175,0.13);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(135deg, rgba(7, 12, 18, 0.64), rgba(10, 14, 22, 0.34)),
+    radial-gradient(circle at 92% 12%, rgba(200,182,142,0.06), transparent 42%);
+  backdrop-filter: blur(4px) saturate(110%);
+  -webkit-backdrop-filter: blur(4px) saturate(110%);
+  box-shadow: 0 14px 44px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.035);
 }
 
 .home-posts-all {
@@ -108,7 +113,8 @@ function initTiltDaily(wrapper) {
   font-family: var(--font-serif);
   transition: color 0.3s;
 }
-.home-posts-all:hover {
+.home-posts-all:hover,
+.home-posts-all:focus-visible {
   color: var(--color-accent);
 }
 

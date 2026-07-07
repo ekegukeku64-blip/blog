@@ -48,35 +48,38 @@ const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
 }
 
 .home-tax-inner {
-  padding: 2rem 2.5rem;
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 1.25rem;
-  background: rgba(10, 14, 22, 0.25);
-  backdrop-filter: blur(12px) saturate(110%);
-  -webkit-backdrop-filter: blur(12px) saturate(110%);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.02);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1.25fr);
+  gap: 2rem;
+  padding: 2.25rem 2.5rem;
+  border: 1px solid rgba(122,149,175,0.13);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(135deg, rgba(7, 12, 18, 0.64), rgba(10, 14, 22, 0.34)),
+    radial-gradient(circle at 8% 12%, rgba(122,149,175,0.08), transparent 42%);
+  backdrop-filter: blur(4px) saturate(110%);
+  -webkit-backdrop-filter: blur(4px) saturate(110%);
+  box-shadow: 0 14px 44px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.035);
 }
 
 .home-tax-group {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  padding: 0.75rem 0;
+  display: block;
+  padding: 0;
 }
 .home-tax-group + .home-tax-group {
-  border-top: 1px solid rgba(255,255,255,0.03);
-  margin-top: 0.5rem;
-  padding-top: 1.25rem;
+  border-left: 1px solid rgba(122,149,175,0.10);
+  padding-left: 2rem;
 }
 
 .home-tax-label {
-  font-size: 0.6rem;
+  display: block;
+  font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(168, 175, 186, 0.3);
-  min-width: 3rem;
-  padding-top: 0.2rem;
+  color: rgba(168, 175, 186, 0.62);
+  margin-bottom: 1rem;
 }
 
 .home-tax-items {
@@ -88,16 +91,16 @@ const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
 .home-tax-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.75rem;
+  gap: 0.45rem;
+  padding: 0.52rem 0.95rem;
+  font-size: 0.78rem;
   font-family: var(--font-serif);
-  color: rgba(168, 175, 186, 0.7);
-  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(214, 218, 225, 0.76);
+  border: 1px solid rgba(122,149,175,0.12);
   border-radius: 9999px;
   text-decoration: none;
   transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-  background: rgba(255,255,255,0.02);
+  background: rgba(122,149,175,0.035);
 }
 .home-tax-chip:hover {
   border-color: rgba(200,182,142,0.2);
@@ -113,14 +116,14 @@ const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
 
 .home-tax-tag {
   display: inline-block;
-  padding: 0.28rem 0.65rem;
+  padding: 0.32rem 0.7rem;
   font-size: 0.7rem;
-  color: rgba(168, 175, 186, 0.45);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: 6px;
+  color: rgba(168, 175, 186, 0.56);
+  border: 1px solid rgba(255,255,255,0.045);
+  border-radius: 0.55rem;
   text-decoration: none;
   transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-  background: rgba(255,255,255,0.015);
+  background: rgba(255,255,255,0.018);
 }
 .home-tax-tag:hover {
   color: var(--color-accent);
@@ -131,5 +134,15 @@ const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
 
 @media (max-width: 768px) {
   .home-tax { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .home-tax-inner {
+    grid-template-columns: 1fr;
+    padding: 1.75rem;
+  }
+  .home-tax-group + .home-tax-group {
+    border-left: 0;
+    border-top: 1px solid rgba(122,149,175,0.10);
+    padding-left: 0;
+    padding-top: 1.5rem;
+  }
 }
 </style>

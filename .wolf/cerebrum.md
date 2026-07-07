@@ -2,7 +2,7 @@
 
 - 推送代码前必须构建验证
 - 博客内容面向普通人，减少技术术语
-- 设计风格：深幽冷寂暗黑极简 (冷墨蓝色系 `#070c12`，accent `#7a95af`)，卡片暗色毛玻璃 (blur: 24px)
+- 设计风格：深幽冷寂暗黑极简 (冷墨蓝色系 `#070c12`，accent `#7a95af`)，卡片暗色毛玻璃但 `backdrop-filter` 控制在约 `blur(4px)`，避免重 GPU 合成开销
 
 ## Key Learnings
 
@@ -14,6 +14,7 @@
 - **2026-06-09: Astro 视图过渡白屏修复** — `::view-transition-old/new(root) { background: #070a13 }` + `html { background-color: #070a13 !important }` 消除过渡期间的白色闪烁
 - **2026-06-09: backdrop-filter blur 性能** — 从 `blur(12px)` 降到 `blur(4px)` 减少 GPU 持续合成开销。同时移除未使用的 `@keyframes bgFlicker`、`--mouse-x/--mouse-y` mousemove handler
 - **2026-06-09: 文本对比度三层体系** — `text-primary: #fafaf9`, `text-secondary: #d6dae1`, `text-muted: #a8afba`，替代原来 `#E2E8F0/#B0BEC5/#94A3B8` 的偏暗色系
+- **2026-07-06: Git Bash 跑 OpenWolf route 参数要禁用路径转换** — `openwolf designqc --routes /` 会把 `/` 转成 `C:/Program Files/Git/`，应使用 `MSYS_NO_PATHCONV=1 openwolf designqc --routes /`
 
 ## Do-Not-Repeat
 
@@ -22,3 +23,4 @@
 - **2026-06-07: 不要在 Astro frontmatter 中做服务端 fetch** — 会阻塞整个页面 SSR 渲染
 - **2026-06-09: 改文本颜色时不要只改 CSS 变量** — 7 个组件文件中用 Tailwind 任意值如 `text-[#94A3B8]` 写死了颜色，CSS 变量更新不生效。必须同时全局搜索替换所有硬编码色值。
 - **2026-06-09: body `isolation: isolate` 会创建层叠上下文** — 配合 `z-index: 0` + opaque background 会让 `z-index: -10` 的视频/背景层完全不可见。视频背景需 body `background: transparent` 或把视频层 z-index 提升到 body 之上。
+- **2026-07-06: 不要直接在 Git Bash 中传 `--routes /` 给 designqc** — MSYS 会把 `/` 当路径转换成 `C:/Program Files/Git/`，导致 invalid URL；加 `MSYS_NO_PATHCONV=1`。

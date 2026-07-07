@@ -22,5 +22,41 @@
     "related_bugs": [],
     "occurrences": 1,
     "last_seen": "2026-06-08T18:39:00+08:00"
+  },
+  {
+    "id": "bug-003",
+    "timestamp": "2026-07-06T23:05:00+08:00",
+    "error_message": "npm error Missing script: \"build\"",
+    "file": "package.json",
+    "root_cause": "构建命令从 C:\\Users\\Lenovo 执行，未进入 D:/blog 项目目录，因此 npm 读取了错误目录的 package.json 或未读取到博客脚本",
+    "fix": "改用 `cd /d/blog && npm run build` 在项目目录内执行，构建通过",
+    "tags": ["build", "cwd", "npm"],
+    "related_bugs": [],
+    "occurrences": 1,
+    "last_seen": "2026-07-06T23:05:00+08:00"
+  },
+  {
+    "id": "bug-004",
+    "timestamp": "2026-07-06T23:05:00+08:00",
+    "error_message": "openwolf designqc --routes / captured route as C:/Program Files/Git/ and failed with invalid URL",
+    "file": ".wolf/designqc-captures/",
+    "root_cause": "Git Bash/MSYS 将参数 `/` 自动转换为 Windows 安装路径 `C:/Program Files/Git/`，导致 designqc 拼出无效 URL",
+    "fix": "使用 `MSYS_NO_PATHCONV=1 openwolf designqc --routes /` 禁用路径转换，截图成功生成",
+    "tags": ["designqc", "git-bash", "path-conversion", "ui-verification"],
+    "related_bugs": [],
+    "occurrences": 2,
+    "last_seen": "2026-07-06T23:05:00+08:00"
+  },
+  {
+    "id": "bug-005",
+    "timestamp": "2026-07-07T14:36:00+08:00",
+    "error_message": "python: command not found; then FileNotFoundError for /d/blog paths under Windows py launcher",
+    "file": ".wolf/maintenance-token-audit",
+    "root_cause": "Git Bash session does not expose `python`, and Windows `py` treats `/d/blog/...` as `\\d\\blog\\...` rather than an MSYS path",
+    "fix": "Use `py` with Windows-style `D:/blog/...` paths for local maintenance scripts",
+    "tags": ["maintenance", "python", "windows", "msys-paths", "token-audit"],
+    "related_bugs": ["bug-003", "bug-004"],
+    "occurrences": 1,
+    "last_seen": "2026-07-07T14:36:00+08:00"
   }
 ]
