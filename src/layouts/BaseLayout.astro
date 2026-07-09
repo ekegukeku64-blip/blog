@@ -11,7 +11,6 @@ import '@fontsource/noto-serif-sc/700.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BackToTop from '../components/BackToTop.astro';
-import MusicPlayer from '../components/MusicPlayer.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import PageProgress from '../components/PageProgress.astro';
 import Analytics from '../components/Analytics.astro';
@@ -40,26 +39,25 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
     <link rel="apple-touch-icon" href={`${import.meta.env.BASE_URL}apple-touch-icon.svg`} />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="alternate" type="application/rss+xml" title="墨迹博客 RSS" href={new URL('/blog/rss.xml', Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title="枫迹博客 RSS" href={new URL('/blog/rss.xml', Astro.site)} />
     <meta property="og:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:site_name" content="墨迹博客" />
+    <meta property="og:site_name" content="枫迹博客" />
     <meta property="og:locale" content="zh_CN" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
-    <meta name="twitter:site" content="@moku_blog" />
     <meta name="author" content="又逢雨季" />
-    <title>{title} | 墨迹博客</title>
+    <title>{title} | 枫迹博客</title>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Blog",
-        "name": "墨迹博客",
+        "name": "枫迹博客",
         "description": "一个关于技术、设计与生活的博客",
         "url": "https://ekegukeku64-blip.github.io/blog/",
         "author": { "@type": "Person", "name": "又逢雨季" },
@@ -70,7 +68,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "墨迹博客",
+        "name": "枫迹博客",
         "url": "https://ekegukeku64-blip.github.io/blog/",
         "potentialAction": {
           "@type": "SearchAction",
@@ -79,11 +77,12 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
         }
       }
     </script>
-    <script is:inline>
+    <script is:inline define:vars={{ baseUrl: import.meta.env.BASE_URL }}>
       // 物理锁死深色模式 + ClientRouter 导航后修复 page-entrance class
       function syncPageEntrance() {
         if (!document.body) return;
-        const onEntrance = location.pathname === '/blog/' || location.pathname === '/';
+        const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+        const onEntrance = location.pathname === normalizedBase || location.pathname === '/';
         document.body.classList.toggle('page-entrance', onEntrance);
         if (!onEntrance) {
           const gv = document.getElementById('global-bg-video');
@@ -113,22 +112,22 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
         loop muted playsinline style="display:none">
       </video>
     </div>
-    <ReadingProgress />
-    <Header />
+    {!isEntrance && <ReadingProgress />}
+    {!isEntrance && <Header />}
     <main class="flex-1">
       <slot />
     </main>
-    <Footer />
-    <BackToTop />
-    <MusicPlayer />
-    <PageProgress />
+    {!isEntrance && <Footer />}
+    {!isEntrance && <BackToTop />}
+    {!isEntrance && <PageProgress />}
     <Analytics />
-    <script is:inline>
+    <script is:inline define:vars={{ bgVideoSrc: `${import.meta.env.BASE_URL}maple.mp4` }}>
       { // block scope for is:inline scripts
       // === Background video: lazy load on interaction ===
+      const isEntrancePage = document.body && document.body.classList.contains('page-entrance');
       const gv = document.getElementById('global-bg-video');
       const poster = document.getElementById('global-bg-poster');
-      if (gv && poster) {
+      if (!isEntrancePage && gv && poster) {
         const isMobile = window.matchMedia('(max-width: 768px)').matches;
         if (!isMobile) {
           let loaded = false;
@@ -136,7 +135,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
             if (loaded) return;
             loaded = true;
             if (!gv.src) {
-              gv.src = '/blog/maple.mp4';
+              gv.src = bgVideoSrc;
               gv.load();
             }
             gv.play().then(() => {
@@ -284,6 +283,9 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
         }
       };
       window.addEventListener('scroll', onScroll, { passive: true });
+      document.addEventListener('astro:before-swap', () => {
+        window.removeEventListener('scroll', onScroll);
+      }, { once: true });
     })();
     </script>
   </body>

@@ -1,7 +1,7 @@
 <section class="home-footnote">
   <div class="home-footnote-divider"></div>
   <div class="home-footnote-text">
-    <span class="font-display font-bold">墨迹</span>
+    <span class="font-display font-bold">枫迹</span>
     <span class="mx-3 opacity-20">·</span>
     <span>不端着，先做出来。</span>
   </div>
@@ -26,10 +26,15 @@
 .home-footnote-text {
   display: inline-flex;
   align-items: center;
-  padding: 0.75rem 1.15rem;
-  border: 1px solid rgba(122,149,175,0.10);
+  padding: 0.8rem 1.25rem;
+  border: 1px solid var(--border-glass);
   border-radius: 999px;
-  background: rgba(7,12,18,0.28);
+  background:
+    linear-gradient(135deg, rgba(32, 45, 68, 0.44), rgba(6, 10, 18, 0.28)),
+    radial-gradient(ellipse at 50% 0%, rgba(226, 238, 248, 0.10), transparent 64%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 16px 38px rgba(0,0,0,0.34), var(--inner-glass);
   font-size: 0.82rem;
   color: rgba(168, 175, 186, 0.62);
   font-family: var(--font-serif);

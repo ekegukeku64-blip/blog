@@ -155,13 +155,43 @@ header { view-transition-name: header; }
 
 /* ========== Reduced Motion ========== */
 @media (prefers-reduced-motion: reduce) {
-  .reveal-target { opacity: 1; transform: none; transition: none; }
+  .reveal-target,
+  .blur-reveal {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: none;
+  }
   .scroll-indicator { animation: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
   .page-enter { animation: none; }
   header { transition: none; }
   html { scroll-behavior: auto; }
-  .click-wave::after,
-  .page-click-wave::before,
-  .page-click-wave::after { animation: none !important; opacity: 0 !important; }
+  body.page-entrance::before,
+  body.page-entrance::after,
+  .global-bg-layer::before,
+  .global-bg-layer::after,
+  body::after {
+    animation: none !important;
+  }
+
+  body.page-entrance::before,
+  body.page-entrance::after,
+  .global-bg-layer::before,
+  .global-bg-layer::after {
+    transform: none !important;
+  }
+
+  .card,
+  .card-flat,
+  .card-tilt,
+  .header-glass,
+  .seal {
+    transition-duration: 0.01ms !important;
+  }
+
+  .card:hover,
+  .card-flat:hover {
+    transform: none;
+  }
 }

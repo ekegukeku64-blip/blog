@@ -77,6 +77,13 @@ Claude Code 是 CLI 形态的 AI Agent，适合需要**理解整个项目**的�
 2. **分步骤**：复杂任务拆成小步骤，每步验证后再继续
 3. **善用 CLAUDE.md**：把项目约定写进去，AI 会自动遵循
 
+如果你经常在不同模型、账号或 API 配置之间切换，可以直接安装 CC Switch：
+
+- [打开 CC Switch 官网](https://ccswitch.io)
+- [下载最新版本](https://github.com/farion1231/cc-switch/releases/latest)
+- Windows 用户可以优先下载 `CC-Switch-*-Windows.msi`
+- macOS 用户可以用 Homebrew：`brew install --cask cc-switch`
+
 ## 实战技巧：组合使用
 
 最高效的模式是**组合使用**，让每个工具做它最擅长的事：

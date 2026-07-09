@@ -90,6 +90,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         else { ts = ts * 1000; }
 
         const d = new Date(ts);
+        if (Number.isNaN(d.getTime())) {
+          document.getElementById('ts-result').innerHTML = '<span class="text-red-500">无效时间戳</span>';
+          return;
+        }
         document.getElementById('ts-result').innerHTML =
           row('本地时间', formatDate(ts)) +
           row('UTC 时间', d.toUTCString()) +

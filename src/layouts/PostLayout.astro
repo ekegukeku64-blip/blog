@@ -78,9 +78,9 @@ function formatDate(date: Date) {
       "keywords": tags.join(", ")
     })} />
   </Fragment>
-  <article class="max-w-3xl mx-auto px-6 pt-16 pb-10">
+  <article class="post-article max-w-3xl mx-auto px-6 pt-16 pb-10">
     <!-- Header: centered typography -->
-    <header class="text-center mb-10" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 2rem;">
+    <header class="post-header text-center mb-10">
       <a href={`${import.meta.env.BASE_URL}category/${category}`} class="reveal-target inline-block text-[11px] tracking-[0.35em] uppercase text-text-muted hover:text-accent transition-colors mb-6 font-sans">
         {category}
       </a>
@@ -122,7 +122,7 @@ function formatDate(date: Date) {
 
       <!-- TOC Sidebar -->
       <aside id="toc-sidebar" class="hidden xl:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto">
-        <div class="pl-4 relative">
+          <div class="post-toc-panel pl-4 relative">
           <div class="absolute left-0 top-0 bottom-0 w-px bg-white/[0.06]"></div>
           <div id="toc-indicator" class="absolute left-0 w-px h-5 bg-gradient-to-b from-accent to-accent/40 transition-all duration-300 ease-out" style="top:1.5rem;opacity:0"></div>
           <p class="text-xs font-medium text-text-muted mb-4 uppercase tracking-wider">目录</p>
@@ -165,7 +165,7 @@ function formatDate(date: Date) {
 
     <!-- 内链预览卡片 -->
     <div id="link-preview" class="fixed z-[300] pointer-events-none opacity-0 scale-95 -translate-y-1 transition-all duration-200 ease-out" style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)">
-      <div class="bg-[#0a0f1a]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl overflow-hidden max-w-xs p-3.5">
+      <div class="post-link-preview bg-[#0a0f1a]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl overflow-hidden max-w-xs p-3.5">
         <h4 id="link-preview-title" class="font-display text-sm font-bold text-text leading-snug line-clamp-2"></h4>
         <p id="link-preview-desc" class="text-xs text-text-muted mt-1.5 line-clamp-2 leading-relaxed font-serif"></p>
       </div>
@@ -290,13 +290,66 @@ function formatDate(date: Date) {
 
   <!-- ===== Code block enhancement: copy + language label + line numbers ===== -->
   <style>
+    .post-article {
+      position: relative;
+    }
+
+    .post-article::before {
+      content: "";
+      position: absolute;
+      top: 4rem;
+      left: 50%;
+      z-index: -1;
+      width: min(920px, 94vw);
+      height: 420px;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 10%, rgba(226, 238, 248, 0.07), transparent 48%),
+        radial-gradient(ellipse at 52% 72%, rgba(200, 142, 82, 0.045), transparent 58%);
+      filter: blur(18px);
+      transform: translateX(-50%);
+    }
+
+    .post-header {
+      position: relative;
+      padding-bottom: 2.25rem;
+      border-bottom: 1px solid rgba(226, 238, 248, 0.065);
+    }
+
+    .post-header::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -1px;
+      width: min(320px, 70vw);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-maple-glow), var(--color-ink-blue), transparent);
+      transform: translateX(-50%);
+      opacity: 0.56;
+    }
+
+    .post-toc-panel {
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    .post-link-preview {
+      background:
+        linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(6, 10, 18, 0.92)),
+        radial-gradient(ellipse at 50% 0%, rgba(226, 238, 248, 0.06), transparent 58%) !important;
+      border-color: var(--border-glass) !important;
+      box-shadow: var(--shadow-glass) !important;
+    }
+
     .code-block-wrap {
       position: relative;
       margin: 1.5em 0;
-      border-radius: 0.75rem;
+      border-radius: 0.85rem;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: #282c34;
+      border: 1px solid rgba(226, 238, 248, 0.075);
+      background:
+        linear-gradient(145deg, rgba(6, 10, 18, 0.98), rgba(12, 18, 30, 0.95));
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.035);
     }
     .code-block-wrap::before {
       content: '';
@@ -305,7 +358,7 @@ function formatDate(date: Date) {
       left: 15%;
       right: 15%;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(122,149,175,0.15), transparent);
+      background: linear-gradient(90deg, transparent, rgba(226, 238, 248, 0.18), rgba(200, 142, 82, 0.13), transparent);
       z-index: 1;
       pointer-events: none;
     }
@@ -314,14 +367,14 @@ function formatDate(date: Date) {
       align-items: center;
       justify-content: space-between;
       padding: 0.4rem 1rem;
-      background: rgba(0,0,0,0.25);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(6, 10, 18, 0.42);
+      border-bottom: 1px solid rgba(226, 238, 248, 0.065);
       font-size: 0.7rem;
       font-family: var(--font-sans);
       user-select: none;
     }
     .code-block-lang {
-      color: rgba(255,255,255,0.35);
+      color: rgba(226, 238, 248, 0.52);
       letter-spacing: 0.05em;
       text-transform: uppercase;
       font-weight: 600;
@@ -332,21 +385,21 @@ function formatDate(date: Date) {
       gap: 0.3rem;
       padding: 0.25rem 0.6rem;
       border-radius: 0.35rem;
-      border: none;
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.4);
+      border: 1px solid rgba(226, 238, 248, 0.07);
+      background: linear-gradient(135deg, rgba(122, 149, 175, 0.10), rgba(200, 142, 82, 0.045));
+      color: rgba(226, 238, 248, 0.62);
       font-size: 0.65rem;
       font-family: var(--font-sans);
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .code-block-copy:hover {
-      background: rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.7);
+      background: rgba(226, 238, 248, 0.11);
+      color: rgba(255, 255, 255, 0.82);
     }
     .code-block-copy.copied {
-      background: rgba(122,149,175,0.2);
-      color: #7a95af;
+      background: rgba(200, 142, 82, 0.18);
+      color: rgba(255, 244, 220, 0.92);
     }
     .code-block-wrap pre {
       margin: 0 !important;

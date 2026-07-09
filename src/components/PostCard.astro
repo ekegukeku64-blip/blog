@@ -35,40 +35,56 @@ function formatDate(date: Date) {
       {tags.length > 0 && (
         <div class="flex flex-wrap gap-1.5 mt-3">
           {tags.slice(0, 3).map((tag) => (
-            <a href={`${import.meta.env.BASE_URL}tag/${tag}/`} class="text-[11px] px-2.5 py-1 text-text-secondary bg-surface/30 backdrop-blur-sm border border-white/[0.04] rounded-md font-sans hover:text-accent hover:scale-105 hover:border-white/[0.10] transition-all duration-300">
+            <span class="post-card-tag text-[11px] px-2.5 py-1 text-text-secondary rounded-md font-sans transition-all duration-300">
               #{tag}
-            </a>
+            </span>
           ))}
         </div>
       )}
       {featured && (
-        <span class="inline-block mt-3 px-2 py-0.5 text-[10px] font-bold text-accent border border-accent/30 rounded font-sans tracking-wide">精选</span>
+        <span class="post-card-featured inline-block mt-3 px-2 py-0.5 text-[10px] font-bold rounded font-sans tracking-wide">精选</span>
       )}
     </a>
   </article>
 </div>
 
 <script>
-  const MAX_TILT = 5.0;
-  const MAX_LIFT = 18;
+  const MAX_TILT = 4.0;
+  const MAX_LIFT = 12;
+  let cleanupTiltCards = () => {};
+
+  const clearTilt = (card) => {
+    card.style.removeProperty('--tilt-x');
+    card.style.removeProperty('--tilt-y');
+    card.style.removeProperty('--tilt-lift');
+    card.style.removeProperty('--tilt-shadow-x');
+    card.style.removeProperty('--tilt-shadow-y');
+    card.style.removeProperty('--tilt-shadow-blur');
+    card.style.removeProperty('--tilt-shadow-spread');
+    card.style.setProperty('--spotlight-x', '50%');
+    card.style.setProperty('--spotlight-y', '50%');
+  };
 
   /** @param {HTMLElement} wrapper */
   function initTilt(wrapper) {
     const card = wrapper.querySelector('.card-tilt');
-    if (!card) return;
+    if (!card) return () => {};
 
-    /** @param {MouseEvent} e */
-    wrapper.addEventListener('mousemove', (e) => {
+    let animationFrame = 0;
+    let latestEvent;
+
+    const updateTilt = () => {
+      animationFrame = 0;
+      if (!latestEvent) return;
+
       const rect = wrapper.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
+      const x = (latestEvent.clientX - rect.left) / rect.width;
+      const y = (latestEvent.clientY - rect.top) / rect.height;
 
       const tiltX = (y - 0.5) * 2 * MAX_TILT;
       const tiltY = (x - 0.5) * -2 * MAX_TILT;
-      const shadowX = (x - 0.5) * -20;
-      const shadowY = (y - 0.5) * -20 + 10;
-
-      // Lift: card rises toward center, stronger when cursor is centered
+      const shadowX = (x - 0.5) * -14;
+      const shadowY = (y - 0.5) * -14 + 8;
       const dx = x - 0.5;
       const dy = y - 0.5;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -79,26 +95,52 @@ function formatDate(date: Date) {
       card.style.setProperty('--tilt-lift', `${-lift}px`);
       card.style.setProperty('--tilt-shadow-x', `${shadowX}px`);
       card.style.setProperty('--tilt-shadow-y', `${shadowY}px`);
-      card.style.setProperty('--tilt-shadow-blur', `${8 + lift * 1.5}px`);
-      card.style.setProperty('--tilt-shadow-spread', `${lift * 0.3}px`);
+      card.style.setProperty('--tilt-shadow-blur', `${10 + lift * 1.1}px`);
+      card.style.setProperty('--tilt-shadow-spread', `${lift * 0.18}px`);
       card.style.setProperty('--spotlight-x', `${x * 100}%`);
       card.style.setProperty('--spotlight-y', `${y * 100}%`);
-    });
+    };
 
-    wrapper.addEventListener('mouseleave', () => {
-      card.style.removeProperty('--tilt-x');
-      card.style.removeProperty('--tilt-y');
-      card.style.removeProperty('--tilt-lift');
-      card.style.removeProperty('--tilt-shadow-x');
-      card.style.removeProperty('--tilt-shadow-y');
-      card.style.removeProperty('--tilt-shadow-blur');
-      card.style.removeProperty('--tilt-shadow-spread');
-      card.style.setProperty('--spotlight-x', '50%');
-      card.style.setProperty('--spotlight-y', '50%');
-    });
+    const moveTilt = (event) => {
+      latestEvent = event;
+      if (!animationFrame) animationFrame = requestAnimationFrame(updateTilt);
+    };
+
+    const resetTilt = () => {
+      latestEvent = undefined;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+      clearTilt(card);
+    };
+
+    wrapper.addEventListener('pointermove', moveTilt);
+    wrapper.addEventListener('pointerleave', resetTilt);
+
+    return () => {
+      wrapper.removeEventListener('pointermove', moveTilt);
+      wrapper.removeEventListener('pointerleave', resetTilt);
+      resetTilt();
+    };
   }
 
-  document.querySelectorAll('.card-tilt-wrapper').forEach(initTilt);
+  const initAllTiltCards = () => {
+    cleanupTiltCards();
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(pointer: fine)').matches) {
+      cleanupTiltCards = () => {};
+      return;
+    }
+
+    const cleanups = [...document.querySelectorAll('.card-tilt-wrapper')].map(initTilt);
+    cleanupTiltCards = () => {
+      cleanups.forEach(cleanup => cleanup());
+      cleanupTiltCards = () => {};
+    };
+  };
+
+  document.addEventListener('astro:page-load', initAllTiltCards);
+  document.addEventListener('astro:before-swap', () => cleanupTiltCards());
+  initAllTiltCards();
 </script>
 
 <style>
@@ -119,11 +161,11 @@ function formatDate(date: Date) {
   }
 
   .card-tilt-wrapper:hover .card-tilt {
-    border-color: rgba(200, 182, 142, 0.15);
+    border-color: var(--border-warm);
     box-shadow:
-      var(--tilt-shadow-x, 0px) var(--tilt-shadow-y, 6px) var(--tilt-shadow-blur, 12px) var(--tilt-shadow-spread, 0px) rgba(0,0,0,0.35),
-      0 0 30px rgba(200, 182, 142, 0.03),
-      inset 0 0 20px rgba(200, 182, 142, 0.02);
+      var(--tilt-shadow-x, 0px) var(--tilt-shadow-y, 6px) var(--tilt-shadow-blur, 12px) var(--tilt-shadow-spread, 0px) rgba(0, 0, 0, 0.32),
+      var(--glow-warm),
+      var(--inner-glass);
   }
 
   .card-tilt::before {
@@ -134,7 +176,7 @@ function formatDate(date: Date) {
     transform: translateX(-50%);
     width: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(200, 182, 142, 0.25), transparent);
+    background: linear-gradient(90deg, transparent, rgba(226, 238, 248, 0.28), rgba(200, 142, 82, 0.22), transparent);
     transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -152,8 +194,9 @@ function formatDate(date: Date) {
     inset: 0;
     border-radius: inherit;
     background: radial-gradient(
-      circle 120px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
-      rgba(200, 182, 142, 0.035) 0%,
+      circle 160px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+      rgba(226, 238, 248, 0.060) 0%,
+      rgba(200, 142, 82, 0.035) 42%,
       transparent 100%
     );
     pointer-events: none;
@@ -162,5 +205,37 @@ function formatDate(date: Date) {
   }
   .card-tilt-wrapper:hover .card-tilt::after {
     opacity: 1;
+  }
+
+  .post-card-tag {
+    background: linear-gradient(135deg, rgba(122, 149, 175, 0.10), rgba(6, 10, 18, 0.24));
+    border: 1px solid rgba(226, 238, 248, 0.075);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  }
+
+  .post-card-featured {
+    color: rgba(255, 244, 220, 0.92);
+    border: 1px solid var(--border-warm);
+    background: linear-gradient(135deg, rgba(200, 142, 82, 0.16), rgba(122, 149, 175, 0.06));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-tilt {
+      transform: none;
+      transition: border-color 0.01ms linear, box-shadow 0.01ms linear;
+    }
+
+    .card-tilt::before,
+    .card-tilt::after {
+      transition: none;
+    }
+
+    .card-tilt-wrapper:hover .card-tilt::before {
+      width: 0;
+    }
+
+    .card-tilt-wrapper:hover .card-tilt::after {
+      opacity: 0;
+    }
   }
 </style>

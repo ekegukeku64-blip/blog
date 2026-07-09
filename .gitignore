@@ -20,6 +20,8 @@ test-results/
 # local AI/project artifacts
 BLOG_PROMPT.md
 HANDOVER.md
+.claude/settings.local.json
+.wolf/video-frames/
 .wolf/capture.mjs
 .wolf/designqc-captures/
 .wolf/*.png

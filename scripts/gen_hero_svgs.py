@@ -43,7 +43,7 @@ TOPICS = {
     'rust-guide-2025': ('学 Rust', '2025 年的理由', '⚙️'),
     'vscode-productivity': ('VS Code 效率', '开发速度翻倍', '⌨️'),
     'web-performance': ('性能优化', 'Web 性能实践', '⚡'),
-    'og-default': ('墨迹', '一个走非主流路线的大专生', '🖌️'),
+    'og-default': ('枫迹', '一个走非主流路线的大专生', '🍁'),
 }
 
 

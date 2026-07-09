@@ -29,24 +29,22 @@ function formatDate(date: Date) {
 const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="归档 - 墨迹" description="所有文章按时间归档">
-  <div class="max-w-3xl mx-auto px-6 py-16">
-    <!-- Header -->
-    <div class="mb-10">
-      <span class="inline-block px-3 py-1 text-[10px] font-sans tracking-[0.2em] uppercase text-accent border border-accent/25 rounded-full mb-5">Archive</span>
+<BaseLayout title="归档 - 枫迹" description="所有文章按时间归档">
+  <div class="archive-page max-w-3xl mx-auto px-6 py-16">
+    <div class="archive-hero mb-10">
+      <span class="archive-kicker">Archive</span>
       <h1 class="font-display text-4xl md:text-5xl font-bold text-text mb-3">归档</h1>
       <p class="text-text-muted font-serif text-lg">
         {posts.length} 篇文章 · {catMap.size} 个分类
       </p>
     </div>
 
-    <!-- Category filter tabs -->
-    <div class="flex flex-wrap gap-2 mb-12" id="cat-filters">
-      <button data-cat="all" class="cat-tab active px-4 py-2 text-sm rounded-full border border-accent/25 bg-accent/8 text-text font-medium transition-all duration-300 hover:border-accent/40 shadow-[0_0_12px_rgba(122,149,175,0.06)]">
+    <div class="archive-filter-row flex flex-wrap gap-2 mb-12" id="cat-filters">
+      <button data-cat="all" class="cat-tab active px-4 py-2 text-sm rounded-full border font-medium transition-all duration-300">
         全部 ({posts.length})
       </button>
       {categories.map(([cat, count]) => (
-        <button data-cat={cat} class="cat-tab px-4 py-2 text-sm rounded-full border border-white/[0.06] bg-transparent text-text-muted font-medium transition-all duration-300 hover:border-accent/20 hover:text-text hover:bg-white/[0.03]">
+        <button data-cat={cat} class="cat-tab px-4 py-2 text-sm rounded-full border font-medium transition-all duration-300">
           {cat} ({count})
         </button>
       ))}
@@ -62,7 +60,7 @@ const base = import.meta.env.BASE_URL;
           <!-- Year header -->
           <div class="flex items-center gap-5 mb-8">
             <div class="relative shrink-0">
-              <div class="w-[30px] h-[30px] md:w-[46px] md:h-[46px] rounded-full bg-surface-raised border-2 border-accent/30 flex items-center justify-center shadow-[0_0_20px_rgba(122,149,175,0.15)] z-10 relative">
+              <div class="archive-year-dot w-[30px] h-[30px] md:w-[46px] md:h-[46px] rounded-full flex items-center justify-center z-10 relative">
                 <span class="text-[10px] md:text-xs font-mono text-accent font-bold">{String(year).slice(2)}</span>
               </div>
             </div>
@@ -78,9 +76,9 @@ const base = import.meta.env.BASE_URL;
               const cat = post.data.category || '未分类';
               return (
                 <a
-                  href={`${base}blog/${post.id}`}
+                  href={`${base}blog/${post.id}/`}
                   data-category={cat}
-                  class="reveal-target group block relative p-5 rounded-xl border border-white/[0.05] bg-[#0a0f1a]/40 hover:bg-[#0a0f1a]/70 hover:border-accent/20 transition-all duration-500 overflow-hidden"
+                  class="archive-post-card reveal-target group block relative p-5 rounded-xl border transition-all duration-500 overflow-hidden"
                 >
                   {/* Hover glow */}
                   <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -92,7 +90,7 @@ const base = import.meta.env.BASE_URL;
                         <time datetime={post.data.pubDate.toISOString()} class="text-xs font-mono text-text-muted/70 tabular-nums shrink-0">
                           {formatDate(post.data.pubDate)}
                         </time>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent/80 font-sans">
+                        <span class="archive-post-category text-[10px] px-2 py-0.5 rounded-full font-sans">
                           {cat}
                         </span>
                       </div>
@@ -108,7 +106,7 @@ const base = import.meta.env.BASE_URL;
                     {post.data.tags && post.data.tags.length > 0 && (
                       <div class="hidden sm:flex flex-wrap gap-1 shrink-0 pt-1">
                         {post.data.tags.slice(0, 3).map(tag => (
-                          <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-white/[0.03] text-text-muted/60 border border-white/[0.04]">
+                          <span class="archive-post-tag text-[10px] px-1.5 py-0.5 rounded-md">
                             {tag}
                           </span>
                         ))}
@@ -126,7 +124,7 @@ const base = import.meta.env.BASE_URL;
     <!-- Footer nav -->
     <div class="mt-10 text-center">
       <a
-        href={`${base}blog`}
+        href={`${base}blog/`}
         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border text-text-muted
                hover:border-accent/40 hover:text-accent hover:shadow-lg hover:shadow-accent/5
                transition-all duration-500 font-medium text-sm"
@@ -147,9 +145,8 @@ const base = import.meta.env.BASE_URL;
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const cat = tab.dataset.cat;
-        tabs.forEach(t => t.classList.remove('active', 'bg-white/8', 'text-text', 'border-border-strong'));
-        tabs.forEach(t => t.classList.add('bg-transparent', 'text-text-muted', 'border-border'));
-        tab.classList.add('active', 'bg-white/8', 'text-text', 'border-border-strong');
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
 
         document.querySelectorAll('[data-category]').forEach(el => {
           const htmlEl = /** @type {HTMLElement} */ (el);
@@ -187,13 +184,107 @@ const base = import.meta.env.BASE_URL;
 </script>
 
 <style>
-  .cat-tab.active {
-    border-color: rgba(122, 149, 175, 0.4) !important;
-    box-shadow: 0 0 20px rgba(122, 149, 175, 0.06);
-    background: rgba(122, 149, 175, 0.08);
-    color: var(--color-text);
+  .archive-page {
+    position: relative;
   }
-  .cat-tab.active:hover {
-    border-color: rgba(122, 149, 175, 0.5) !important;
+
+  .archive-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    border: 1px solid var(--border-glass);
+    border-radius: 1.6rem;
+    background:
+      linear-gradient(145deg, rgba(32, 45, 68, 0.52), rgba(6, 10, 18, 0.30)),
+      radial-gradient(ellipse at 12% 0%, rgba(226, 238, 248, 0.13), transparent 48%),
+      radial-gradient(circle at 100% 100%, rgba(200, 142, 82, 0.08), transparent 44%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    box-shadow: var(--shadow-glass-floating);
+  }
+
+  .archive-kicker {
+    display: inline-block;
+    padding: 0.28rem 0.8rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border-warm);
+    border-radius: 999px;
+    background: rgba(200, 142, 82, 0.055);
+    color: var(--color-accent);
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .cat-tab {
+    border-color: rgba(226, 238, 248, 0.10);
+    background: linear-gradient(135deg, rgba(122,149,175,0.07), rgba(6,10,18,0.18));
+    color: rgba(214, 218, 225, 0.70);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
+  }
+
+  .cat-tab:hover,
+  .cat-tab.active {
+    border-color: var(--border-warm) !important;
+    background: linear-gradient(135deg, rgba(200,182,142,0.13), rgba(122,149,175,0.075));
+    color: var(--color-text);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.24), var(--glow-warm), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+  }
+
+  .archive-year-dot {
+    border: 1px solid var(--border-glass-strong);
+    background:
+      linear-gradient(145deg, rgba(32,45,68,0.62), rgba(6,10,18,0.30)),
+      radial-gradient(circle at 50% 0%, rgba(226,238,248,0.14), transparent 58%);
+    box-shadow: var(--shadow-glass-floating);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+  }
+
+  .archive-post-card {
+    border-color: var(--border-glass);
+    background:
+      linear-gradient(145deg, rgba(32,45,68,0.48), rgba(6,10,18,0.28)),
+      radial-gradient(ellipse at 10% 0%, rgba(226,238,248,0.10), transparent 48%);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.34), var(--inner-glass);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+
+  .archive-post-card:hover {
+    border-color: var(--border-warm);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.44), var(--glow-warm), var(--glass-rim-strong);
+    transform: translateY(-2px);
+  }
+
+  .archive-post-category,
+  .archive-post-tag {
+    border: 1px solid rgba(226,238,248,0.10);
+    background: linear-gradient(135deg, rgba(122,149,175,0.09), rgba(6,10,18,0.18));
+    color: rgba(214,218,225,0.68);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
+  }
+
+  .archive-post-category {
+    color: rgba(200,182,142,0.82);
+  }
+
+  @media (max-width: 560px) {
+    .archive-hero,
+    .archive-post-card,
+    .archive-year-dot {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cat-tab,
+    .archive-post-card {
+      transition: none;
+      transform: none !important;
+    }
   }
 </style>

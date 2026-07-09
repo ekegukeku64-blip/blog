@@ -22,10 +22,10 @@ const { category, posts } = Astro.props;
 ---
 
 <BaseLayout title={`分类: ${category}`} description={`"${category}" 分类下的所有文章`}>
-  <div class="max-w-5xl mx-auto px-6 py-16">
-    <div class="mb-10">
-      <a href={`${import.meta.env.BASE_URL}blog`} class="text-sm text-accent dark:text-dark-accent hover:underline mb-4 inline-block">&larr; 所有文章</a>
-      <span class="inline-block px-3 py-1 text-xs font-sans tracking-widest text-accent dark:text-dark-accent border border-accent/30 dark:border-dark-accent/30 mb-4">CATEGORY</span>
+  <div class="category-page max-w-5xl mx-auto px-6 py-16">
+    <div class="category-detail-hero mb-10">
+      <a href={`${import.meta.env.BASE_URL}blog/`} class="category-back-link">&larr; 所有文章</a>
+      <span class="category-detail-kicker">CATEGORY</span>
       <h1 class="font-display text-4xl font-bold text-text dark:text-dark-text mb-3">
         {category}
       </h1>
@@ -46,4 +46,57 @@ const { category, posts } = Astro.props;
       ))}
     </div>
   </div>
+  <style>
+    .category-detail-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 2rem;
+      border: 1px solid var(--border-glass);
+      border-radius: 1.6rem;
+      background:
+        linear-gradient(145deg, rgba(32,45,68,0.52), rgba(6,10,18,0.30)),
+        radial-gradient(ellipse at 12% 0%, rgba(226,238,248,0.13), transparent 48%),
+        radial-gradient(circle at 100% 100%, rgba(200,142,82,0.08), transparent 44%);
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      box-shadow: var(--shadow-glass-floating);
+    }
+
+    .category-back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: rgba(168,175,186,0.68);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .category-back-link:hover,
+    .category-back-link:focus-visible {
+      color: var(--color-accent);
+    }
+
+    .category-detail-kicker {
+      display: block;
+      width: max-content;
+      padding: 0.28rem 0.8rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border-warm);
+      border-radius: 999px;
+      background: rgba(200,142,82,0.055);
+      color: var(--color-accent);
+      font-family: var(--font-sans);
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 560px) {
+      .category-detail-hero {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+    }
+  </style>
 </BaseLayout>
