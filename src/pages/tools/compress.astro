@@ -84,6 +84,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
       let originalFile = null;
       let img = null;
+      let loadObjectUrl = null;
+      let compressionRequest = 0;
 
       uploadZone.addEventListener('click', () => fileInput.click());
       uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = 'var(--color-accent)'; });
@@ -99,20 +101,51 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       });
 
       function loadFile(file) {
+        compressionRequest += 1;
+        window._compBlob = null;
+        if (loadObjectUrl) {
+          URL.revokeObjectURL(loadObjectUrl);
+          loadObjectUrl = null;
+        }
+
         originalFile = file;
         document.getElementById('orig-size').textContent = formatSize(file.size);
-        origPreview.src = URL.createObjectURL(file);
+        const objectUrl = URL.createObjectURL(file);
+        loadObjectUrl = objectUrl;
+        let pendingLoads = 2;
+        const releaseObjectUrl = () => {
+          pendingLoads -= 1;
+          if (pendingLoads === 0) {
+            URL.revokeObjectURL(objectUrl);
+            if (loadObjectUrl === objectUrl) loadObjectUrl = null;
+          }
+        };
+
+        origPreview.onload = releaseObjectUrl;
+        origPreview.onerror = releaseObjectUrl;
+        origPreview.src = objectUrl;
         img = new Image();
         img.onload = () => {
+          releaseObjectUrl();
+          if (originalFile !== file) return;
           uploadZone.style.display = 'none';
           editor.style.display = 'block';
           compress();
         };
-        img.src = URL.createObjectURL(file);
+        img.onerror = () => {
+          releaseObjectUrl();
+          if (originalFile !== file) return;
+          originalFile = null;
+          img = null;
+          document.getElementById('ratio').textContent = '图片读取失败';
+        };
+        img.src = objectUrl;
       }
 
       function compress() {
-        if (!img) return;
+        if (!img || !originalFile) return;
+        const sourceFile = originalFile;
+        const requestId = ++compressionRequest;
         const maxW = parseInt(maxWidthInput.value) || 0;
         let w = img.naturalWidth;
         let h = img.naturalHeight;
@@ -126,10 +159,17 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         const quality = parseInt(qualitySlider.value) / 100;
         const format = formatSelect.value;
         compPreview.toBlob((blob) => {
+          if (requestId !== compressionRequest || sourceFile !== originalFile) return;
+          if (!blob) {
+            window._compBlob = null;
+            document.getElementById('comp-size').textContent = '-';
+            document.getElementById('ratio').textContent = '压缩失败，请更换输出格式后重试';
+            return;
+          }
           document.getElementById('comp-size').textContent = formatSize(blob.size);
-          const ratio = Math.round((1 - blob.size / originalFile.size) * 100);
+          const ratio = Math.round((1 - blob.size / sourceFile.size) * 100);
           document.getElementById('ratio').textContent = ratio > 0
-            ? `压缩了 ${ratio}%，减小 ${formatSize(originalFile.size - blob.size)}`
+            ? `压缩了 ${ratio}%，减小 ${formatSize(sourceFile.size - blob.size)}`
             : `文件变大了 ${Math.abs(ratio)}%`;
           window._compBlob = blob;
         }, format, quality);
@@ -152,16 +192,24 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         if (!window._compBlob) return;
         const a = document.createElement('a');
         const ext = formatSelect.value.split('/')[1] === 'jpeg' ? 'jpg' : formatSelect.value.split('/')[1];
+        const downloadUrl = URL.createObjectURL(window._compBlob);
         a.download = 'compressed.' + ext;
-        a.href = URL.createObjectURL(window._compBlob);
+        a.href = downloadUrl;
         a.click();
+        setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
       });
 
       document.getElementById('btn-switch').addEventListener('click', () => {
+        compressionRequest += 1;
+        if (loadObjectUrl) {
+          URL.revokeObjectURL(loadObjectUrl);
+          loadObjectUrl = null;
+        }
         editor.style.display = 'none';
         uploadZone.style.display = '';
         originalFile = null;
         img = null;
+        window._compBlob = null;
         fileInput.value = '';
       });
     })();

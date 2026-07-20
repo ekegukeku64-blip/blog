@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { serializeJsonForScript } from '../utils/safeJson';
 
 const base = import.meta.env.BASE_URL;
 const posts = (await getCollection('posts', ({ data }) => !data.draft && !data.noindex))
@@ -13,7 +14,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft && !data.n
     pubDate: post.data.pubDate.toISOString(),
     url: base + 'blog/' + post.id + '/',
   }));
-const serializedPosts = JSON.stringify(posts).replace(/</g, '\u003c');
+const serializedPosts = serializeJsonForScript(posts);
 ---
 
 <BaseLayout

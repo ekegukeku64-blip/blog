@@ -21,6 +21,7 @@ import {
   deleteDoc,
   getDocs,
   serverTimestamp,
+  type Timestamp,
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -66,8 +67,10 @@ export type Comment = {
   photoURL: string
   content: string
   status: 'approved' | 'pending' | 'rejected'
-  createdAt: any
+  createdAt: Timestamp | null
 }
+
+export type { User }
 
 export {
   auth,

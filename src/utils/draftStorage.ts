@@ -1,3 +1,5 @@
+import { canvasToBlob } from './canvas';
+
 const DB_NAME = 'mogi-drafts';
 const DB_VERSION = 1;
 const STORE_NAME = 'images';
@@ -31,9 +33,7 @@ export async function saveDraft(canvas: HTMLCanvasElement): Promise<Draft> {
     throw new Error('DRAFT_FULL');
   }
 
-  const blob = await new Promise<Blob>((resolve) => {
-    canvas.toBlob(b => resolve(b!), 'image/png');
-  });
+  const blob = await canvasToBlob(canvas);
 
   // 生成缩略图
   const thumb = document.createElement('canvas');

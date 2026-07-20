@@ -195,6 +195,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   } from '../lib/firebase'
   import { ADMIN_UIDS } from '../lib/adminUids'
 
+  declare global {
+    interface Window {
+      __adminCleanup?: () => void
+    }
+  }
+
   let allComments: (Comment & { id: string })[] = []
   let currentFilter = 'all'
   let currentPage = 1
@@ -202,9 +208,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const PAGE_SIZE = 20
   const selectedIds = new Set<string>()
 
-  function formatDate(ts: any) {
+  function formatDate(ts: Comment['createdAt']) {
     if (!ts) return ''
-    const d = ts.toDate ? ts.toDate() : new Date(ts)
+    const d = ts.toDate()
     return d.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
@@ -389,7 +395,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   document.addEventListener('astro:page-load', () => {
-    ;(window as any).__adminCleanup?.()
+    window.__adminCleanup?.()
     const controller = new AbortController()
     let authUnsubscribe: (() => void) | null = null
     currentPage = 1
@@ -497,11 +503,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       await loadComments()
     })
-    ;(window as any).__adminCleanup = () => {
+    window.__adminCleanup = () => {
       controller.abort()
       authUnsubscribe?.()
       authUnsubscribe = null
     }
   })
-  document.addEventListener('astro:before-swap', () => (window as any).__adminCleanup?.(), { once: true })
+  document.addEventListener('astro:before-swap', () => window.__adminCleanup?.(), { once: true })
 </script>

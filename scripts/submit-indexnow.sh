@@ -49,4 +49,5 @@ else
     -H "Content-Type: application/json; charset=utf-8" \
     -d "$JSON_PAYLOAD"
   echo ""
+  exit 1
 fi

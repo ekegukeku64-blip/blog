@@ -213,17 +213,23 @@
     isFirebaseConfigured, onAuth, loginWithGoogle, loginWithGithub,
     db, collection, addDoc, query, where,
     onSnapshot, doc, deleteDoc, serverTimestamp,
-    type Comment,
+    type Comment, type User,
   } from '../lib/firebase'
 
+  declare global {
+    interface Window {
+      __commentCleanup?: () => void
+    }
+  }
+
   let pageId = window.location.pathname
-  let currentUser: any = null
+  let currentUser: User | null = null
   let unsubscribe: (() => void) | null = null
   let authUnsubscribe: (() => void) | null = null
 
-  function formatCommentTime(ts: any) {
+  function formatCommentTime(ts: Comment['createdAt']) {
     if (!ts) return ''
-    const d = ts.toDate ? ts.toDate() : new Date(ts)
+    const d = ts.toDate()
     return d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
   }
 
@@ -309,7 +315,7 @@
   }
 
   document.addEventListener('astro:page-load', () => {
-    ;(window as any).__commentCleanup?.()
+    window.__commentCleanup?.()
     const controller = new AbortController()
     pageId = window.location.pathname
     authUnsubscribe?.()
@@ -392,7 +398,7 @@
         if (submitStatus) submitStatus.textContent = '提交失败，请重试'
       }
     }, { signal: controller.signal })
-    ;(window as any).__commentCleanup = () => {
+    window.__commentCleanup = () => {
       controller.abort()
       authUnsubscribe?.()
       authUnsubscribe = null
@@ -401,5 +407,5 @@
       currentUser = null
     }
   })
-  document.addEventListener('astro:before-swap', () => (window as any).__commentCleanup?.())
+  document.addEventListener('astro:before-swap', () => window.__commentCleanup?.())
 </script>

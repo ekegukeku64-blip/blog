@@ -96,6 +96,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   <script>
     import { removeBackground } from '@imgly/background-removal';
+    import { canvasToBlob } from '../../utils/canvas';
 
     const uploadZone = document.getElementById('upload-zone')!;
     const fileInput = document.getElementById('file-input') as HTMLInputElement;
@@ -166,7 +167,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         loadText.textContent = 'AI 正在分析图像...';
 
         // Convert current canvas to blob
-        const blob = await new Promise<Blob>((resolve) => canvas.toBlob(b => resolve(b!), 'image/png'));
+        const blob = await canvasToBlob(canvas);
 
         const result = await removeBackground(blob, {
           progress: (key, current, total) => {
@@ -179,13 +180,17 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
         // Draw result onto canvas
         const resultImg = new Image();
-        resultImg.onload = () => {
+        const resultUrl = URL.createObjectURL(result);
+        try {
+          resultImg.src = resultUrl;
+          await resultImg.decode();
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(resultImg, 0, 0, canvas.width, canvas.height);
           saveHistory();
           loadOverlay.style.display = 'none';
-        };
-        resultImg.src = URL.createObjectURL(result);
+        } finally {
+          URL.revokeObjectURL(resultUrl);
+        }
       } catch (err) {
         console.error('AI removal failed:', err);
         loadText.textContent = '处理失败，请重试';
@@ -373,8 +378,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         await saveDraft(canvas);
         showToast('草稿已保存');
         updateDraftBadge();
-      } catch (e: any) {
-        if (e.message === 'DRAFT_FULL') {
+      } catch (error) {
+        if (error instanceof Error && error.message === 'DRAFT_FULL') {
           showToast('草稿箱已满（最多10个），请删除旧草稿');
         } else {
           showToast('保存失败');
