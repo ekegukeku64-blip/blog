@@ -134,4 +134,9 @@ docs/add-tool.md
 
 ## 许可
 
-MIT © 又逢雨季
+- 原创程序代码、配置、脚本和工作流采用 [MIT License](./LICENSE)。
+- `src/content/posts/**` 中的原创文章和 `public/hero/**` 中的原创封面保留所有权利。
+- `src/content/projects/**` 中的第三方 README 快照仍遵循各自上游许可证，不由本仓库重新授权。
+- 依赖包、字体及其他第三方资源遵循其各自许可证。
+
+完整边界说明见 [LICENSE-SCOPE.md](./LICENSE-SCOPE.md)。
