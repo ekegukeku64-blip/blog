@@ -1,2 +1,4 @@
 src/content/projects/*.md whitespace=-trailing-space
 firestore.indexes.json whitespace=-blank-at-eof
+src/content/posts/daily-*.md whitespace=-trailing-space
+public/hero/*.svg whitespace=-trailing-space
