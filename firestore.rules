@@ -4,7 +4,7 @@ service cloud.firestore {
 
     // 管理员集合（用于权限判断）
     match /admins/{uid} {
-      allow read: if true;
+      allow read: if false;
     }
 
     match /comments/{commentId} {
@@ -14,19 +14,40 @@ service cloud.firestore {
       // 登录用户可创建评论（只能用自己的uid）
       allow create: if request.auth != null
         && request.auth.uid == request.resource.data.uid
-        && request.resource.data.keys().hasAll(['pageId', 'uid', 'displayName', 'content', 'status', 'createdAt'])
-        && request.resource.data.status == 'approved'
+        && commentId.size() > 0
+        && commentId.size() <= 128
+        && commentId.matches('^[A-Za-z0-9_-]+$')
+        && request.resource.data.keys().hasOnly(['pageId', 'uid', 'displayName', 'photoURL', 'content', 'status', 'createdAt'])
+        && request.resource.data.pageId is string
+        && request.resource.data.pageId.size() > 0
+        && request.resource.data.pageId.size() <= 512
+        && request.resource.data.uid is string
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.displayName.size() <= 200
+        && request.resource.data.photoURL is string
+        && request.resource.data.photoURL.size() <= 2048
+        && (request.resource.data.photoURL == ''
+          || request.resource.data.photoURL.matches('^https?://[^\\s]+$'))
+        && request.resource.data.status == 'pending'
         && request.resource.data.content is string
         && request.resource.data.content.size() > 0
-        && request.resource.data.content.size() <= 2000;
+        && request.resource.data.content.size() <= 2000
+        && request.resource.data.createdAt == request.time;
 
       // 用户可删除自己的评论
       allow delete: if request.auth != null
         && resource.data.uid == request.auth.uid;
 
-      // 管理员可读所有评论、更新状态、删除
-      allow read, update, delete: if request.auth != null
+      // 管理员可读取、删除所有评论
+      allow read, delete: if request.auth != null
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+
+      // 管理员只能更新审核状态，不能篡改评论正文或作者信息
+      allow update: if request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['approved', 'pending', 'rejected'];
     }
   }
 }

@@ -5,7 +5,7 @@ import Sidebar from '../../components/Sidebar.astro';
 import { getCollection } from 'astro:content';
 import { calcReadingTime } from '../../utils/readingTime';
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
 const sortedPosts = [...allPosts].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const categories = [...new Set(allPosts.map(p => p.data.category))].map(name => ({
@@ -40,7 +40,7 @@ const categoryIcons: Record<string, string> = {
 ---
 
 <BaseLayout title="文章" description="所有文章列表">
-  <main class="blog-index-page">
+  <div class="blog-index-page">
     <div class="blog-index-orbit blog-index-orbit--cold"></div>
     <div class="blog-index-orbit blog-index-orbit--warm"></div>
     <section class="blog-hero ink-reveal" aria-labelledby="blog-heading">
@@ -147,7 +147,7 @@ const categoryIcons: Record<string, string> = {
         <Sidebar categories={categories} recentPosts={sidebarPosts} />
       </aside>
     </section>
-  </main>
+  </div>
 
   <script is:inline>
     const BLOG_INDEX_LIFECYCLE_KEY = '__blogIndexLifecycleBound';

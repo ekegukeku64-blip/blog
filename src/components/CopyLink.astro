@@ -17,6 +17,8 @@
 
 <script is:inline>
   document.addEventListener('astro:page-load', () => {
+    window.__copyLinkCleanup?.();
+    const controller = new AbortController();
     const btn = document.getElementById('copy-link-btn');
     const text = document.getElementById('copy-link-text');
     if (!btn || !text) return;
@@ -34,6 +36,7 @@
         text.textContent = '复制失败';
         setTimeout(() => { text.textContent = '复制链接'; }, 2000);
       }
-    });
+    }, { signal: controller.signal });
+    window.__copyLinkCleanup = () => controller.abort();
   });
 </script>

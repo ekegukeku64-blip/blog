@@ -8,7 +8,7 @@ import HomeCurrentMe from '../components/home/HomeCurrentMe.astro';
 import HomeFootnote from '../components/home/HomeFootnote.astro';
 import { getCollection } from 'astro:content';
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
 const sortedPosts = [...allPosts].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const recentPosts = sortedPosts.slice(0, 6);
 const now = new Date();
@@ -24,21 +24,9 @@ const focusCards = [
   { label: '在线工具', text: '直接打开浏览器本地运行的小工具。', href: `${import.meta.env.BASE_URL}tools/` },
   { label: '成长记录', text: '看普通人怎么试错、复盘和继续往前走。', href: `${import.meta.env.BASE_URL}growth/` },
 ];
-const postMatches = (post: typeof sortedPosts[number], keywords: string[]) => {
-  const haystack = [
-    post.data.title,
-    post.data.description,
-    post.data.category,
-    ...post.data.tags,
-  ].join(' ').toLowerCase();
-  return keywords.some(keyword => haystack.includes(keyword.toLowerCase()));
-};
-
-const pickPathPosts = (keywords: string[]) => {
-  const matched = sortedPosts.filter(post => postMatches(post, keywords));
-  const fallback = sortedPosts.filter(post => !matched.includes(post));
-  return [...matched, ...fallback].slice(0, 3);
-};
+const pickPathPosts = (ids: string[]) => ids
+  .map(id => sortedPosts.find(post => post.id === id))
+  .filter((post): post is typeof sortedPosts[number] => post !== undefined);
 
 const readingPaths = [
   {
@@ -46,21 +34,21 @@ const readingPaths = [
     title: 'AI 工具实践',
     description: '从真实使用场景开始，看工具、提示词和工作流到底怎么落地。',
     href: `${import.meta.env.BASE_URL}tag/${encodeURIComponent('AI')}/`,
-    posts: pickPathPosts(['AI', '工具', '效率', 'Claude', '提示词']),
+    posts: pickPathPosts(['ai-coding-tools', 'growth-002', 'growth-005']),
   },
   {
     label: 'Growth log',
     title: '普通人成长记录',
     description: '不是鸡血路线，而是把犹豫、试错、复盘和继续做下去都记下来。',
     href: `${import.meta.env.BASE_URL}category/${encodeURIComponent('成长记录')}/`,
-    posts: pickPathPosts(['成长记录', '成长', '复盘', '坚持', '反思']),
+    posts: pickPathPosts(['growth-012', 'growth-011', 'growth-009']),
   },
   {
     label: 'Build notes',
     title: '开发与效率笔记',
     description: '围绕博客、前端、Git 和日常开发，把能复用的经验沉淀出来。',
     href: `${import.meta.env.BASE_URL}category/${encodeURIComponent('技术')}/`,
-    posts: pickPathPosts(['技术', 'Astro', 'Git', 'VS Code', '性能', '教程', '前端']),
+    posts: pickPathPosts(['astro-blog-03', 'git-tips', 'vscode-productivity']),
   },
 ];
 
@@ -98,7 +86,7 @@ const activityItems = [
 ---
 
 <BaseLayout title="首页" description="枫迹 — AI 工具、真实试错和普通人能用的经验">
-  <main class="home-page">
+  <div class="home-page">
     <div class="home-page-orbit home-page-orbit--cold"></div>
     <div class="home-page-orbit home-page-orbit--warm"></div>
     <div class="home-page-spine"></div>
@@ -130,7 +118,7 @@ const activityItems = [
       <HomeNowSnapshot />
       <HomeFootnote />
     </div>
-  </main>
+  </div>
 </BaseLayout>
 
 <style>

@@ -6,23 +6,30 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/noto-serif-sc/400.css';
-import '@fontsource/noto-serif-sc/600.css';
-import '@fontsource/noto-serif-sc/700.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BackToTop from '../components/BackToTop.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import PageProgress from '../components/PageProgress.astro';
-import Analytics from '../components/Analytics.astro';
 import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
   description?: string;
   image?: string;
+  robots?: string;
+  pagefind?: boolean;
+  ogType?: 'website' | 'article';
 }
 
-const { title, description = '一个关于技术、设计与生活的博客', image } = Astro.props;
+const {
+  title,
+  description = '一个关于技术、设计与生活的博客',
+  image,
+  robots = 'index, follow',
+  pagefind = true,
+  ogType = 'website',
+} = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.pathname === '/';
 ---
@@ -33,7 +40,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="google-site-verification" content="nF43Ycr0M27ASMgp4dtsTYJa9xfQ2mO9lyB1aWs2iYs" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
     <meta name="theme-color" content="#070A13" />
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
     <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
@@ -43,7 +50,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <meta property="og:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="枫迹博客" />
     <meta property="og:locale" content="zh_CN" />
@@ -53,7 +60,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <meta name="twitter:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
     <meta name="author" content="又逢雨季" />
     <title>{title} | 枫迹博客</title>
-    <script type="application/ld+json">
+    <script is:inline type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Blog",
@@ -64,22 +71,21 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
         "inLanguage": "zh-CN"
       }
     </script>
-    <script type="application/ld+json">
+    <script is:inline type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "枫迹博客",
-        "url": "https://ekegukeku64-blip.github.io/blog/",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://ekegukeku64-blip.github.io/blog/?q={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
+        "url": "https://ekegukeku64-blip.github.io/blog/"
       }
+    </script>
+    <script is:inline>
+      document.documentElement.classList.add('js');
     </script>
     <script is:inline define:vars={{ baseUrl: import.meta.env.BASE_URL }}>
       // 物理锁死深色模式 + ClientRouter 导航后修复 page-entrance class
       function syncPageEntrance() {
+        document.documentElement.classList.add('js');
         if (!document.body) return;
         const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
         const onEntrance = location.pathname === normalizedBase || location.pathname === '/';
@@ -104,6 +110,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <slot name="head" />
   </head>
   <body class={`min-h-screen flex flex-col${isEntrance ? ' page-entrance' : ''}`}>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[1000] focus:rounded-lg focus:bg-surface focus:px-4 focus:py-3 focus:text-text focus:shadow-xl">跳到正文</a>
     <div class="global-bg-layer" aria-hidden="true">
       <img id="global-bg-poster" class="global-bg-video" src={`${import.meta.env.BASE_URL}maple.jpg`} alt="" />
       <video id="global-bg-video" class="global-bg-video"
@@ -114,13 +121,12 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     </div>
     {!isEntrance && <ReadingProgress />}
     {!isEntrance && <Header />}
-    <main class="flex-1">
+    <main id="main-content" class="flex-1" data-pagefind-body={pagefind ? true : undefined} data-pagefind-ignore={pagefind ? undefined : true}>
       <slot />
     </main>
     {!isEntrance && <Footer />}
     {!isEntrance && <BackToTop />}
-    {!isEntrance && <PageProgress />}
-    <Analytics />
+    <PageProgress />
     <script is:inline define:vars={{ bgVideoSrc: `${import.meta.env.BASE_URL}maple.mp4` }}>
       { // block scope for is:inline scripts
       // === Background video: lazy load on interaction ===
@@ -129,7 +135,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       const poster = document.getElementById('global-bg-poster');
       if (!isEntrancePage && gv && poster) {
         const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        if (!isMobile) {
+        if (!isMobile && !navigator.connection?.saveData) {
           let loaded = false;
           const loadVideo = () => {
             if (loaded) return;
@@ -154,27 +160,34 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       } // end block scope
     </script>
     <script is:inline>
-      function initReveal() {
+      window.__initReveal = function() {
+        if (window.__revealObserver) window.__revealObserver.disconnect();
+        (window.__revealTimers || []).forEach(clearTimeout);
+        window.__revealTimers = [];
+
         // Unified scroll reveal for both .reveal-target and .blur-reveal
         let staggerIdx = 0;
         let staggerTimer = null;
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
-              const delay = staggerIdx * 60;
-              setTimeout(() => {
+              const delay = Math.min(staggerIdx, 5) * 55;
+              const revealTimer = setTimeout(() => {
                 entry.target.classList.add('is-revealed');
                 if (entry.target.classList.contains('blur-reveal')) {
                   entry.target.classList.add('is-focused');
                 }
               }, delay);
+              window.__revealTimers.push(revealTimer);
               staggerIdx++;
               clearTimeout(staggerTimer);
               staggerTimer = setTimeout(() => { staggerIdx = 0; }, 400);
+              window.__revealTimers.push(staggerTimer);
               observer.unobserve(entry.target);
             }
           });
         }, { rootMargin: '0px 0px -30px 0px', threshold: 0.08 });
+        window.__revealObserver = observer;
 
         document.querySelectorAll('.reveal-target, .blur-reveal').forEach(el => {
           el.classList.remove('is-revealed', 'is-focused');
@@ -187,10 +200,12 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
           el.classList.remove('is-revealed');
           observer.observe(el);
         });
-      }
+      };
 
-      initReveal();
-      document.addEventListener('astro:page-load', initReveal);
+      if (!window.__revealPageLoadReady) {
+        window.__revealPageLoadReady = true;
+        document.addEventListener('astro:page-load', () => window.__initReveal());
+      }
     </script>
     <script is:inline>
       function initPageClickWave() {
@@ -202,6 +217,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
 
         document.addEventListener('pointerdown', (event) => {
           if (reduceMotion.matches) return;
+          if (event.target instanceof Element && event.target.closest('a[href], button, [role="button"], summary, input, select, textarea')) return;
           const layer = window.__pageClickWaveLayer;
           if (!layer) return;
           layer.style.setProperty('--page-wave-x', `${event.clientX}px`);
@@ -226,18 +242,166 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       }
     </script>
     <div id="page-click-wave" class="page-click-wave" aria-hidden="true"></div>
+    <!-- Local press feedback + click-origin page transition -->
+    <script is:inline>
+    (function() {
+      if (window.__interactionFeedbackReady) return;
+      window.__interactionFeedbackReady = true;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const pressableSelector = 'a[href], button:not([disabled]), [role="button"]:not([aria-disabled="true"]), summary';
+
+      const getPressable = (target) => target instanceof Element
+        ? target.closest(pressableSelector)
+        : null;
+      const armPostMorph = (control) => {
+        document.querySelectorAll('[data-post-transition-title]').forEach((title) => {
+          title.style.removeProperty('view-transition-name');
+        });
+
+        const title = control instanceof HTMLElement && control.matches('[data-post-transition]')
+          ? control.querySelector('[data-post-transition-title]')
+          : null;
+        title?.style.setProperty('view-transition-name', 'post-title');
+      };
+      const suspendAmbientMotion = () => {
+        document.documentElement.classList.add('is-navigating');
+        const backgroundVideo = document.getElementById('global-bg-video');
+        if (backgroundVideo instanceof HTMLVideoElement) backgroundVideo.pause();
+      };
+
+      const createRipple = (control, clientX, clientY) => {
+        if (reduceMotion.matches || !(control instanceof HTMLElement)) return;
+        const rect = control.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        const x = clientX ?? rect.left + rect.width / 2;
+        const y = clientY ?? rect.top + rect.height / 2;
+        const farthestX = Math.max(x - rect.left, rect.right - x);
+        const farthestY = Math.max(y - rect.top, rect.bottom - y);
+        const size = Math.ceil(Math.hypot(farthestX, farthestY) * 2);
+        const ripple = document.createElement('span');
+        ripple.className = 'interaction-ripple';
+        ripple.style.width = `${size}px`;
+        ripple.style.height = `${size}px`;
+        ripple.style.left = `${x - rect.left}px`;
+        ripple.style.top = `${y - rect.top}px`;
+
+        control.querySelectorAll(':scope > .interaction-ripple').forEach(node => node.remove());
+        control.classList.add('interaction-pressable', 'is-pressing');
+        control.appendChild(ripple);
+        ripple.addEventListener('animationend', () => {
+          ripple.remove();
+          if (!control.querySelector('.interaction-ripple')) {
+            control.classList.remove('interaction-pressable');
+          }
+        }, { once: true });
+      };
+
+      const isInternalNavigation = (event, link) => {
+        if (!(link instanceof HTMLAnchorElement)) return false;
+        if (event.defaultPrevented || event.button !== 0) return false;
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
+        if (link.hasAttribute('download') || link.target === '_blank') return false;
+
+        let destination;
+        try { destination = new URL(link.href, location.href); }
+        catch (_) { return false; }
+        if (!['http:', 'https:'].includes(destination.protocol) || destination.origin !== location.origin) return false;
+
+        const current = new URL(location.href);
+        const sameDocument = destination.pathname === current.pathname && destination.search === current.search;
+        if (sameDocument) return false;
+        return true;
+      };
+
+
+      document.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        const control = getPressable(event.target);
+        if (!control) return;
+        armPostMorph(control);
+        createRipple(control, event.clientX, event.clientY);
+      }, { passive: true });
+
+      const releasePressedControls = () => {
+        document.querySelectorAll('.interaction-pressable.is-pressing').forEach(
+          control => control.classList.remove('is-pressing'),
+        );
+      };
+      document.addEventListener('pointerup', releasePressedControls, { passive: true });
+      document.addEventListener('pointercancel', releasePressedControls, { passive: true });
+
+      document.addEventListener('click', (event) => {
+        const control = getPressable(event.target);
+        if (!control) return;
+
+        if (event.detail === 0) {
+          armPostMorph(control);
+          const rect = control.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
+          createRipple(control, x, y);
+        }
+
+        if (isInternalNavigation(event, control.closest('a[href]'))) {
+          suspendAmbientMotion();
+          control.classList.add('is-navigation-intent');
+        }
+      });
+      document.addEventListener('astro:before-preparation', suspendAmbientMotion);
+
+
+      document.addEventListener('astro:page-load', () => {
+        document.documentElement.classList.remove('is-navigating');
+        const backgroundVideo = document.getElementById('global-bg-video');
+        if (backgroundVideo instanceof HTMLVideoElement && backgroundVideo.currentSrc) {
+          backgroundVideo.play().catch(() => {});
+        }
+        document.querySelectorAll('.is-navigation-intent').forEach(
+          node => node.classList.remove('is-navigation-intent'),
+        );
+      });
+    })();
+    </script>
+
+    <!-- Precision control lens -->
+    <script is:inline>
+    (function() {
+      if (window.__interactionLensReady) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+      window.__interactionLensReady = true;
+
+      let lensFrame = 0;
+      let latestLensEvent = null;
+      document.addEventListener('pointermove', (event) => {
+        latestLensEvent = event;
+        if (lensFrame) return;
+        lensFrame = requestAnimationFrame(() => {
+          lensFrame = 0;
+          const currentEvent = latestLensEvent;
+          const target = currentEvent?.target;
+          if (!(target instanceof Element)) return;
+          const control = target.closest('.header-action, .share-action, .back-to-top');
+          if (!control) return;
+          const rect = control.getBoundingClientRect();
+          const x = ((currentEvent.clientX - rect.left) / rect.width) * 100;
+          const y = ((currentEvent.clientY - rect.top) / rect.height) * 100;
+          control.style.setProperty('--interaction-x', `${Math.max(0, Math.min(100, x)).toFixed(1)}%`);
+          control.style.setProperty('--interaction-y', `${Math.max(0, Math.min(100, y)).toFixed(1)}%`);
+        });
+      }, { passive: true });
+    })();
+    </script>
 
     <!-- 全局胶片颗粒 -->
-    <svg class="global-film-grain" aria-hidden="true" preserveAspectRatio="none">
-      <defs>
-        <filter id="global-grain-noise"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-      </defs>
-      <rect width="100%" height="100%" filter="url(#global-grain-noise)" opacity="0.04"/>
-    </svg>
+    <div class="global-film-grain" aria-hidden="true"></div>
 
     <!-- 全局光标光晕 -->
     <script is:inline>
     (function() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       if (document.getElementById('global-cursor-glow')) return;
       const glow = document.createElement('div');
       glow.id = 'global-cursor-glow';
@@ -268,6 +432,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <!-- 背景视差 — 滚动时微移背景 -->
     <script is:inline>
     (function() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       let ticking = false;
       const bgLayer = document.querySelector('.global-bg-layer');
       if (!bgLayer) return;

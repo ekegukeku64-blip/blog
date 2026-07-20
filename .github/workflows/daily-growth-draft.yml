@@ -41,12 +41,31 @@ jobs:
         id: changes
         run: |
           shopt -s nullglob
-          git add src/content/posts/daily-*.md src/content/posts/growth-*.md public/hero/daily-*.svg public/hero/growth-*.svg
+          git add src/content/posts/daily-*.md src/content/posts/risk-daily-*.md src/content/posts/growth-*.md src/content/projects/*.md public/hero/daily-*.svg public/hero/growth-*.svg
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
+
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run check
+      - run: python3 scripts/generate_daily_digest.py --self-test
+      - run: npm run build
+        env:
+          PUBLIC_FIREBASE_API_KEY: ${{ secrets.PUBLIC_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.PUBLIC_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ secrets.PUBLIC_FIREBASE_APP_ID }}
 
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
@@ -55,14 +74,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: 每日自动更新 $(date +%Y-%m-%d)"
           git push
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - run: npm ci
-      - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -19,6 +19,8 @@
 
 <script is:inline>
   document.addEventListener('astro:page-load', () => {
+    window.__focusCleanup?.();
+    const controller = new AbortController();
     const btn = document.getElementById('focus-toggle');
     const aside = document.getElementById('toc-sidebar');
     if (!btn) return;
@@ -35,12 +37,18 @@
       if (aside) aside.style.display = focused ? 'none' : '';
       btn.classList.toggle('text-accent', focused);
       btn.classList.toggle('dark:text-dark-accent', focused);
-    });
+      btn.setAttribute('aria-pressed', String(focused));
+    }, { signal: controller.signal });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'f' && !e.metaKey && !e.ctrlKey && !e.target.closest('input,textarea')) {
+      const target = e.target instanceof Element ? e.target : null;
+      if (e.key === 'f' && !e.metaKey && !e.ctrlKey && !target?.closest('input,textarea')) {
         btn.click();
       }
-    });
+    }, { signal: controller.signal });
+    window.__focusCleanup = () => {
+      controller.abort();
+      if (aside) aside.style.display = '';
+    };
   });
 </script>

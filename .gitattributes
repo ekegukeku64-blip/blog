@@ -1,0 +1,2 @@
+src/content/projects/*.md whitespace=-trailing-space
+firestore.indexes.json whitespace=-blank-at-eof

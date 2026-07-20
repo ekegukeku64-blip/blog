@@ -1,39 +1,42 @@
 /* ========== View Transitions ========== */
-::view-transition-old(root) {
-  animation: vt-out 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-::view-transition-new(root) {
-  animation: vt-in 0.55s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-::view-transition-image-pair(root) { isolation: isolate; }
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  background: #070a13;
+  animation: none;
 }
 
-@keyframes vt-out {
-  to {
-    opacity: 0;
-    filter: blur(4px);
-    transform: scale(1.02);
-  }
-}
-@keyframes vt-in {
-  from {
-    opacity: 0;
-    filter: blur(8px);
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
-  }
+::view-transition-image-pair(root) {
+  isolation: isolate;
 }
 
-header { view-transition-name: header; }
-::view-transition-old(header),
-::view-transition-new(header) { animation: none; }
+::view-transition-group(post-title) {
+  animation-duration: 360ms;
+  animation-timing-function: var(--ease-emphasized);
+}
+
+::view-transition-old(post-title) {
+  animation: postTitleOut 280ms var(--ease-standard) both;
+}
+
+::view-transition-new(post-title) {
+  animation: postTitleIn 360ms var(--ease-emphasized) both;
+}
+
+
+@keyframes postTitleOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes postTitleIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+html.is-navigating .global-bg-layer::before,
+html.is-navigating .global-bg-layer::after,
+html.is-navigating body.page-entrance::before,
+html.is-navigating body.page-entrance::after {
+  animation-play-state: paused;
+}
 
 /* ========== Scrollbar ========== */
 ::-webkit-scrollbar { width: 3px; }
@@ -43,24 +46,32 @@ header { view-transition-name: header; }
 
 /* ========== Scroll Reveal ========== */
 .reveal-target {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.8s var(--interactive-ease),
-              transform 0.8s var(--interactive-ease);
-  will-change: opacity, transform;
+  opacity: 1;
+  transform: none;
 }
 
-.reveal-target.is-revealed {
+.js .reveal-target {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(20px) scale(0.992);
+  transition: opacity var(--motion-slow) var(--ease-standard),
+              filter var(--motion-slow) var(--ease-standard),
+              transform var(--motion-page) var(--ease-emphasized);
+  will-change: opacity, filter, transform;
+}
+
+.js .reveal-target.is-revealed {
   opacity: 1;
-  transform: translateY(0);
+  filter: blur(0);
+  transform: translateY(0) scale(1);
 }
 
 /* 卡片仅保留 opacity 过渡（scroll reveal），位移由 JS 物理引擎驱动 */
 .card-flat.reveal-target {
-  transition: opacity 0.8s var(--interactive-ease);
+  transition: opacity var(--motion-slow) var(--ease-standard);
 }
 
-.page-enter { animation: pageEnter 0.4s var(--ease-out-expo) both; }
+.page-enter { animation: pageEnter var(--motion-base) var(--ease-emphasized) both; }
 @keyframes pageEnter { from { opacity: 0; } to { opacity: 1; } }
 
 /* ========== Page Click Wave ========== */
@@ -152,8 +163,55 @@ header { view-transition-name: header; }
       0 0 0 60px rgba(170, 178, 200, 0);
   }
 }
+/* ========== Press Feedback ========== */
+:where(.interaction-pressable) {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  -webkit-tap-highlight-color: transparent;
+}
 
-/* ========== Reduced Motion ========== */
+.interaction-ripple {
+  position: absolute;
+  z-index: 3;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.04);
+  background: radial-gradient(
+    circle,
+    rgba(247, 249, 252, 0.34) 0%,
+    rgba(151, 174, 197, 0.20) 34%,
+    rgba(200, 142, 82, 0.10) 56%,
+    transparent 72%
+  );
+  border: 1px solid rgba(226, 238, 248, 0.16);
+  box-shadow: 0 0 28px rgba(122, 149, 175, 0.12);
+  animation: interactionRipple 620ms var(--ease-emphasized) both;
+  will-change: transform, opacity;
+}
+
+.interaction-pressable.is-pressing {
+  filter: brightness(1.08);
+  transition: filter var(--motion-instant) var(--ease-standard);
+}
+
+.interaction-pressable.is-navigation-intent {
+  filter: brightness(1.12) saturate(1.06);
+}
+
+@keyframes interactionRipple {
+  0% {
+    opacity: 0.72;
+    transform: translate(-50%, -50%) scale(0.04);
+  }
+  46% { opacity: 0.32; }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-target,
   .blur-reveal {
@@ -164,7 +222,24 @@ header { view-transition-name: header; }
   }
   .scroll-indicator { animation: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  ::view-transition-group(post-title),
+  ::view-transition-old(post-title),
+  ::view-transition-new(post-title) {
+    animation: none;
+  }
   .page-enter { animation: none; }
+  .page-click-wave,
+  .navigation-ink,
+  .interaction-ripple {
+    display: none;
+  }
+
+  .interaction-pressable,
+  .interaction-pressable.is-pressing,
+  .interaction-pressable.is-navigation-intent {
+    filter: none;
+    transition: none;
+  }
   header { transition: none; }
   html { scroll-behavior: auto; }
   body.page-entrance::before,

@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const base = import.meta.env.BASE_URL;
 
@@ -27,7 +27,7 @@ sortedPosts.forEach(p => {
       <!-- 时间线 -->
       <div class="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-accent/40 via-border/40 to-transparent dark:from-dark-accent/40 dark:via-dark-border/40"></div>
 
-      {Object.entries(yearGroups).map(([year, posts], yi) => (
+      {Object.entries(yearGroups).map(([year, posts]) => (
         <div class="mb-14">
           <!-- 年份标记 -->
           <div class="relative flex items-center mb-6">
@@ -43,7 +43,7 @@ sortedPosts.forEach(p => {
               <div class:list={['relative ink-reveal', `ink-reveal-delay-${(i % 4) + 1}`]}>
                 <!-- 连接点 -->
                 <div class="absolute -left-[2.5rem] md:-left-[3rem] top-4 w-3 h-3 rounded-full border-2 border-accent dark:border-dark-accent bg-surface dark:bg-dark-surface"></div>
-                <a href={`${base}blog/${post.id}`} class="block p-5 border border-border/40 dark:border-dark-border/40 hover:border-accent/60 dark:hover:border-dark-accent/60 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5 dark:hover:shadow-dark-accent/5 transition-all duration-300 group rounded-xl bg-gradient-to-br from-surface/50 to-surface-alt/30 dark:from-dark-surface/50 dark:to-dark-surface-alt/30">
+                <a href={`${base}blog/${post.id}/`} class="block p-5 border border-border/40 dark:border-dark-border/40 hover:border-accent/60 dark:hover:border-dark-accent/60 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5 dark:hover:shadow-dark-accent/5 transition-all duration-300 group rounded-xl bg-gradient-to-br from-surface/50 to-surface-alt/30 dark:from-dark-surface/50 dark:to-dark-surface-alt/30">
                   <div class="flex items-center gap-3 mb-2">
                     <time class="text-xs font-mono text-text-muted dark:text-dark-text-muted">
                       {post.data.pubDate.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}

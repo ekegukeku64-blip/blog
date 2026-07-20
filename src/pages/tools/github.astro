@@ -118,7 +118,7 @@ const base = import.meta.env.BASE_URL;
 <script>
 import { marked } from 'marked';
 
-function parseRepoUrl(raw) {
+function parseRepoUrl(raw: string) {
   raw = raw.trim();
   const match = raw.match(/github\.com\/([^/]+)\/([^/\s#?]+)/);
   if (match) return { owner: match[1], repo: match[2] };
@@ -127,10 +127,37 @@ function parseRepoUrl(raw) {
   return null;
 }
 
-async function loadRepo(repo, owner, repoName) {
-  const errorEl = document.getElementById('error');
-  const resultEl = document.getElementById('result');
-  const loadingEl = document.getElementById('loading');
+function sanitizeHtml(html: string) {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  template.content.querySelectorAll('script, iframe, object, embed, style, link').forEach((node) => node.remove());
+  template.content.querySelectorAll('*').forEach((element) => {
+    [...element.attributes].forEach((attribute) => {
+      const name = attribute.name.toLowerCase();
+      const value = attribute.value.trim();
+      if (name.startsWith('on') || name === 'style') {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+      if (name !== 'href' && name !== 'src' && name !== 'xlink:href') return;
+      try {
+        const url = new URL(value, window.location.href);
+        const allowed = name === 'src'
+          ? url.protocol === 'http:' || url.protocol === 'https:'
+          : ['http:', 'https:', 'mailto:', 'tel:', ''].includes(url.protocol);
+        if (!allowed) element.removeAttribute(attribute.name);
+      } catch {
+        element.removeAttribute(attribute.name);
+      }
+    });
+  });
+  return template.innerHTML;
+}
+
+async function loadRepo(_repo: { owner: string; repo: string }, owner: string, repoName: string) {
+  const errorEl = document.getElementById('error')!;
+  const resultEl = document.getElementById('result')!;
+  const loadingEl = document.getElementById('loading')!;
 
   errorEl.classList.add('hidden');
   resultEl.classList.add('hidden');
@@ -159,37 +186,40 @@ async function loadRepo(repo, owner, repoName) {
     (_, alt, path) => `![${alt}](https://cdn.jsdelivr.net/gh/${owner}/${repoName}@${usedBranch}${path})`
   );
 
-  const html = marked.parse(readmeText) as string;
+  const html = sanitizeHtml(marked.parse(readmeText) as string);
 
-  document.getElementById('repo-name').textContent = `${owner}/${repoName}`;
-  document.getElementById('repo-meta').innerHTML = `
+  document.getElementById('repo-name')!.textContent = `${owner}/${repoName}`;
+  document.getElementById('repo-meta')!.innerHTML = `
     <span class="flex items-center gap-1.5">
       <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
       ${usedBranch}
     </span>
   `;
-  document.getElementById('readme-content').innerHTML = html;
+  document.getElementById('readme-content')!.innerHTML = html;
 
   loadingEl.classList.add('hidden');
   resultEl.classList.remove('hidden');
 }
 
-document.getElementById('load-btn').addEventListener('click', () => {
-  const repo = parseRepoUrl(document.getElementById('repo-input').value);
+const repoInput = document.getElementById('repo-input') as HTMLInputElement;
+const errorEl = document.getElementById('error')!;
+
+document.getElementById('load-btn')!.addEventListener('click', () => {
+  const repo = parseRepoUrl(repoInput.value);
   if (!repo) {
-    document.getElementById('error').textContent = '请输入有效的 GitHub 仓库地址';
-    document.getElementById('error').classList.remove('hidden');
+    errorEl.textContent = '请输入有效的 GitHub 仓库地址';
+    errorEl.classList.remove('hidden');
     return;
   }
   loadRepo(repo, repo.owner, repo.repo);
 });
 
-document.getElementById('repo-input').addEventListener('keydown', (e) => {
+repoInput.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key === 'Enter') {
-    const repo = parseRepoUrl(e.target.value);
+    const repo = parseRepoUrl(repoInput.value);
     if (!repo) {
-      document.getElementById('error').textContent = '请输入有效的 GitHub 仓库地址';
-      document.getElementById('error').classList.remove('hidden');
+      errorEl.textContent = '请输入有效的 GitHub 仓库地址';
+      errorEl.classList.remove('hidden');
       return;
     }
     loadRepo(repo, repo.owner, repo.repo);
@@ -199,7 +229,7 @@ document.getElementById('repo-input').addEventListener('keydown', (e) => {
 const params = new URLSearchParams(window.location.search);
 const repoParam = params.get('repo');
 if (repoParam) {
-  document.getElementById('repo-input').value = repoParam;
+  repoInput.value = repoParam;
   const repo = parseRepoUrl(repoParam);
   if (repo) loadRepo(repo, repo.owner, repo.repo);
 }

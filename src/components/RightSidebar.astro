@@ -42,13 +42,11 @@ const { totalPosts, thisMonth, wordCount } = Astro.props;
 </div>
 
 <script>
-  /** @param {HTMLElement} target */
-  function initClickWave(target) {
+  function initClickWave(target: HTMLElement) {
     if (target.dataset.waveReady === 'true') return;
     target.dataset.waveReady = 'true';
 
-    /** @param {MouseEvent} event */
-    target.addEventListener('click', (event) => {
+    target.addEventListener('click', (event: MouseEvent) => {
       const rect = target.getBoundingClientRect();
 
       target.style.setProperty('--wave-x', `${event.clientX - rect.left}px`);
@@ -58,8 +56,7 @@ const { totalPosts, thisMonth, wordCount } = Astro.props;
       target.classList.add('is-waving');
     });
 
-    /** @param {AnimationEvent} event */
-    target.addEventListener('animationend', (event) => {
+    target.addEventListener('animationend', (event: AnimationEvent) => {
       if (event.animationName === 'clickWave') {
         target.classList.remove('is-waving');
       }

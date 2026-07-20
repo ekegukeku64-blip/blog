@@ -48,11 +48,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <script>
     import QRCode from 'qrcode';
 
-    const qrInput = /** @type {HTMLInputElement} */ (document.getElementById('input'));
-    const qrSize = /** @type {HTMLInputElement} */ (document.getElementById('size'));
-    const qrFg = /** @type {HTMLInputElement} */ (document.getElementById('fg-color'));
-    const qrBg = /** @type {HTMLInputElement} */ (document.getElementById('bg-color'));
-    const container = /** @type {HTMLElement} */ (document.getElementById('qr-container'));
+    const qrInput = document.getElementById('input') as HTMLTextAreaElement;
+    const qrSize = document.getElementById('size') as HTMLInputElement;
+    const qrFg = document.getElementById('fg-color') as HTMLInputElement;
+    const qrBg = document.getElementById('bg-color') as HTMLInputElement;
+    const container = document.getElementById('qr-container') as HTMLElement;
 
     async function updateQr() {
       const text = qrInput.value.trim();
@@ -83,7 +83,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     qrFg.addEventListener('input', updateQr);
     qrBg.addEventListener('input', updateQr);
 
-    const btnDownload = /** @type {HTMLElement} */ (document.getElementById('btn-download'));
+    const btnDownload = document.getElementById('btn-download') as HTMLButtonElement;
     btnDownload.addEventListener('click', () => {
       const svgEl = container.querySelector('svg');
       if (!svgEl) return;
@@ -109,7 +109,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           URL.revokeObjectURL(url);
         }, 'image/png');
       };
-      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
     });
 
     updateQr();

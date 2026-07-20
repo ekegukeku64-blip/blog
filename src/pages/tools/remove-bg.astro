@@ -102,6 +102,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     const editor = document.getElementById('editor') as HTMLElement;
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+    const brushSizeInput = document.getElementById('brush-size') as HTMLInputElement;
+    const undoButton = document.getElementById('btn-undo') as HTMLButtonElement;
 
     let mode = 'eraser';
     let originalImage: HTMLImageElement | null = null;
@@ -142,7 +144,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           history = [];
           saveHistory();
         };
-        img.src = ev.target.result;
+        const result = ev.target?.result;
+        if (typeof result === 'string') img.src = result;
       };
       reader.readAsDataURL(file);
     }
@@ -195,7 +198,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     });
 
     // === Mode Switching ===
-    document.querySelectorAll('.tool-btn').forEach(btn => {
+    document.querySelectorAll<HTMLButtonElement>('.tool-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tool-btn').forEach(b => {
           b.classList.remove('bg-accent', 'dark:bg-dark-accent', 'text-white');
@@ -203,14 +206,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         });
         btn.classList.add('bg-accent', 'dark:bg-dark-accent', 'text-white');
         btn.classList.remove('text-text-muted', 'dark:text-dark-text-muted');
-        mode = btn.dataset.mode;
+        mode = btn.dataset.mode || 'eraser';
         document.getElementById('brush-opts')!.style.display = (mode === 'eraser' || mode === 'restore') ? 'flex' : 'none';
         canvas.style.cursor = (mode === 'eraser' || mode === 'restore') ? 'crosshair' : 'default';
       });
     });
 
     // === Slider ===
-    document.getElementById('brush-size')!.addEventListener('input', function(this: HTMLInputElement) {
+    brushSizeInput.addEventListener('input', function(this: HTMLInputElement) {
       document.getElementById('brush-val')!.textContent = this.value;
     });
 
@@ -218,14 +221,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     function saveHistory() {
       if (history.length >= 20) history.shift();
       history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      document.getElementById('btn-undo').disabled = history.length <= 1;
+      undoButton.disabled = history.length <= 1;
     }
 
-    document.getElementById('btn-undo')!.addEventListener('click', () => {
+    undoButton.addEventListener('click', () => {
       if (history.length > 1) {
         history.pop();
         ctx.putImageData(history[history.length - 1], 0, 0);
-        document.getElementById('btn-undo').disabled = history.length <= 1;
+        undoButton.disabled = history.length <= 1;
       }
     });
 
@@ -286,7 +289,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     canvas.addEventListener('mouseleave', endDraw);
 
     function applyBrush(x: number, y: number) {
-      const size = parseInt(document.getElementById('brush-size').value);
+      const size = parseInt(brushSizeInput.value);
       const r = size / 2;
       ctx.save();
       ctx.beginPath();
@@ -402,7 +405,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
       list.innerHTML = drafts.map(d => `
         <div class="flex items-center gap-4 p-3 rounded-lg border border-border/40 dark:border-dark-border/40 mb-2 hover:bg-surface-alt dark:hover:bg-dark-surface-alt transition-colors">
-          <img src="${d.thumbnail}" class="w-16 h-12 object-cover rounded border border-border/30 dark:border-dark-border/30" />
+          <img src="${d.thumbnail}" class="w-16 h-12 object-cover rounded border border-border/30 dark:border-dark-border/30" alt="背景移除草稿缩略图" />
           <div class="flex-1 min-w-0">
             <div class="text-xs text-text-muted dark:text-dark-text-muted">${formatTime(d.createdAt)}</div>
           </div>
@@ -412,7 +415,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       `).join('');
 
       // 恢复草稿
-      list.querySelectorAll('.draft-restore-btn').forEach(btn => {
+      list.querySelectorAll<HTMLButtonElement>('.draft-restore-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.dataset.id;
           if (!id) return;
@@ -439,7 +442,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       });
 
       // 删除草稿
-      list.querySelectorAll('.draft-delete-btn').forEach(btn => {
+      list.querySelectorAll<HTMLButtonElement>('.draft-delete-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.dataset.id;
           if (!id) return;

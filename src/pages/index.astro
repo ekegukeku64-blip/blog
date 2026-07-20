@@ -2,24 +2,24 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const latestPost = sortedPosts[0];
 ---
 
 <BaseLayout title="枫迹 - Entrance">
   <link slot="head" rel="preload" as="image" href={`${import.meta.env.BASE_URL}maple.jpg`} />
-  <main class="entrance-container" id="entrance-root">
+  <div class="entrance-container" id="entrance-root">
     <div class="bg-layer">
       <video
         id="entrance-video"
         class="bg-media"
-        preload="metadata"
+        preload="none"
         loop
         muted
         playsinline
+        data-src={`${import.meta.env.BASE_URL}maple.mp4`}
         poster={`${import.meta.env.BASE_URL}maple.jpg`}>
-        <source src={`${import.meta.env.BASE_URL}maple.mp4`} type="video/mp4" />
       </video>
     </div>
 
@@ -64,7 +64,7 @@ const latestPost = sortedPosts[0];
         </svg>
       </div>
 
-      <h1 class="editorial-title" aria-label="枫">
+      <h1 class="editorial-title" aria-label="枫迹">
         <span class="editorial-line" aria-hidden="true"></span>
         <span class="handwriting-title" aria-hidden="true">
           <span class="handwriting-word">
@@ -85,11 +85,11 @@ const latestPost = sortedPosts[0];
           <span class="editorial-char editorial-char--ink" style="--glyph-delay: 3.88s; --bloom-delay: 3.78s; --trace-delay: 4.14s; --drift-delay: 5.8s" data-depth="0.7">枫</span>
         </span>
       </h1>
-      <p class="blur-reveal subtitle">一个安静记录生活和想法的角落</p>
+      <p class="blur-reveal subtitle" id="entrance-subtitle">一个安静记录生活和想法的角落</p>
 
-      <a href={`${import.meta.env.BASE_URL}home/`} class="blur-reveal enter-btn" id="enter-btn">
+      <a href={`${import.meta.env.BASE_URL}home/`} class="blur-reveal enter-btn" id="enter-btn" aria-describedby="entrance-subtitle">
         <span class="btn-glass-overlay" aria-hidden="true"></span>
-        <span class="btn-text">Enter Room</span>
+        <span class="btn-text">进入枫迹</span>
       </a>
 
       <a class="blur-reveal atmosphere-btn" id="entrance-playlist" href="https://music.163.com/#/playlist?id=2931801429" target="_blank" rel="noopener noreferrer">
@@ -97,9 +97,11 @@ const latestPost = sortedPosts[0];
       </a>
 
       {latestPost && (
-        <p class="recent-update">
-          最近更新：{latestPost.data.pubDate.toLocaleDateString('zh-CN', { month:'long', day:'numeric' })} · {latestPost.data.title}
-        </p>
+        <a class="recent-update" href={`${import.meta.env.BASE_URL}blog/${latestPost.id}/`}>
+          <span>最近更新：</span>
+          <span>{latestPost.data.pubDate.toLocaleDateString('zh-CN', { month:'long', day:'numeric' })} · {latestPost.data.title}</span>
+          <span aria-hidden="true">→</span>
+        </a>
       )}
     </div>
 
@@ -113,10 +115,13 @@ const latestPost = sortedPosts[0];
       <p class="quote-text" id="quote-text"></p>
       <p class="quote-author" id="quote-author"></p>
     </div>
-  </main>
+  </div>
 
   <script is:inline>
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = navigator.connection?.saveData === true;
+    const isMobileDevice = window.matchMedia('(max-width: 768px)').matches;
+    const staticMedia = reduceMotion || saveData || isMobileDevice;
 
     { // === time-based color temperature ===
     const hour = new Date().getHours();
@@ -126,12 +131,27 @@ const latestPost = sortedPosts[0];
 
     { // === video autoplay ===
     const ev = document.getElementById('entrance-video');
-    if (ev && !reduceMotion) {
-      ev.play().catch(() => {});
+    if (ev && !staticMedia) {
+      const videoSrc = ev.dataset.src;
+      if (videoSrc && !ev.src) {
+        ev.src = videoSrc;
+        ev.load();
+      }
+
+      const playVideo = () => {
+        if (!document.hidden) ev.play().catch(() => {});
+      };
+      playVideo();
       const resumeVideo = () => { ev.play().catch(() => {}); };
+      const syncVideoVisibility = () => {
+        if (document.hidden) ev.pause();
+        else playVideo();
+      };
       document.addEventListener('click', resumeVideo, { once: true });
+      document.addEventListener('visibilitychange', syncVideoVisibility);
       document.addEventListener('astro:before-swap', () => {
         document.removeEventListener('click', resumeVideo);
+        document.removeEventListener('visibilitychange', syncVideoVisibility);
         ev.pause();
       }, { once: true });
     }
@@ -139,9 +159,10 @@ const latestPost = sortedPosts[0];
 
     { // === particle system — fireflies + maple leaves ===
     const canvas = document.getElementById('particle-canvas');
-    if (canvas && !reduceMotion) {
+    if (canvas && !staticMedia) {
       const ctx = canvas.getContext('2d');
-      let W = 0, H = 0, animId;
+      let W = 0, H = 0, animId = 0;
+      let particlesRunning = false;
       const fireflies = [];
       const leaves = [];
 
@@ -307,20 +328,40 @@ const latestPost = sortedPosts[0];
       document.addEventListener('mouseleave', onMouseLeave);
 
       function animate() {
+        if (!particlesRunning) return;
         ctx.clearRect(0, 0, W, H);
         fireflies.forEach(f => { f.update(); f.draw(); });
         leaves.forEach(l => { l.update(); l.draw(); });
         animId = requestAnimationFrame(animate);
       }
 
+      const startParticles = () => {
+        if (particlesRunning || document.hidden) return;
+        particlesRunning = true;
+        animate();
+      };
+
+      const stopParticles = () => {
+        particlesRunning = false;
+        cancelAnimationFrame(animId);
+        animId = 0;
+      };
+
+      const syncParticleVisibility = () => {
+        if (document.hidden) stopParticles();
+        else startParticles();
+      };
+
       const onResize = () => { resize(); updateCanvasRect(); };
       window.addEventListener('resize', onResize, { passive: true });
+      document.addEventListener('visibilitychange', syncParticleVisibility);
       resize();
-      animate();
+      startParticles();
 
       document.addEventListener('astro:before-swap', () => {
-        cancelAnimationFrame(animId);
+        stopParticles();
         window.removeEventListener('resize', onResize);
+        document.removeEventListener('visibilitychange', syncParticleVisibility);
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseleave', onMouseLeave);
       }, { once: true });
@@ -1161,15 +1202,43 @@ const latestPost = sortedPosts[0];
 
   /* ── Recent update ── */
   .recent-update {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.3rem;
+    width: min(88vw, 420px);
     margin-top: 2.2rem;
     font-size: 0.78rem;
     color: rgba(168, 175, 186, 0.58);
     letter-spacing: 0.08em;
-    max-width: 320px;
-    white-space: nowrap;
+    text-decoration: none;
+    transition: color 180ms ease;
+    animation: fadeInUp 0.8s 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .recent-update span:nth-child(2) {
     overflow: hidden;
     text-overflow: ellipsis;
-    animation: fadeInUp 0.8s 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+    white-space: nowrap;
+  }
+
+  .recent-update:hover,
+  .recent-update:focus-visible {
+    color: rgba(214, 218, 225, 0.88);
+  }
+
+  .recent-update span:last-child {
+    transition: transform 180ms ease;
+  }
+
+  .recent-update:hover span:last-child,
+  .recent-update:focus-visible span:last-child {
+    transform: translateX(0.2rem);
+  }
+
+  .recent-update:focus-visible {
+    outline: 1px solid rgba(200, 182, 142, 0.36);
+    outline-offset: 0.45rem;
   }
 
   @keyframes fadeInUp {
@@ -1641,7 +1710,10 @@ const latestPost = sortedPosts[0];
     .bottom-quote { bottom: 0.95rem; width: min(86vw, 420px); padding-top: 0.65rem; }
     .bottom-quote::before { width: min(250px, 64vw); opacity: 0.52; }
     .right-accent { display: none; }
-    .recent-update { font-size: 0.7rem; white-space: normal; }
+    .recent-update {
+      width: min(88vw, 360px);
+      font-size: 0.7rem;
+    }
     .quote-text { font-size: 0.75rem; }
     .enter-btn {
       padding: 0.78rem 2.1rem;

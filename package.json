@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
+    "test": "node --experimental-strip-types --test",
+    "check": "astro check",
     "preview": "astro preview",
     "daily": "npm run daily:digest && npm run daily:growth",
     "daily:digest": "py -3 scripts/generate_daily_digest.py",
@@ -16,6 +18,7 @@
     "weekly": "py -3 scripts/generate_weekly_picks.py",
     "weekly:dry": "py -3 scripts/generate_weekly_picks.py --dry-run",
     "indexnow": "bash scripts/submit-indexnow.sh",
+    "firebase:deploy": "firebase deploy --only firestore:rules,firestore:indexes",
     "astro": "astro"
   },
   "dependencies": {

@@ -2,7 +2,7 @@
 // 收藏夹 — 本地收藏文章
 ---
 
-<button id="bookmark-btn"
+<button id="bookmark-btn" type="button" aria-pressed="false" title="收藏文章"
   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans
          border border-border/60 dark:border-dark-border/60 rounded-lg
          text-text-muted dark:text-dark-text-muted
@@ -16,7 +16,9 @@
 </button>
 
 <script is:inline>
-  document.addEventListener('astro:page-load', () => {
+  window.__refreshBookmarkButton = function() {};
+
+  window.__initBookmarkButton = function() {
     const btn = document.getElementById('bookmark-btn');
     const icon = document.getElementById('bookmark-icon');
     const text = document.getElementById('bookmark-text');
@@ -25,20 +27,33 @@
     const slug = window.location.pathname.replace(/.*\/blog\//, '').replace(/\/$/, '');
     if (!slug) return;
 
-    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-    const isBookmarked = bookmarks.includes(slug);
+    const readBookmarks = () => {
+      try {
+        const value = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+        return Array.isArray(value) ? value : [];
+      } catch {
+        return [];
+      }
+    };
 
     function updateUI() {
+      const bookmarks = readBookmarks();
       const nowBookmarked = bookmarks.includes(slug);
       icon.setAttribute('fill', nowBookmarked ? 'currentColor' : 'none');
       text.textContent = nowBookmarked ? '已收藏' : '收藏';
       btn.classList.toggle('text-accent', nowBookmarked);
       btn.classList.toggle('dark:text-dark-accent', nowBookmarked);
+      btn.setAttribute('aria-pressed', String(nowBookmarked));
+      btn.setAttribute('title', nowBookmarked ? '取消收藏' : '收藏文章');
     }
 
+    window.__refreshBookmarkButton = updateUI;
     updateUI();
 
+    if (btn.dataset.bookmarkReady === 'true') return;
+    btn.dataset.bookmarkReady = 'true';
     btn.addEventListener('click', () => {
+      const bookmarks = readBookmarks();
       const idx = bookmarks.indexOf(slug);
       if (idx > -1) {
         bookmarks.splice(idx, 1);
@@ -47,6 +62,15 @@
       }
       localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
       updateUI();
+      window.dispatchEvent(new CustomEvent('bookmarks:changed'));
     });
-  });
+  };
+
+  window.__initBookmarkButton();
+  if (!window.__bookmarkButtonPageLoadReady) {
+    window.__bookmarkButtonPageLoadReady = true;
+    document.addEventListener('astro:page-load', () => window.__initBookmarkButton());
+    window.addEventListener('storage', () => window.__refreshBookmarkButton());
+    window.addEventListener('bookmarks:changed', () => window.__refreshBookmarkButton());
+  }
 </script>

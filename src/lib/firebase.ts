@@ -21,7 +21,6 @@ import {
   deleteDoc,
   getDocs,
   serverTimestamp,
-  type DocumentData,
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -32,6 +31,9 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.PUBLIC_FIREBASE_APP_ID,
 }
+export const isFirebaseConfigured = Object.values(firebaseConfig).every(
+  value => typeof value === 'string' && value.trim().length > 0,
+)
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)

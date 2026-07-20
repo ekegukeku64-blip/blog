@@ -9,10 +9,12 @@
     python scripts/generate_weekly_picks.py --dry-run # 只打印不写入
 """
 
+import html
 import io
 import os
 import re
 import sys
+import urllib.parse
 from datetime import datetime, timezone, timedelta
 
 if sys.platform == "win32":
@@ -224,16 +226,48 @@ def format_stars(n: int) -> str:
     if n >= 1000:
         return f"{n / 1000:.1f}k"
     return str(n)
+MARKDOWN_SPECIALS_RE = re.compile(r"([\\*_{}\[\]()#+.!|])")
+MARKDOWN_UNESCAPE_RE = re.compile(r"\\([\\*_{}\[\]()#+.!|])")
+
+def sanitize_external_text(value: object, max_length: int = 1000) -> str:
+    """Return one-line external text that cannot open Markdown or raw HTML."""
+    text = html.unescape(str(value or ""))
+    text = MARKDOWN_UNESCAPE_RE.sub(r"\1", text)
+    text = "".join(ch if ord(ch) >= 32 else " " for ch in text)
+    text = re.sub(r"\s+", " ", text).strip()
+    text = text[:max_length]
+    text = html.escape(text, quote=False)
+    text = text.replace(chr(96), "\\" + chr(96))
+    return MARKDOWN_SPECIALS_RE.sub(lambda match: "\\" + match.group(1), text)
+
+
+def sanitize_external_url(value: object) -> str:
+    """Allow only canonical HTTPS GitHub links in generated Markdown."""
+    text = str(value or "").strip()
+    try:
+        parsed = urllib.parse.urlsplit(text)
+    except ValueError:
+        return ""
+    if parsed.scheme != "https":
+        return ""
+    if parsed.hostname not in {"github.com", "www.github.com"}:
+        return ""
+    return urllib.parse.quote(text, safe="/:#?[]@!$&'*+,;=%")
+
 
 
 def generate_weekly_post(repos: list[dict], week_start: str, week_end: str) -> str:
     entries = []
     for i, r in enumerate(repos, 1):
-        entries.append(f"""## {i}. [{r['name']}]({r['url']})
+        name = sanitize_external_text(r.get("name"), 200)
+        url = sanitize_external_url(r.get("url")) or "https://github.com"
+        description = sanitize_external_text(r.get("description") or "暂无描述", 800)
+        language = sanitize_external_text(r.get("language") or "未知", 80)
+        entries.append(f"""## {i}. [{name}]({url})
 
-> {r['description']}
+> {description}
 
-⭐ {format_stars(r['stars'])} stars · 语言: **{r['language']}**
+⭐ {format_stars(r['stars'])} stars · 语言: **{language}**
 
 ### 💬 我的看法
 

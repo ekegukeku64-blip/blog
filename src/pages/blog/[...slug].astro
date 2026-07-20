@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
   const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const publicPosts = sorted.filter(post => !post.data.noindex);
 
   function detectSeries(title: string): { name: string; part: number } | null {
     const match = title.match(/^(.+?)\s*#(\d+)/);
@@ -26,7 +27,8 @@ export async function getStaticPaths() {
     }
   }
 
-  return sorted.map((post, i) => {
+  return sorted.map((post) => {
+    const publicIndex = publicPosts.findIndex(item => item.id === post.id);
     const series = detectSeries(post.data.title);
     let seriesData = null;
     if (series) {
@@ -47,8 +49,12 @@ export async function getStaticPaths() {
         readingTime: calcReadingTime(post.body || ''),
         wordCount: calcWordCount(post.body || ''),
         updatedDate,
-        prev: i < sorted.length - 1 ? { title: sorted[i + 1].data.title, slug: sorted[i + 1].id } : null,
-        next: i > 0 ? { title: sorted[i - 1].data.title, slug: sorted[i - 1].id } : null,
+        prev: !post.data.noindex && publicIndex < publicPosts.length - 1
+          ? { title: publicPosts[publicIndex + 1].data.title, slug: publicPosts[publicIndex + 1].id }
+          : null,
+        next: !post.data.noindex && publicIndex > 0
+          ? { title: publicPosts[publicIndex - 1].data.title, slug: publicPosts[publicIndex - 1].id }
+          : null,
         seriesData,
       },
     };
@@ -74,6 +80,7 @@ const { Content } = await render(post);
   slug={post.id}
   seriesData={seriesData}
   body={post.body}
+  noindex={post.data.noindex}
 >
   <Content />
 </PostLayout>

@@ -9,7 +9,6 @@ import PostStamp from '../components/PostStamp.astro';
 import ImageLightbox from '../components/ImageLightbox.astro';
 import FocusMode from '../components/FocusMode.astro';
 import CopyLink from '../components/CopyLink.astro';
-import ShareQR from '../components/ShareQR.astro';
 import AuthorCard from '../components/AuthorCard.astro';
 import Bookmarks from '../components/Bookmarks.astro';
 import FontSizeControl from '../components/FontSizeControl.astro';
@@ -39,12 +38,20 @@ interface Props {
   slug?: string;
   seriesData?: { name: string; items: SeriesItem[]; currentSlug: string } | null;
   body?: string;
+  noindex?: boolean;
 }
 
-const { title, description, pubDate, updatedDate, heroImage, tags, category, readingTime, wordCount, prev = null, next = null, slug = '', seriesData = null, body = '' } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, category, readingTime, wordCount, prev = null, next = null, slug = '', seriesData = null, body = '', noindex = false } = Astro.props;
+const isRiskReport = noindex && category === '风险观察';
+const articleURL = new URL(Astro.url.pathname, Astro.site).toString();
+const articleImageURL = heroImage
+  ? new URL(`${import.meta.env.BASE_URL}${heroImage.replace(/^\//, '')}`, Astro.site).toString()
+  : undefined;
 
 // 所有文章数据，用于内链预览
-const allPostsForPreview = await getCollection('posts', ({ data }) => !data.draft);
+const allPostsForPreview = isRiskReport
+  ? []
+  : await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
 const previewPosts = allPostsForPreview.map(p => ({
   slug: p.id,
   title: p.data.title,
@@ -56,16 +63,22 @@ function formatDate(date: Date) {
 }
 ---
 
-<BaseLayout title={title} description={description} image={heroImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={heroImage}
+  robots={noindex ? 'noindex, nofollow' : 'index, follow'}
+  pagefind={!noindex}
+  ogType="article"
+>
   <Fragment slot="head">
-    <meta property="og:type" content="article" />
     <meta property="article:published_time" content={pubDate.toISOString()} />
     {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
     <meta property="article:author" content="又逢雨季" />
     {tags.map(tag => <meta property="article:tag" content={tag} />)}
     <meta name="keywords" content={tags.join(', ')} />
     {heroImage && <meta name="twitter:image" content={new URL(`${import.meta.env.BASE_URL}${heroImage.replace(/^\//, '')}`, Astro.site)} />}
-    <script type="application/ld+json" set:html={JSON.stringify({
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": title,
@@ -73,19 +86,25 @@ function formatDate(date: Date) {
       "datePublished": pubDate.toISOString(),
       ...(updatedDate ? { "dateModified": updatedDate.toISOString() } : {}),
       "author": { "@type": "Person", "name": "又逢雨季" },
-      "url": `${Astro.site}${slug}/`,
-      ...(heroImage ? { "image": `${Astro.site}${heroImage.replace(/^\//, '')}` } : {}),
+      "url": articleURL,
+      ...(articleImageURL ? { "image": articleImageURL } : {}),
       "keywords": tags.join(", ")
     })} />
   </Fragment>
   <article class="post-article max-w-3xl mx-auto px-6 pt-16 pb-10">
     <!-- Header: centered typography -->
     <header class="post-header text-center mb-10">
-      <a href={`${import.meta.env.BASE_URL}category/${category}`} class="reveal-target inline-block text-[11px] tracking-[0.35em] uppercase text-text-muted hover:text-accent transition-colors mb-6 font-sans">
-        {category}
-      </a>
+      {noindex ? (
+        <span class="reveal-target inline-block text-[11px] tracking-[0.35em] uppercase text-text-muted mb-6 font-sans">
+          {category}
+        </span>
+      ) : (
+        <a href={`${import.meta.env.BASE_URL}category/${encodeURIComponent(category)}/`} class="reveal-target inline-block text-[11px] tracking-[0.35em] uppercase text-text-muted hover:text-accent transition-colors mb-6 font-sans">
+          {category}
+        </a>
+      )}
 
-      <h1 class="reveal-target text-5xl md:text-6xl font-bold leading-tight mb-5 text-text" style="font-family: var(--font-display); letter-spacing: 0.04em;">
+      <h1 class="post-transition-title text-5xl md:text-6xl font-bold leading-tight mb-5 text-text" style="font-family: var(--font-display); letter-spacing: 0.04em; view-transition-name: post-title;">
         {title}
       </h1>
 
@@ -97,20 +116,18 @@ function formatDate(date: Date) {
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
         {wordCount && <span>· {formatWordCount(wordCount)} 字</span>}
         {readingTime && <span>· 约 {readingTime} 分钟阅读</span>}
-        <span>· <span id="page-view-count">0</span> 次阅读</span>
         {updatedDate && <span>· 更新于 {formatDate(updatedDate)}</span>}
       </div>
 
       <div class="flex items-center justify-center gap-2 mt-4">
-        <CopyLink />
-        <ShareQR />
-        <Bookmarks />
+        {!isRiskReport && <CopyLink />}
+        {!isRiskReport && <Bookmarks />}
         <FontSizeControl />
       </div>
     </header>
 
     <!-- Series Navigation -->
-    {seriesData && (
+    {!isRiskReport && seriesData && (
       <SeriesNav seriesName={seriesData.name} items={seriesData.items} currentSlug={seriesData.currentSlug} />
     )}
 
@@ -131,76 +148,85 @@ function formatDate(date: Date) {
       </aside>
     </div>
 
-    <!-- Tags -->
-    {tags.length > 0 && (
-      <div class="mt-14 pt-8 border-t border-white/[0.05]">
-        <TagCloud tags={tags} />
-      </div>
+    {!isRiskReport ? (
+      <Fragment>
+        {tags.length > 0 && (
+          <div class="mt-14 pt-8 border-t border-white/[0.05]">
+            <TagCloud tags={tags} />
+          </div>
+        )}
+
+        <div class="mt-14 pt-8 border-t border-white/[0.05]">
+          <AuthorCard />
+        </div>
+
+        <ShareLike slug={slug} title={title} />
+
+        {body && body.length > 100 && (
+          <PostAISummary content={body} slug={slug} />
+        )}
+
+        <RelatedPosts currentSlug={slug} tags={tags} />
+        <PostNav prev={prev} next={next} />
+        <PostStamp />
+
+        <script is:inline id="preview-data" type="application/json" set:html={JSON.stringify(previewPosts)}></script>
+
+        <div id="link-preview" class="fixed z-[300] pointer-events-none opacity-0 scale-95 -translate-y-1 transition-all duration-200 ease-out" style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)">
+          <div class="post-link-preview bg-[#0a0f1a]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl overflow-hidden max-w-xs p-3.5">
+            <h4 id="link-preview-title" class="font-display text-sm font-bold text-text leading-snug line-clamp-2"></h4>
+            <p id="link-preview-desc" class="text-xs text-text-muted mt-1.5 line-clamp-2 leading-relaxed font-serif"></p>
+          </div>
+        </div>
+
+        <div class="mt-10 pt-8 border-t border-white/[0.05]">
+          <Comment />
+        </div>
+      </Fragment>
+    ) : (
+      <nav class="risk-report-nav mt-14 pt-6 border-t border-white/[0.08]" aria-label="风险观察导航">
+        <a href={import.meta.env.BASE_URL + 'risk-watch/'}>返回风险观察</a>
+        <a href={import.meta.env.BASE_URL + 'disclaimer/'}>查看内容声明</a>
+      </nav>
     )}
-
-    <!-- 作者卡片 -->
-    <div class="mt-14 pt-8 border-t border-white/[0.05]">
-      <AuthorCard />
-    </div>
-
-    <!-- Share & Like -->
-    <ShareLike slug={slug} title={title} />
-
-    <!-- AI Summary -->
-    {body && body.length > 100 && (
-      <PostAISummary content={body} slug={slug} />
-    )}
-
-    <!-- Related Posts -->
-    <RelatedPosts currentSlug={slug} tags={tags} />
-
-    <!-- Prev/Next Navigation -->
-    <PostNav prev={prev} next={next} />
-
-    <!-- 个人印章 -->
-    <PostStamp />
-
-    <!-- 内链预览数据 -->
-    <script id="preview-data" type="application/json" set:html={JSON.stringify(previewPosts)}></script>
-
-    <!-- 内链预览卡片 -->
-    <div id="link-preview" class="fixed z-[300] pointer-events-none opacity-0 scale-95 -translate-y-1 transition-all duration-200 ease-out" style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1)">
-      <div class="post-link-preview bg-[#0a0f1a]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl overflow-hidden max-w-xs p-3.5">
-        <h4 id="link-preview-title" class="font-display text-sm font-bold text-text leading-snug line-clamp-2"></h4>
-        <p id="link-preview-desc" class="text-xs text-text-muted mt-1.5 line-clamp-2 leading-relaxed font-serif"></p>
-      </div>
-    </div>
-
-    <!-- Comments -->
-    <div class="mt-10 pt-8 border-t border-white/[0.05]">
-      <Comment />
-    </div>
   </article>
 
-  <ImageLightbox />
-  <FocusMode />
+  {!isRiskReport && <ImageLightbox />}
+  {!isRiskReport && <FocusMode />}
 
   <script is:inline>
-  document.addEventListener('astro:page-load', () => {
+  window.__initPostPreviews = function() {
+    if (window.__postPreviewController) window.__postPreviewController.abort();
+    const controller = new AbortController();
+    window.__postPreviewController = controller;
     const dataEl = document.getElementById('preview-data');
     const preview = document.getElementById('link-preview');
     const previewTitle = document.getElementById('link-preview-title');
     const previewDesc = document.getElementById('link-preview-desc');
     if (!dataEl || !preview) return;
 
-    const posts = JSON.parse(dataEl.textContent || '[]');
-    const base = document.querySelector('meta[name="base-url"]')?.content || '/';
+    let posts = [];
+    try { posts = JSON.parse(dataEl.textContent || '[]'); }
+    catch { return; }
     let hideTimer = null;
 
+    controller.signal.addEventListener('abort', () => clearTimeout(hideTimer), { once: true });
     document.querySelectorAll('.prose a').forEach(link => {
       const href = link.getAttribute('href') || '';
-      const match = href.match(/\/blog\/([^\/]+)/);
-      if (!match) return;
-      const slug = match[1];
+      let slug;
+      try {
+        const url = new URL(href, location.href);
+        if (url.origin !== location.origin) return;
+        const segments = url.pathname.split('/').filter(Boolean);
+        if (segments.length < 2 || segments.at(-2) !== 'blog') return;
+        slug = decodeURIComponent(segments.at(-1));
+      } catch {
+        return;
+      }
       const post = posts.find(p => p.slug === slug);
       if (!post) return;
 
-      link.addEventListener('mouseenter', (e) => {
+      link.addEventListener('mouseenter', () => {
         clearTimeout(hideTimer);
         previewTitle.textContent = post.title;
         previewDesc.textContent = post.description || '';
@@ -215,20 +241,26 @@ function formatDate(date: Date) {
         preview.style.top = (rect.bottom + 8) + 'px';
         preview.classList.remove('opacity-0', 'scale-95', '-translate-y-1');
         preview.classList.add('opacity-100', 'scale-100', 'translate-y-0');
-      });
+      }, { signal: controller.signal });
 
       link.addEventListener('mouseleave', () => {
         hideTimer = setTimeout(() => {
           preview.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
           preview.classList.add('opacity-0', 'scale-95', '-translate-y-1');
         }, 150);
-      });
+      }, { signal: controller.signal });
     });
-  });
+  };
+  if (!window.__postPreviewPageLoadReady) {
+    window.__postPreviewPageLoadReady = true;
+    document.addEventListener('astro:page-load', () => window.__initPostPreviews());
+  }
   </script>
+    document.addEventListener('astro:before-swap', () => window.__postPreviewController?.abort());
 
   <script is:inline>
-    document.addEventListener('astro:page-load', () => {
+    window.__initPostToc = function() {
+      if (window.__postTocObserver) window.__postTocObserver.disconnect();
       const prose = document.querySelector('.prose');
       const tocNav = document.getElementById('toc-nav');
       const tocSidebar = document.getElementById('toc-sidebar');
@@ -251,7 +283,8 @@ function formatDate(date: Date) {
           'text-text-muted hover:text-accent';
         a.addEventListener('click', (e) => {
           e.preventDefault();
-          h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+          h.scrollIntoView({ behavior, block: 'start' });
         });
         tocNav.appendChild(a);
       });
@@ -285,7 +318,12 @@ function formatDate(date: Date) {
       }, { rootMargin: '-80px 0px -70% 0px' });
 
       headings.forEach(h => observer.observe(h));
-    });
+      window.__postTocObserver = observer;
+    };
+    if (!window.__postTocPageLoadReady) {
+      window.__postTocPageLoadReady = true;
+      document.addEventListener('astro:page-load', () => window.__initPostToc());
+    }
   </script>
 
   <!-- ===== Code block enhancement: copy + language label + line numbers ===== -->
@@ -331,6 +369,29 @@ function formatDate(date: Date) {
     .post-toc-panel {
       padding-top: 0.25rem;
       padding-bottom: 0.25rem;
+    }
+
+    .risk-report-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 1.5rem;
+    }
+
+    .risk-report-nav a {
+      display: inline-flex;
+      min-height: 2.75rem;
+      align-items: center;
+      color: var(--color-text-muted);
+      font-size: 0.82rem;
+      text-decoration: underline;
+      text-decoration-color: var(--color-border-strong);
+      text-underline-offset: 0.3rem;
+      transition: color 180ms ease;
+    }
+
+    .risk-report-nav a:hover,
+    .risk-report-nav a:focus-visible {
+      color: var(--color-warm);
     }
 
     .post-link-preview {

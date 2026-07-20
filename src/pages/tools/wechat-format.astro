@@ -77,6 +77,32 @@ def hello():
 
 ![图片占位](https://) *需在公众号编辑器上传图片*`;
 
+    function escapeHtml(value: unknown) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function escapeAttribute(value: unknown) {
+      return escapeHtml(value)
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function safeUrl(value: string | null, kind: 'link' | 'image') {
+      if (!value?.trim()) return '';
+      try {
+        const url = new URL(value, window.location.href);
+        const allowed = kind === 'image'
+          ? ['http:', 'https:'].includes(url.protocol)
+          : ['http:', 'https:', 'mailto:', 'tel:'].includes(url.protocol);
+        return allowed ? url.toString() : '';
+      } catch {
+        return '';
+      }
+    }
+
     function toWechatHtml(md: string): string {
       // 先用 marked 解析为 HTML
       const raw = marked.parse(md, { breaks: true, gfm: true }) as string;
@@ -88,7 +114,7 @@ def hello():
 
       function convertNode(node: Node): string {
         if (node.nodeType === Node.TEXT_NODE) {
-          return node.textContent || '';
+          return escapeHtml(node.textContent || '');
         }
 
         if (node.nodeType !== Node.ELEMENT_NODE) return '';
@@ -133,9 +159,11 @@ def hello():
           case 'li':
             return `<li style="margin: 0.3em 0;">${inner}</li>`;
           case 'a':
-            return `<a href="${el.getAttribute('href') || ''}" style="color: #7a95af; text-decoration: underline;">${inner}</a>`;
+            return `<a href="${escapeAttribute(safeUrl(el.getAttribute('href'), 'link'))}" style="color: #7a95af; text-decoration: underline;">${inner}</a>`;
           case 'img':
-            return `<p style="text-align: center; margin: 1em 0;"><img src="${el.getAttribute('src') || ''}" alt="${el.getAttribute('alt') || ''}" style="max-width: 100%; border-radius: 6px;" /></p>`;
+            const src = escapeAttribute(safeUrl(el.getAttribute('src'), 'image'));
+            const alt = escapeAttribute(el.getAttribute('alt') || '');
+            return `<p style="text-align: center; margin: 1em 0;"><img src="${src}" alt="${alt}" style="max-width: 100%; border-radius: 6px;" /></p>`;
           case 'hr':
             return `<hr style="border: none; border-top: 1px solid #e0e0e0; margin: 1.5em 0;" />`;
           case 'table':
@@ -180,8 +208,7 @@ def hello():
     copyBtn.addEventListener('click', async () => {
       const html = toWechatHtml(input.value);
       try {
-        // 同时复制 HTML 和纯文本，提升兼容性
-        const plainText = preview.textContent || '';
+        // 复制已过滤的内联 HTML，直接粘贴到公众号编辑器
         await navigator.clipboard.writeText(html);
         copyStatus.textContent = '已复制微信 HTML ✓';
         copyStatus.classList.remove('hidden');

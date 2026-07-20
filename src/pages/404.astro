@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="404 — 页面未找到" description="你要找的页面不存在">
+<BaseLayout title="404 — 页面未找到" description="你要找的页面不存在" robots="noindex, nofollow" pagefind={false}>
   <section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
     <!-- 水墨背景装饰 -->
     <div class="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.03]">
@@ -36,7 +36,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- 返回按钮 -->
       <div class="flex items-center justify-center gap-4">
         <a
-          href={import.meta.env.BASE_URL}
+          href={`${import.meta.env.BASE_URL}home/`}
           class="magnetic-link inline-flex items-center gap-2 px-7 py-3.5 bg-accent text-white rounded-sm font-medium hover:bg-accent-light transition-all duration-300 hover:shadow-lg hover:shadow-accent/20"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

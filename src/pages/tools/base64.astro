@@ -34,9 +34,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     const output = document.getElementById('output');
     const error = document.getElementById('error');
 
+    const encodeUtf8Base64 = (value) => {
+      const bytes = new TextEncoder().encode(value);
+      const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
+      return btoa(binary);
+    };
+
+    const decodeUtf8Base64 = (value) => {
+      const binary = atob(value.trim());
+      const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+      return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    };
+
     document.getElementById('btn-encode').addEventListener('click', () => {
       try {
-        output.value = btoa(unescape(encodeURIComponent(input.value)));
+        output.value = encodeUtf8Base64(input.value);
         error.classList.add('hidden');
       } catch (e) {
         error.textContent = '编码失败: ' + e.message;
@@ -46,7 +58,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
     document.getElementById('btn-decode').addEventListener('click', () => {
       try {
-        input.value = decodeURIComponent(escape(atob(output.value)));
+        input.value = decodeUtf8Base64(output.value);
         error.classList.add('hidden');
       } catch (e) {
         error.textContent = '解码失败: 无效的 Base64 字符串';

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 const year = new Date().getFullYear();
 const base = import.meta.env.BASE_URL;
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
 const recentPosts = allPosts
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
@@ -31,12 +31,15 @@ const recentPosts = allPosts
           导航
         </h3>
         <div class="flex flex-col gap-2">
-          <a href={`${base}`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">首页</a>
+          <a href={`${base}home/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">首页</a>
           <a href={`${base}blog/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">文章</a>
           <a href={`${base}archive/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">归档</a>
           <a href={`${base}tools/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">工具</a>
           <a href={`${base}friends/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">友链</a>
           <a href={`${base}about/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">关于</a>
+          <a href={`${base}privacy/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">隐私说明</a>
+          <a href={`${base}disclaimer/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">内容声明</a>
+          <a href={`${base}bookmarks/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">我的收藏</a>
         </div>
       </div>
 
@@ -76,11 +79,8 @@ const recentPosts = allPosts
     <div class="pt-6 border-t border-white/[0.04] flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-text-muted/50 reveal-target">
       <p class="font-serif">&copy; {year} 又逢雨季 · 枫迹</p>
       <div class="flex items-center gap-3 font-serif">
-        <span>访客 <span id="busuanzi_value_site_uv" class="font-mono text-text-muted">-</span></span>
-        <span class="text-text-muted/20">·</span>
         <span>雨天更适合相遇</span>
       </div>
     </div>
   </div>
-  <script async is:inline src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </footer>

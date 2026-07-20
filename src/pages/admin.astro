@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="管理面板" description="博客后台管理">
+<BaseLayout title="管理面板" description="博客后台管理" robots="noindex, nofollow" pagefind={false}>
   <div class="max-w-4xl mx-auto px-6 py-16">
     <div id="admin-gate" class="text-center py-20">
       <svg class="w-16 h-16 mx-auto mb-4 text-text-muted dark:text-dark-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -18,6 +17,7 @@ const base = import.meta.env.BASE_URL;
           GitHub 登录
         </button>
       </div>
+      <p id="admin-auth-status" class="mt-4 text-sm text-red-500 hidden" role="status" aria-live="polite"></p>
     </div>
 
     <div id="admin-no-access" class="hidden text-center py-20">
@@ -31,10 +31,14 @@ const base = import.meta.env.BASE_URL;
       </div>
 
       <!-- 统计 -->
-      <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
           <p id="stat-total" class="text-2xl font-bold text-text dark:text-dark-text">-</p>
           <p class="text-xs text-text-muted dark:text-dark-text-muted">全部评论</p>
+        </div>
+        <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
+          <p id="stat-pending" class="text-2xl font-bold text-amber-500">-</p>
+          <p class="text-xs text-text-muted dark:text-dark-text-muted">待审核</p>
         </div>
         <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
           <p id="stat-approved" class="text-2xl font-bold text-green-500">-</p>
@@ -47,14 +51,30 @@ const base = import.meta.env.BASE_URL;
       </div>
 
       <!-- 筛选 -->
-      <div class="flex gap-2 mb-6">
+      <div class="flex flex-wrap gap-2 mb-6">
         <button data-filter="all" class="filter-btn px-4 py-2 text-sm rounded-lg bg-accent text-white">全部</button>
+        <button data-filter="pending" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">待审核</button>
         <button data-filter="approved" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">已通过</button>
         <button data-filter="rejected" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">已拒绝</button>
       </div>
+      <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] mb-6">
+        <label class="sr-only" for="admin-comment-search">搜索评论</label>
+        <input id="admin-comment-search" type="search" placeholder="搜索作者、页面或评论内容" class="w-full min-h-11 px-4 py-2.5 rounded-lg border border-border/60 dark:border-dark-border/60 bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text focus:outline-none focus:border-accent" />
+        <div class="flex flex-wrap gap-2">
+          <button id="admin-select-page" type="button" class="px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text">选择本页</button>
+          <button id="admin-batch-approve" type="button" disabled class="px-3 py-2 text-sm rounded-lg bg-green-600 text-white disabled:opacity-40 disabled:cursor-not-allowed">批量通过</button>
+          <button id="admin-batch-reject" type="button" disabled class="px-3 py-2 text-sm rounded-lg bg-red-500 text-white disabled:opacity-40 disabled:cursor-not-allowed">批量拒绝</button>
+        </div>
+      </div>
+
 
       <!-- 评论列表 -->
       <div id="admin-comments" class="space-y-4"></div>
+      <div id="admin-pagination" class="hidden items-center justify-center gap-3 mt-6">
+        <button id="admin-page-prev" type="button" class="min-h-11 px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text disabled:opacity-40" aria-label="上一页">上一页</button>
+        <span id="admin-page-info" class="text-sm text-text-muted dark:text-dark-text-muted" aria-live="polite"></span>
+        <button id="admin-page-next" type="button" class="min-h-11 px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text disabled:opacity-40" aria-label="下一页">下一页</button>
+      </div>
     </div>
   </div>
 
@@ -155,6 +175,10 @@ const base = import.meta.env.BASE_URL;
       background: #22c55e20;
       color: #22c55e;
     }
+    .status-pending {
+      background: #f59e0b20;
+      color: #f59e0b;
+    }
     .status-rejected {
       background: #ef444420;
       color: #ef4444;
@@ -164,7 +188,7 @@ const base = import.meta.env.BASE_URL;
 
 <script>
   import {
-    onAuth, loginWithGoogle, loginWithGithub,
+    isFirebaseConfigured, onAuth, loginWithGoogle, loginWithGithub,
     db, collection, query, orderBy, getDocs,
     doc, updateDoc, deleteDoc,
     type Comment,
@@ -173,6 +197,10 @@ const base = import.meta.env.BASE_URL;
 
   let allComments: (Comment & { id: string })[] = []
   let currentFilter = 'all'
+  let currentPage = 1
+  let searchQuery = ''
+  const PAGE_SIZE = 20
+  const selectedIds = new Set<string>()
 
   function formatDate(ts: any) {
     if (!ts) return ''
@@ -180,57 +208,132 @@ const base = import.meta.env.BASE_URL;
     return d.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
-  function escapeHtml(str: string) {
+  function escapeHtml(value: unknown) {
     const div = document.createElement('div')
-    div.textContent = str
+    div.textContent = String(value ?? '')
     return div.innerHTML
+  }
+
+  function safeImageUrl(value: unknown) {
+    if (typeof value !== 'string' || !value.trim()) return ''
+    try {
+      const url = new URL(value)
+      return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : ''
+    } catch {
+      return ''
+    }
   }
 
   function renderStats(comments: (Comment & { id: string })[]) {
     const total = comments.length
+    const pending = comments.filter(c => c.status === 'pending').length
     const approved = comments.filter(c => c.status === 'approved').length
     const rejected = comments.filter(c => c.status === 'rejected').length
     const el = (id: string) => document.getElementById(id)
     if (el('stat-total')) el('stat-total')!.textContent = String(total)
+    if (el('stat-pending')) el('stat-pending')!.textContent = String(pending)
     if (el('stat-approved')) el('stat-approved')!.textContent = String(approved)
     if (el('stat-rejected')) el('stat-rejected')!.textContent = String(rejected)
+  }
+
+  function getFilteredComments() {
+    const byStatus = currentFilter === 'all'
+      ? allComments
+      : allComments.filter(comment => comment.status === currentFilter)
+    const normalizedQuery = searchQuery.trim().toLocaleLowerCase('zh-CN')
+    if (!normalizedQuery) return byStatus
+    return byStatus.filter(comment =>
+      [comment.displayName, comment.pageId, comment.content]
+        .some(value => String(value || '').toLocaleLowerCase('zh-CN').includes(normalizedQuery))
+    )
+  }
+
+  function updateAdminControls(pageItems: (Comment & { id: string })[], totalItems: number, totalPages: number) {
+    const pagination = document.getElementById('admin-pagination')
+    const pageInfo = document.getElementById('admin-page-info')
+    const prev = document.getElementById('admin-page-prev') as HTMLButtonElement | null
+    const next = document.getElementById('admin-page-next') as HTMLButtonElement | null
+    const selectPage = document.getElementById('admin-select-page') as HTMLButtonElement | null
+    const approve = document.getElementById('admin-batch-approve') as HTMLButtonElement | null
+    const reject = document.getElementById('admin-batch-reject') as HTMLButtonElement | null
+    const showPagination = totalItems > PAGE_SIZE
+    pagination?.classList.toggle('hidden', !showPagination)
+    pagination?.classList.toggle('flex', showPagination)
+    if (pageInfo) pageInfo.textContent = '第 ' + currentPage + ' / ' + totalPages + ' 页'
+    if (prev) prev.disabled = currentPage <= 1
+    if (next) next.disabled = currentPage >= totalPages
+    const selectedCount = selectedIds.size
+    if (approve) {
+      approve.disabled = selectedCount === 0
+      approve.textContent = selectedCount ? '批量通过 (' + selectedCount + ')' : '批量通过'
+    }
+    if (reject) {
+      reject.disabled = selectedCount === 0
+      reject.textContent = selectedCount ? '批量拒绝 (' + selectedCount + ')' : '批量拒绝'
+    }
+    if (selectPage) {
+      const allSelected = pageItems.length > 0 && pageItems.every(comment => selectedIds.has(comment.id))
+      selectPage.textContent = allSelected ? '取消选择' : '选择本页'
+    }
+  }
+
+  async function batchReview(status: 'approved' | 'rejected') {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+    try {
+      await Promise.all(ids.map(id => updateDoc(doc(db, 'comments', id), { status })))
+      selectedIds.clear()
+      await loadComments()
+    } catch (error) {
+      console.error('Batch review failed:', error)
+      alert('批量操作失败，请重试')
+    }
   }
 
   function renderComments() {
     const container = document.getElementById('admin-comments')
     if (!container) return
 
-    const filtered = currentFilter === 'all'
-      ? allComments
-      : allComments.filter(c => c.status === currentFilter)
+    const filtered = getFilteredComments()
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+    currentPage = Math.min(Math.max(currentPage, 1), totalPages)
+    const start = (currentPage - 1) * PAGE_SIZE
+    const pageItems = filtered.slice(start, start + PAGE_SIZE)
+    updateAdminControls(pageItems, filtered.length, totalPages)
 
     if (filtered.length === 0) {
       container.innerHTML = '<p class="text-center text-text-muted dark:text-dark-text-muted py-8">暂无评论</p>'
       return
     }
 
-    container.innerHTML = filtered.map(c => {
-      const avatarHtml = c.photoURL
-        ? `<img src="${c.photoURL}" alt="" />`
-        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--color-accent);color:white;font-size:0.7rem;font-weight:600">${escapeHtml(c.displayName).charAt(0).toUpperCase()}</div>`
-      const statusClass = c.status === 'approved' ? 'status-approved' : 'status-rejected'
-      const statusText = c.status === 'approved' ? '已通过' : '已拒绝'
+    container.innerHTML = pageItems.map(c => {
+      const displayName = String(c.displayName || '匿名')
+      const photoURL = safeImageUrl(c.photoURL)
+      const safeId = escapeHtml(c.id)
+      const checked = selectedIds.has(c.id) ? ' checked' : ''
+      const avatarHtml = photoURL
+        ? `<img src="${escapeHtml(photoURL)}" alt="" referrerpolicy="no-referrer" />`
+        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--color-accent);color:white;font-size:0.7rem;font-weight:600">${escapeHtml(displayName).charAt(0).toUpperCase()}</div>`
+      const [statusClass, statusText] = c.status === 'approved'
+        ? ['status-approved', '已通过']
+        : c.status === 'pending' ? ['status-pending', '待审核'] : ['status-rejected', '已拒绝']
       return `
         <div class="admin-comment">
           <div class="admin-comment-header">
             <div class="admin-comment-meta">
+              <input class="admin-comment-select" type="checkbox" data-id="${safeId}" aria-label="选择 ${escapeHtml(displayName)} 的评论"${checked} />
               <div class="admin-comment-avatar">${avatarHtml}</div>
-              <span class="admin-comment-name">${escapeHtml(c.displayName)}</span>
+              <span class="admin-comment-name">${escapeHtml(displayName)}</span>
               <span class="status-badge ${statusClass}">${statusText}</span>
             </div>
-            <span class="admin-comment-time">${formatDate(c.createdAt)}</span>
+            <span class="admin-comment-time">${escapeHtml(formatDate(c.createdAt))}</span>
           </div>
           <p class="admin-comment-page">页面: ${escapeHtml(c.pageId)}</p>
           <div class="admin-comment-body">${escapeHtml(c.content).replace(/\n/g, '<br>')}</div>
           <div class="admin-comment-actions">
-            ${c.status !== 'approved' ? `<button class="btn-approve" data-id="${c.id}" data-action="approve">通过</button>` : ''}
-            ${c.status !== 'rejected' ? `<button class="btn-reject" data-id="${c.id}" data-action="reject">拒绝</button>` : ''}
-            <button class="btn-delete" data-id="${c.id}" data-action="delete">删除</button>
+            ${c.status !== 'approved' ? `<button class="btn-approve" data-id="${safeId}" data-action="approve">通过</button>` : ''}
+            ${c.status !== 'rejected' ? `<button class="btn-reject" data-id="${safeId}" data-action="reject">拒绝</button>` : ''}
+            <button class="btn-delete" data-id="${safeId}" data-action="delete">删除</button>
           </div>
         </div>
       `
@@ -246,6 +349,7 @@ const base = import.meta.env.BASE_URL;
           if (action === 'approve') await updateDoc(doc(db, 'comments', id), { status: 'approved' })
           else if (action === 'reject') await updateDoc(doc(db, 'comments', id), { status: 'rejected' })
           else if (action === 'delete') await deleteDoc(doc(db, 'comments', id))
+          selectedIds.delete(id)
           await loadComments()
         } catch (e) {
           console.error(e)
@@ -253,37 +357,86 @@ const base = import.meta.env.BASE_URL;
         }
       })
     })
+    container.querySelectorAll<HTMLInputElement>('.admin-comment-select').forEach(input => {
+      input.addEventListener('change', () => {
+        const id = input.getAttribute('data-id')
+        if (!id) return
+        if (input.checked) selectedIds.add(id)
+        else selectedIds.delete(id)
+        updateAdminControls(pageItems, filtered.length, totalPages)
+      })
+    })
   }
 
   async function loadComments() {
-    const q = query(collection(db, 'comments'), orderBy('createdAt', 'desc'))
-    const snapshot = await getDocs(q)
-    allComments = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Comment & { id: string }))
-    renderStats(allComments)
-    renderComments()
+    const container = document.getElementById('admin-comments')
+    if (container) {
+      container.innerHTML = '<p class="text-center text-text-muted dark:text-dark-text-muted py-8" role="status">正在加载评论…</p>'
+    }
+    try {
+      const q = query(collection(db, 'comments'), orderBy('createdAt', 'desc'))
+      const snapshot = await getDocs(q)
+      allComments = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Comment & { id: string }))
+      renderStats(allComments)
+      renderComments()
+    } catch (error) {
+      console.error('Failed to load admin comments:', error)
+      if (container) {
+        container.innerHTML = '<div class="text-center text-text-muted dark:text-dark-text-muted py-8" role="alert"><p>评论加载失败，请重试。</p><button id="admin-comments-retry" type="button" class="mt-3 px-4 py-2 text-sm rounded-lg bg-accent text-white">重新加载</button></div>'
+        document.getElementById('admin-comments-retry')?.addEventListener('click', () => loadComments(), { once: true })
+      }
+    }
   }
 
   document.addEventListener('astro:page-load', () => {
+    ;(window as any).__adminCleanup?.()
+    const controller = new AbortController()
+    let authUnsubscribe: (() => void) | null = null
+    currentPage = 1
+    searchQuery = ''
+    selectedIds.clear()
     const gate = document.getElementById('admin-gate')
     const noAccess = document.getElementById('admin-no-access')
     const panel = document.getElementById('admin-panel')
     const userInfo = document.getElementById('admin-user-info')
     const loginGoogle = document.getElementById('admin-login-google')
     const loginGithub = document.getElementById('admin-login-github')
+    const authStatus = document.getElementById('admin-auth-status')
+    const searchInput = document.getElementById('admin-comment-search') as HTMLInputElement | null
+    const selectPage = document.getElementById('admin-select-page') as HTMLButtonElement | null
+    const batchApprove = document.getElementById('admin-batch-approve') as HTMLButtonElement | null
+    const batchReject = document.getElementById('admin-batch-reject') as HTMLButtonElement | null
+    const prevPage = document.getElementById('admin-page-prev') as HTMLButtonElement | null
+    const nextPage = document.getElementById('admin-page-next') as HTMLButtonElement | null
 
     if (!gate || !panel) return
 
+    const setAuthStatus = (message: string) => {
+      if (!authStatus) return
+      authStatus.textContent = message
+      authStatus.classList.toggle('hidden', !message)
+    }
+    if (!isFirebaseConfigured) {
+      setAuthStatus('评论后台尚未配置 Firebase 环境变量。')
+      loginGoogle?.setAttribute('disabled', '')
+      loginGithub?.setAttribute('disabled', '')
+      return
+    }
+
+
     loginGoogle?.addEventListener('click', async () => {
-      try { await loginWithGoogle() } catch (e) { console.error(e) }
-    })
+      try { setAuthStatus(''); await loginWithGoogle() } catch (e) { console.error(e); setAuthStatus('登录失败，请检查弹窗或浏览器拦截设置。') }
+    }, { signal: controller.signal })
     loginGithub?.addEventListener('click', async () => {
-      try { await loginWithGithub() } catch (e) { console.error(e) }
-    })
+      try { setAuthStatus(''); await loginWithGithub() } catch (e) { console.error(e); setAuthStatus('登录失败，请检查弹窗或浏览器拦截设置。') }
+    }, { signal: controller.signal })
 
     // 筛选按钮
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         currentFilter = btn.getAttribute('data-filter') || 'all'
+        currentPage = 1
+        selectedIds.clear()
         document.querySelectorAll('.filter-btn').forEach(b => {
           b.classList.remove('bg-accent', 'text-white')
           b.classList.add('bg-surface-alt', 'dark:bg-dark-surface-alt', 'text-text', 'dark:text-dark-text')
@@ -291,10 +444,38 @@ const base = import.meta.env.BASE_URL;
         btn.classList.remove('bg-surface-alt', 'dark:bg-dark-surface-alt', 'text-text', 'dark:text-dark-text')
         btn.classList.add('bg-accent', 'text-white')
         renderComments()
-      })
+      }, { signal: controller.signal })
     })
 
-    onAuth(async (user) => {
+    searchInput?.addEventListener('input', () => {
+      searchQuery = searchInput.value
+      currentPage = 1
+      selectedIds.clear()
+      renderComments()
+    }, { signal: controller.signal })
+    prevPage?.addEventListener('click', () => {
+      currentPage = Math.max(1, currentPage - 1)
+      selectedIds.clear()
+      renderComments()
+    }, { signal: controller.signal })
+    nextPage?.addEventListener('click', () => {
+      currentPage += 1
+      selectedIds.clear()
+      renderComments()
+    }, { signal: controller.signal })
+    selectPage?.addEventListener('click', () => {
+      const filtered = getFilteredComments()
+      const start = (currentPage - 1) * PAGE_SIZE
+      const pageItems = filtered.slice(start, start + PAGE_SIZE)
+      const allSelected = pageItems.length > 0 && pageItems.every(comment => selectedIds.has(comment.id))
+      pageItems.forEach(comment => allSelected ? selectedIds.delete(comment.id) : selectedIds.add(comment.id))
+      renderComments()
+    }, { signal: controller.signal })
+    batchApprove?.addEventListener('click', () => batchReview('approved'), { signal: controller.signal })
+    batchReject?.addEventListener('click', () => batchReview('rejected'), { signal: controller.signal })
+
+
+    authUnsubscribe = onAuth(async (user) => {
       if (!user) {
         gate.classList.remove('hidden')
         noAccess?.classList.add('hidden')
@@ -316,5 +497,11 @@ const base = import.meta.env.BASE_URL;
 
       await loadComments()
     })
+    ;(window as any).__adminCleanup = () => {
+      controller.abort()
+      authUnsubscribe?.()
+      authUnsubscribe = null
+    }
   })
+  document.addEventListener('astro:before-swap', () => (window as any).__adminCleanup?.(), { once: true })
 </script>

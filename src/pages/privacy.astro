@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="隐私说明" description="枫迹博客的数据处理、第三方服务与本地工具说明">
+  <article class="privacy-page">
+    <header>
+      <p class="privacy-kicker">Privacy</p>
+      <h1>隐私说明</h1>
+      <p>这里说明本站什么时候会连接第三方服务，以及哪些数据只留在你的浏览器里。</p>
+      <time datetime="2026-07-17">更新于 2026 年 7 月 17 日</time>
+    </header>
+
+    <section>
+      <h2>默认访问</h2>
+      <p>浏览文章和普通页面不要求注册。本站当前不使用广告追踪脚本，也不会出售访问数据。</p>
+    </section>
+
+    <section>
+      <h2>登录与留言</h2>
+      <p>留言功能使用 Firebase，并支持 Google 或 GitHub 登录。登录时，第三方服务可能提供账号标识、显示名称和头像；留言正文、页面地址与发布时间会保存在 Firestore，用于展示和管理评论。</p>
+    </section>
+
+    <section>
+      <h2>在线工具</h2>
+      <p>JSON、Base64、文本对比、图片压缩等工具主要在浏览器本地处理数据。GitHub 查看工具需要向 GitHub 请求公开仓库信息；智能抠图工具会下载运行模型，但图片处理在浏览器中完成。</p>
+    </section>
+
+    <section>
+      <h2>浏览器存储</h2>
+      <p>收藏、字号、草稿和部分界面偏好可能保存在浏览器的 localStorage 中。你可以通过浏览器设置随时清除这些数据。</p>
+    </section>
+
+    <section>
+      <h2>外部链接</h2>
+      <p>文章和日报会链接到 GitHub 等外部网站。离开本站后，数据处理方式以对应网站的隐私政策为准。</p>
+    </section>
+
+    <section>
+      <h2>联系</h2>
+      <p>如需查询或删除与留言相关的数据，可通过 <a href="https://github.com/ekegukeku64-blip" target="_blank" rel="noopener noreferrer">GitHub</a> 联系站点维护者。</p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .privacy-page {
+    width: min(100% - 2.5rem, 48rem);
+    margin: 0 auto;
+    padding: 4.5rem 0 6rem;
+  }
+  .privacy-page header {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-glass);
+  }
+  .privacy-kicker {
+    margin-bottom: 1rem;
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .privacy-page h1 {
+    margin-bottom: 1rem;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .privacy-page header > p:not(.privacy-kicker),
+  .privacy-page section p {
+    color: var(--color-text-secondary);
+    font-family: var(--font-serif);
+    line-height: 1.9;
+  }
+  .privacy-page time {
+    display: block;
+    margin-top: 1rem;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .privacy-page section {
+    padding-top: 2rem;
+  }
+  .privacy-page h2 {
+    margin-bottom: 0.75rem;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .privacy-page a {
+    color: var(--color-accent);
+    text-underline-offset: 0.2em;
+  }
+  @media (max-width: 768px) {
+    .privacy-page {
+      padding-top: 3rem;
+    }
+    .privacy-page h1 {
+      font-size: 2.25rem;
+    }
+  }
+</style>

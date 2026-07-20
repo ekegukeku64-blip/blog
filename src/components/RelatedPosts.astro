@@ -8,12 +8,12 @@ const { currentSlug, tags } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
 // Get all posts
-const allPosts = await import.meta.glob('../content/posts/*.md', { eager: true });
+const allPosts = import.meta.glob('../content/posts/*.md', { eager: true });
 const posts = Object.values(allPosts) as any[];
 
 // Find related posts by matching tags
 const related = posts
-  .filter(post => post.file && !post.file.includes(currentSlug))
+  .filter(post => post.file && !post.file.includes(currentSlug) && !post.frontmatter?.noindex)
   .map(post => {
     const postTags = post.frontmatter?.tags || [];
     const matchCount = postTags.filter((t: string) => tags.includes(t)).length;
@@ -23,9 +23,6 @@ const related = posts
   .sort((a, b) => b.matchCount - a.matchCount)
   .slice(0, 3);
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-}
 
 function getSlug(file: string) {
   const filename = file.split('/').pop()?.replace('.md', '') || '';
@@ -43,7 +40,7 @@ function getSlug(file: string) {
         const slug = getSlug(post.file);
         return (
           <a
-            href={`${base}blog/${slug}`}
+            href={`${base}blog/${slug}/`}
             class="group block p-5 border border-border/40 dark:border-dark-border/40
                    hover:border-accent/60 dark:hover:border-dark-accent/60
                    hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5 dark:hover:shadow-dark-accent/5
