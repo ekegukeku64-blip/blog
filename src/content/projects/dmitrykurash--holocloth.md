@@ -5,13 +5,13 @@ name: "holocloth"
 fullName: "dmitrykurash/holocloth"
 description: "Real-time holographic cloth design tool. Drape posters and graphics on simulated fabric — iridescent foil shader, Verlet cloth physics, macro depth of field, film grain, bump maps, and transparent PNG export. Built with Three.js (WebGL 2), React, and DialKit. Physics and shaders written from scratch."
 sourceUrl: "https://github.com/dmitrykurash/holocloth"
-stars: 31
-forks: 1
+stars: 64
+forks: 6
 language: "TypeScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-07-23"
+snapshotDate: "2026-07-25"
 pushedAt: "2026-07-22T15:58:49Z"
 ---
 

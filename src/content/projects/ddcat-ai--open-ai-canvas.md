@@ -5,15 +5,14 @@ name: "open-ai-canvas"
 fullName: "ddcat-ai/open-ai-canvas"
 description: "面向 AI 影视创作的开源无限画布工作台，集成多模态生成、分镜编排、素材管理与 Agent 工作流。"
 sourceUrl: "https://github.com/ddcat-ai/open-ai-canvas"
-stars: 72
-forks: 19
+stars: 108
+forks: 25
 language: "TypeScript"
 topics: []
 license: "AGPL-3.0"
-homepage: "https://ai.ddcat.pro/login"
 defaultBranch: "main"
-snapshotDate: "2026-07-23"
-pushedAt: "2026-07-23T02:34:59Z"
+snapshotDate: "2026-07-25"
+pushedAt: "2026-07-24T01:29:14Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -91,7 +90,7 @@ Issue 反馈、技术讨论和产品升级建议都可以在 QQ 群中沟通。�
 curl -fsSL https://raw.githubusercontent.com/ddcat-ai/open-ai-canvas/main/scripts/install-server.sh | sudo bash
 ```
 
-脚本会自动安装 Docker 和 Docker Compose，把部署配置安装到 `/opt/open-ai-canvas`，生成随机数据库密码，从 GitHub Container Registry 拉取网页与后端镜像，并启动网页、后端、PostgreSQL 和 Redis。数据库和上传文件使用 Docker 数据卷持久保存，重新启动容器不会丢失。
+脚本会自动安装 Docker 和 Docker Compose，把项目源码安装到 `/opt/open-ai-canvas`，生成随机数据库密码，在服务器本地构建网页与后端镜像，并启动网页、后端、PostgreSQL 和 Redis。该流程不依赖 GitHub Container Registry（GHCR）的匿名拉取权限；数据库和上传文件使用 Docker 数据卷持久保存，重新启动容器不会丢失。
 
 完成后打开 `http://服务器IP:3000`。第一个注册的账号会自动成为管理员；登录后在系统设置中配置模型渠道即可开始使用。公开注册默认关闭，但不影响第一个管理员注册。
 
@@ -99,11 +98,11 @@ curl -fsSL https://raw.githubusercontent.com/ddcat-ai/open-ai-canvas/main/script
 
 ```bash
 cd /opt/open-ai-canvas
-sudo docker compose --env-file .env -f docker-compose.deploy.yml ps
-sudo docker compose --env-file .env -f docker-compose.deploy.yml logs -f --tail=200
+sudo docker compose --env-file .env -f docker-compose.deploy.yml -f docker-compose.build.yml ps
+sudo docker compose --env-file .env -f docker-compose.deploy.yml -f docker-compose.build.yml logs -f --tail=200
 ```
 
-默认拉取 `ghcr.io/ddcat-ai/open-ai-canvas-web:latest` 和 `ghcr.io/ddcat-ai/open-ai-canvas-backend:latest`。发布版本还会生成去掉 `v` 前缀的版本标签；如需固定版本，可在 `.env` 中设置 `CANVAS_IMAGE_TAG=1.0.2`。
+首次部署需要下载构建依赖并编译前后端，耗时和资源占用会高于直接拉取镜像；后续更新会复用 Docker 构建缓存。需要固定代码版本时，可通过 `REPOSITORY_REF` 指定分支或标签。
 
 ### 直接使用 GitHub Packages 镜像
 
@@ -113,7 +112,7 @@ sudo docker compose --env-file .env -f docker-compose.deploy.yml logs -f --tail=
 curl -fsSL https://raw.githubusercontent.com/ddcat-ai/open-ai-canvas/main/scripts/install-server-image.sh | sudo bash
 ```
 
-默认使用 `latest` 标签。固定版本或修改端口可在首次执行后编辑 `/opt/open-ai-canvas/.env`，然后重新执行脚本；使用私有 GHCR 镜像时，请先执行 `docker login ghcr.io`，或在直接运行脚本时提供 `GHCR_USERNAME` 和 `GHCR_TOKEN` 环境变量完成登录。
+该快速脚本仍依赖 GHCR 容器包的可见性。容器包尚未公开时，必须先执行 `docker login ghcr.io`，或在直接运行脚本时提供 `GHCR_USERNAME` 和 `GHCR_TOKEN` 环境变量完成登录；未配置凭据时请使用上方推荐的源码构建脚本。默认使用 `latest` 标签，固定版本或修改端口可在首次执行后编辑 `/opt/open-ai-canvas/.env`，然后重新执行脚本。
 
 部署配置和 PostgreSQL 密码保存在 `/opt/open-ai-canvas/.env`，不要发送给他人，也不要删除 `backend-data`、`postgres-data` 和 `redis-data` 数据卷。数据卷持久化不等于备份，请定期备份 PostgreSQL 和上传文件。直接使用 IP 访问仅适合首次配置；公网长期使用必须绑定域名并配置 HTTPS。
 
@@ -136,6 +135,8 @@ bun run dev
 
 打开 `http://localhost:3000`，注册首个管理员账号，再在系统设置中配置渠道和模型。
 
+资源配额、Worker/渠道/账号任务并发、业务频控、任务超时和渠道中转策略可在“系统配置 → 资源与策略”中统一热更新，支持重置和自用模式；系统渠道可选择跟随全局值，或单独设置 `1-999` 的最大并发数。未保存后台配置时 Worker 和全局渠道并发分别回退到 `CANVAS_WORKER_CONCURRENCY` 和 `CANVAS_CHANNEL_CONCURRENCY`，两者默认均为 `3`。渠道槽位暂满时任务会等待，不会直接标记失败。
+
 Docker 一体化运行：
 
 ```bash
@@ -144,10 +145,10 @@ docker compose -f docker-compose.local.yml up -d --build
 
 ## 数据说明
 
-- 用户自定义 AI API Key 保存在浏览器本地；创建异步任务时会提交给自部署后端并加密入队，生产环境必须使用 HTTPS。
+- 用户自定义 AI API Key 保存在浏览器本地；登录态拉取模型目录时会临时提交给自部署后端但不会保存，创建异步任务时会加密入队；仅应使用可信部署，生产环境必须启用 HTTPS。
 - 画布和素材登录后同步到后端，本地 `localForage` 继续承担缓存和降级存储。
 - 媒体资源在启用 OSS 时保存到私有 OSS，否则保存到后端数据目录；删除业务记录不会自动清理 OSS 对象。
-- 用户主动上传的单个文件必须小于 50MB，每个账号按 UTC 自然日累计必须小于 200MB；AI 生成结果不计入主动上传额度。
+- 用户主动上传、Agent 会话附件和 AI 生成资源的单文件上限、账号容量及 UTC 日上传总量由后台“资源与策略”统一维护，默认分别为 50MB、32MB、64MB、2GB 和 200MB；管理员可按可信部署需要调整，单文件业务上限最高 999MB，Nginx 请求体硬上限为 1024MB。
 
 ## 公网部署安全
 

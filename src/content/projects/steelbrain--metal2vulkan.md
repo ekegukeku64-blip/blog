@@ -5,14 +5,14 @@ name: "metal2vulkan"
 fullName: "steelbrain/metal2vulkan"
 description: "Translate Metal AIR / LLVM IR to Vulkan SPIR-V with a native Rust emitter"
 sourceUrl: "https://github.com/steelbrain/metal2vulkan"
-stars: 95
-forks: 2
+stars: 144
+forks: 4
 language: "Rust"
 topics: []
 license: "LGPL-3.0"
 defaultBranch: "master"
-snapshotDate: "2026-07-23"
-pushedAt: "2026-07-22T10:18:33Z"
+snapshotDate: "2026-07-25"
+pushedAt: "2026-07-23T23:26:05Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -99,3 +99,6 @@ Optional private system-metallib harvest and hash-only drift pins are documented
 
 Licensed under the GNU Lesser General Public License v3.0 or later
 (`LGPL-3.0-or-later`).
+
+Metal is a trademark of Apple Inc. metal2vulkan is an independent project and is not affiliated
+with, sponsored by, or endorsed by Apple Inc.

@@ -5,26 +5,26 @@ name: "grok-app"
 fullName: "RongleCat/grok-app"
 description: "Desktop workbench for Grok Build CLI — sessions, projects, media, automations (Tauri 2 · unofficial)"
 sourceUrl: "https://github.com/RongleCat/grok-app"
-stars: 76
-forks: 7
+stars: 243
+forks: 25
 language: "TypeScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-07-24"
-pushedAt: "2026-07-24T00:21:44Z"
+snapshotDate: "2026-07-25"
+pushedAt: "2026-07-25T03:11:44Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
 
 Grok App
 
-本机 Grok Build 的桌面指挥台
+Desktop workbench for local Grok Build
 Sessions, projects, media, automations — for the real grok CLI
 
 
-  中文 ·
-  English
+  English ·
+  中文
 
 
   
@@ -38,213 +38,253 @@ Sessions, projects, media, automations — for the real grok CLI
   
 
 
-  关注作者 · Follow
+  Follow the author
   X / Twitter → 铁柱AGI @cgnot996
-  微信公众号搜索 「铁柱AGI」 · 扫码或搜一搜关注
+  WeChat Official Account: search 「铁柱AGI」 (scan or WeChat Search below)
 
 
   
 
 
-  仓库 ·
+  Repo ·
   RongleCat/grok-app
 
 
 ---
 
 > [!NOTE]
-> ## 说明
+> ## Note
 >
-> **Grok App 不是 xAI 官方产品。** 它把本机 [Grok Build](https://x.ai) CLI（`grok agent stdio`）收成桌面工作台：会话、项目、权限、媒体预览与已安排任务。
+> **Grok App is not an official xAI product.** It wraps the local [Grok Build](https://x.ai) CLI (`grok agent stdio`) into a desktop workbench: sessions, projects, permissions, media previews, and scheduled tasks.
 >
-> 真 Agent 能力依赖本机已安装并可登录的 **Grok Build CLI**。没有 CLI 时可用首次向导安装，或开发态 `GROK_APP_ACP=mock` 做 UI 联调。
+> Real agent power needs a working **Grok Build CLI** installed and signed in. Without CLI you can install from the first-run wizard, or use `GROK_APP_ACP=mock` for UI-only development.
 
 ---
 
-## 目录
+## Contents
 
-1. 简介
-2. 功能特性
-3. 界面预览
-4. 安装与使用
-5. macOS 无法打开 / 提示已损坏
-6. 配置目录
-7. 开发与构建
-8. 文档与贡献
-9. 关注作者
-
----
-
-## 简介
-
-在终端里跑 `grok` 很强，但日常工作台还缺一块：多项目、多会话、权限条、富媒体预览、定时任务、中英文界面。
-
-**Grok App** 解决的是「指挥台」问题：
-
-1. 安装 App，准备好 Grok Build CLI  
-2. 添加项目 / 新建会话  
-3. 连接 Agent，用 Ask 或 YOLO 发消息  
-4. 预览产物、安排自动化、在设置里管账号与中转  
-
-技术栈：**Tauri 2 + Rust · React + TypeScript + Vite · Tailwind CSS**
+1. Overview
+2. Features
+3. Screenshots
+4. Install & first run
+5. macOS “damaged” / Gatekeeper
+6. Config paths
+7. Develop & build
+8. Docs & contributing
+9. Contributors
+10. Follow the author
 
 ---
 
-## 功能特性
+## Overview
 
-| 类别 | 说明 |
-|------|------|
-| **真 Build 会话** | 默认 `grok agent stdio`（ACP）；Host 独占会话 FSM |
-| **项目与会话** | 多项目信任目录、侧栏会话、orphan「其他会话」 |
-| **权限** | 默认 Ask；Allow once / session / Deny；可选 YOLO |
-| **斜杠与技能** | Composer 斜杠面板、技能标签、Goal / Doctor 入口 |
-| **媒体与文件** | 图 / 视频 / PDF / Office / 代码预览；资源窗 + 内嵌浏览器 |
-| **自动化** | 已安排任务列表；对话里自然语言创建（静默 fence，不展示 JSON） |
-| **账号与额度** | 官方登录面、SuperGrok 额度与热力图 |
-| **自定义中转** | 独立 `GROK_HOME` agent 配置，避免污染默认 `~/.grok` |
-| **i18n** | 界面与托盘中英切换 |
-| **跨平台打包** | macOS ARM / Intel + Windows x64（GitHub Actions） |
+The `grok` CLI is powerful in a terminal. Day-to-day work still needs multi-project sessions, a permission bar, rich previews, scheduled jobs, and bilingual UI.
+
+**Grok App** is that workbench:
+
+1. Install the app and prepare Grok Build CLI  
+2. Add a project / new session  
+3. Connect the agent; chat under Ask or YOLO  
+4. Preview artifacts, schedule automations, manage account & relays in Settings  
+
+**Stack:** Tauri 2 + Rust · React + TypeScript + Vite · Tailwind CSS
 
 ---
 
-## 界面预览
+## Features
 
-> 截图来自当前开发版（macOS）。
+| Area | What you get |
+|------|----------------|
+| **Real Build sessions** | Default `grok agent stdio` (ACP); host-owned session FSM; optional remote ACP |
+| **Projects & sessions** | Trusted dirs, virtualized sidebar, archive / orphan, fork & rewind; **import CLI sessions** in shared mode |
+| **Multi-session stream** | Keep busy turns streaming after switching chats; process limits & idle recycle |
+| **Git worktrees** | Project chip lists linked worktrees; switch cwd in one click (hidden for non-git) |
+| **Permissions** | Default Ask; allow once / session / deny; YOLO; **per-project** permission tier |
+| **Plan / Goal** | Sticky execution progress; resource-pane Markdown review + steps; Goal entry |
+| **Slash · Extensions** | Slash palette, Skills; Settings → Extensions for MCP / Plugins |
+| **Composer** | Follow-up send queue while busy; paste screenshots; context usage chip |
+| **Media & files** | Image / video / PDF / Office / code preview; **edit & save** text in Resources; Changes (session diffs + workspace git) |
+| **Agent runtime** | Stall cancel; structured error deck; **diagnostic zip** export; no early “ready” while tools/permissions open |
+| **Automations** | Scheduled list; natural-language create-from-chat (silent fence, no JSON in UI) |
+| **Account & quota** | Multi-account switcher, official login, SuperGrok quota + heatmap, custom-provider local usage |
+| **Custom relays** | Independent `GROK_HOME` agent profile (keeps `~/.grok` clean when desired) |
+| **Security** | Optional OS keychain for API keys (default `secrets.json` 0600); store write locks; in-app confirms only |
+| **i18n** | Simplified Chinese / Traditional Chinese / English + tray |
+| **Packaging** | macOS ARM / Intel · Windows x64 (setup + portable) · Linux x64 (AppImage / deb / rpm) |
 
-| 工作台 · SuperGrok | 账户与额度 |
+---
+
+## Screenshots
+
+> From the current macOS development build.
+
+| Workbench · SuperGrok | Account & quota |
 |:---:|:---:|
 | *图片：Workbench* | *图片：Account* |
 
-| 浅色主题 | 会话与媒体 |
+| Light theme | Session & media |
 |:---:|:---:|
 | *图片：Light* | *图片：Chat* |
 
 ---
 
-## 安装与使用
+## Install & first run
 
-### 1. 下载
+### 1. Download
 
-从 Releases 下载对应平台安装包：
+Get installers from Releases:
 
-| 平台 | 文件 |
-|------|------|
+| Platform | Artifact |
+|----------|----------|
 | macOS Apple Silicon | `Grok_*_aarch64.dmg` |
 | macOS Intel | `Grok_*_x64.dmg` |
-| Windows x64 | `.msi` / `.exe` |
+| Windows x64 | `*-setup.exe` installer + `*-portable.zip` |
+| Linux x64 | AppImage / `.deb` / `.rpm` |
 
-安装包产品名为 **Grok**（与窗口标题一致）。
+The bundle product name is **Grok** (matches the window title).
 
-### 2. 首次使用
+**Arch / Manjaro / EndeavourOS:** prefer the **AppImage** (`chmod +x` then run). Official CI does not publish a separate AUR package; AppImage is distro-agnostic.
 
-1. 启动 App → **Setup 向导** 确认 CLI 已安装（可一键多镜像安装）  
-2. （可选）登录官方账号 / 填 API Key / 配置自定义中转；可跳过  
-3. **添加项目** → 选择并信任文件夹  
-4. **连接 Agent** → Ready 后发消息  
-5. 权限条默认 **Ask**；需要无人值守时再开 YOLO  
+### 2. First run
 
-### 3. 依赖
+1. Launch → **Setup wizard** ensures CLI is installed (multi-mirror install supported)  
+2. (Optional) Official login / API key / custom relay — skippable  
+3. **Add project** → trust a folder  
+4. **Connect agent** → chat when Ready  
+5. Permission bar defaults to **Ask**; use YOLO only when you want unattended runs  
 
-- 本机 **Grok Build CLI**（`grok`），常见路径：`~/.grok/bin/grok` 或 PATH  
-- Windows：`%USERPROFILE%\.grok\bin\grok.exe` 或 PATH  
+### 3. Requirements
+
+- Local **Grok Build CLI** (`grok`), often `~/.grok/bin/grok` or on `PATH`  
+- Windows: `%USERPROFILE%\.grok\bin\grok.exe` or `PATH`  
 
 ---
 
-## macOS 无法打开 / 提示已损坏
+## macOS “damaged” / Gatekeeper
 
-当前 Release **未做 Apple 公证**（需付费开发者账号）。从 GitHub 下载后，Gatekeeper 可能提示「已损坏」「无法验证开发者」等，属预期行为。
+Release builds are **not Apple-notarized** (paid Developer ID required). Gatekeeper may block downloads — that is expected.
 
-**推荐处理：**
+**Recommended:**
 
 ```bash
-# 将 App 拖到「应用程序」后执行
 xattr -cr /Applications/Grok.app
 open /Applications/Grok.app
 ```
 
-**其他方式：**
+**Also works:**
 
-- Finder 中 **右键** App → **打开** → 再次确认打开  
-- **系统设置 → 隐私与安全性** → 对拦截项点 **仍要打开**  
+- Finder: **right-click** → **Open** → confirm  
+- **System Settings → Privacy & Security** → **Open Anyway**  
 
-请仅从本仓库官方 Releases 下载。
+Only download from this repo’s official Releases.
 
 ---
 
-## 配置目录
+## Config paths
 
-默认数据根（可用环境变量 **`GROK_APP_HOME`** 覆盖）：
+Default data root (override with **`GROK_APP_HOME`**):
 
-| 平台 | 典型路径 |
-|------|----------|
+| Platform | Typical path |
+|----------|----------------|
 | macOS | `~/Library/Application Support/com.grokapp.grok-app/` |
 | Windows | `%APPDATA%\grokapp\grok-app\` |
-| 回退 | `~/.grok-app/` |
+| Fallback | `~/.grok-app/` |
 
 ```text
 /
   projects.json
   sessions_index.json
   settings.json
-  secrets.json          # 0600；请勿提交
+  secrets.json          # metadata (+ API-key fallback); keys prefer OS keychain
   automations.json
   projects/
   sessions/
   logs/
-  agent-home/           # 独立模式 GROK_HOME（providers / config.toml）
+  agent-home/           # independent-mode GROK_HOME
 ```
 
-Grok Build 自身配置仍在 **`~/.grok`**（CLI 登录、`auth.json` 等）。  
-**shared** 会话模式可与 CLI 共用 `~/.grok`；**independent** 模式使用 `agent-home/`。
+API keys prefer the OS secret store (macOS Keychain / Windows Credential Manager /
+Linux Secret Service) with a `secrets.json` (mode `0600`) fallback when the OS store
+is unavailable. Do not commit secrets.
+
+Grok Build’s own config remains under **`~/.grok`** (CLI login, `auth.json`, …).  
+**shared** session mode can use `~/.grok`; **independent** mode uses `agent-home/`.
 
 ---
 
-## 开发与构建
+## Develop & build
 
 ```bash
-# 依赖：Node 22+、pnpm 9、Rust stable、Xcode CLT (macOS)
+# Needs: Node 22+, pnpm 9, Rust stable, Xcode CLT (macOS)
 pnpm install
 
-# 开发（前端 + Tauri，默认真 CLI）
-pnpm dev
-
-# 仅前端
-pnpm dev:ui
-
-# 无 CLI 的 mock 联调
+pnpm dev                 # full app (real CLI by default)
+pnpm dev:ui              # frontend only
 GROK_APP_ACP=mock pnpm dev
 
-# 检查
 pnpm typecheck && pnpm test
 cd src-tauri && cargo test
 
-# 生产构建
 pnpm build
 ```
 
-交叉编译、发版与可选签名见 docs/BUILD.md。
+Cross-compile and release notes: docs/BUILD.md.
 
-发版（需先写好 `CHANGELOG.md` 对应章节）：
+Release (write the matching `CHANGELOG.md` section first):
 
 ```bash
-./scripts/release-tag.sh 0.1.1          # 本地 tag
-./scripts/release-tag.sh 0.1.1 --push   # 推送后触发 CI 打安装包
+./scripts/release-tag.sh 0.1.1
+./scripts/release-tag.sh 0.1.1 --push
 ```
 
 ---
 
-## 文档与贡献
+## Docs & contributing
 
-| 对象 | 入口 |
-|------|------|
-| AI Agent / 产品规则 | `docs/llm-wiki/` |
-| 构建与发布 | docs/BUILD.md |
-| 更新日志 | CHANGELOG.md |
-| 贡献指南 | CONTRIBUTING.md |
-| 行为准则 | CODE_OF_CONDUCT.md |
-| 安全披露 | SECURITY.md |
+| Audience | Link |
+|----------|------|
+| AI agents / product rules | `docs/llm-wiki/` |
+| Build & release | docs/BUILD.md |
+| Changelog | CHANGELOG.md |
+| Contributing | CONTRIBUTING.md |
+| Code of conduct | CODE_OF_CONDUCT.md |
+| Security | SECURITY.md |
 
-欢迎 Issue 与 PR。
+Issues and PRs are welcome.
+
+## Contributors
+
+Thanks to everyone who has contributed to Grok App. Data from the GitHub Contributors API (fetched 2026-07-24).
+
+
+  
+  &nbsp;&nbsp;
+  
+  &nbsp;&nbsp;
+  
+  &nbsp;&nbsp;
+  
+  &nbsp;&nbsp;
+  
+  &nbsp;&nbsp;
+  
+  &nbsp;&nbsp;
+  
+
+
+| | Contributor | Commits | Highlights (selected) |
+|:---:|:---|:---:|:---|
+|  | **RongleCat** · maintainer | 59 | Product architecture, releases, community integration |
+|  | **sonnemusk** | 21 | Changes / fork & rewind, MCP·Plugins, permission tiers, worktrees, resource edit, paste screenshots, error deck, multi-session stream, CLI session import, turn-complete, store locks, and more |
+|  | **Sdefendre**Steve Defendre | 2 | Session titles follow locale; Grok Build permission optionIds |
+|  | **jason920612** | 2 | Remote ACP (API mode); Traditional Chinese locale |
+|  | **shiaho777**shiaho | 2 | Cancelable login; stop re-streaming history on session switch |
+|  | **2530185073**Yun | 1 | Custom provider account + local usage UI |
+|  | **tisrop**wanghang | — | Composer follow-up send queue while agent is busy |
+
+Full contributors graph →
+
+*图片：Contributors*
 
 ## License
 
@@ -252,19 +292,19 @@ MIT © RongleCat
 
 ---
 
-## 关注作者
+## Follow the author
 
-项目更新、用法拆解与 AI 实战内容，优先看作者主页：
+Updates, walkthroughs, and AI practice content land first on:
 
-| 渠道 | 入口 |
-|------|------|
-| **X / Twitter** | [铁柱AGI @cgnot996](https://x.com/cgnot996) ← 强烈推荐关注 |
-| **微信公众号** | 搜索 **「铁柱AGI」**，或扫下方码 / 搜一搜卡片 |
+| Channel | Link |
+|---------|------|
+| **X / Twitter** | [铁柱AGI @cgnot996](https://x.com/cgnot996) ← highly recommended |
+| **WeChat Official Account** | Search **「铁柱AGI」**, or scan / use the card below |
 
 
   
 
 
-  如果 Grok App 对你有帮助，请给仓库点个 Star，并在
-  X @cgnot996
-  与微信公众号 铁柱AGI 关注作者 🙏
+  If Grok App helps you, please star the repo and follow
+  @cgnot996 on X
+  and the WeChat account 铁柱AGI 🙏
