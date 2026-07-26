@@ -5,14 +5,14 @@ name: "grok-app"
 fullName: "RongleCat/grok-app"
 description: "Desktop workbench for Grok Build CLI — sessions, projects, media, automations (Tauri 2 · unofficial)"
 sourceUrl: "https://github.com/RongleCat/grok-app"
-stars: 243
-forks: 25
+stars: 262
+forks: 26
 language: "TypeScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-07-25"
-pushedAt: "2026-07-25T03:11:44Z"
+snapshotDate: "2026-07-26"
+pushedAt: "2026-07-25T16:05:06Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
