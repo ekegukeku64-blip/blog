@@ -5,13 +5,13 @@ name: "openclaude-improved"
 fullName: "0xwilliamortiz/openclaude-improved"
 description: "runs anywhere. uses anything"
 sourceUrl: "https://github.com/0xwilliamortiz/openclaude-improved"
-stars: 175
-forks: 26
+stars: 572
+forks: 84
 language: "TypeScript"
 topics: ["agentic-ai", "ai", "ai-agent", "ai-coding", "ai-coding-agent", "ai-coding-agents", "ai-coding-assistant", "anthropic"]
 license: "NOASSERTION"
 defaultBranch: "main"
-snapshotDate: "2026-07-27"
+snapshotDate: "2026-07-28"
 pushedAt: "2026-07-26T22:22:56Z"
 ---
 

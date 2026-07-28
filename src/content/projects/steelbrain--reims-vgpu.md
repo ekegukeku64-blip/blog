@@ -5,14 +5,14 @@ name: "reims-vgpu"
 fullName: "steelbrain/reims-vgpu"
 description: "reims-vgpu is an experimental virtual GPU for macOS guests"
 sourceUrl: "https://github.com/steelbrain/reims-vgpu"
-stars: 102
-forks: 3
+stars: 139
+forks: 7
 language: "Rust"
 topics: []
 license: "LGPL-3.0"
 defaultBranch: "master"
-snapshotDate: "2026-07-27"
-pushedAt: "2026-07-26T14:48:27Z"
+snapshotDate: "2026-07-28"
+pushedAt: "2026-07-27T22:04:59Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

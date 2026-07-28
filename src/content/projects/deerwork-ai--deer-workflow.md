@@ -3,29 +3,24 @@ title: "deerwork-ai/deer-workflow"
 owner: "deerwork-ai"
 name: "deer-workflow"
 fullName: "deerwork-ai/deer-workflow"
-description: "An open-source Dynamic Workflow runtime that keeps orchestration in TypeScript and delegates semantic work to replaceable Agent runtimes."
+description: "An open-source graph engineering runtime that keeps orchestration in TypeScript and delegates semantic work to replaceable Agent runtimes."
 sourceUrl: "https://github.com/deerwork-ai/deer-workflow"
-stars: 122
-forks: 15
+stars: 261
+forks: 20
 language: "TypeScript"
 topics: ["agent", "ai", "ai-agent", "ai-agents", "ai-coding", "bun", "dynamic-workflow", "dynamic-workflows"]
 license: "MIT"
 homepage: "https://deerwork-ai.github.io/deer-workflow/"
 defaultBranch: "main"
-snapshotDate: "2026-07-27"
-pushedAt: "2026-07-26T16:17:46Z"
+snapshotDate: "2026-07-28"
+pushedAt: "2026-07-27T15:34:26Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
 
-# deer-workflow
+English | 简体中文
 
-English: README ·
-Guide ·
-API |
-简体中文：README ·
-快速入门 ·
-API
+# deer-workflow
 
 *图片：License: MIT*
 [*图片：npm*](https://www.npmjs.com/package/@deerwork-ai/deer-workflow)
@@ -35,143 +30,96 @@ API
 *图片：DeerFlow Stars*
 *图片：GitHub Stars*
 
-An open-source Dynamic Workflow runtime that combines deterministic TypeScript
-orchestration with replaceable Agent runtimes.
+An open-source Dynamic Workflow runtime for building observable, reusable Agent
+graphs.
 
-`deer-workflow` is a pilot project for
-**DeerFlow 3.0**, also known as
-**DeerWork**. The package name is `@deerwork-ai/deer-workflow`; the executable is
-named `deer-workflow`.
+`deer-workflow` is a pilot project for **DeerFlow 3.0**, also known as **DeerWork**.
 
 ## Index
 
+- Why Deer Workflow
 - How to use
-  - Prerequisites
-  - Install the CLI
-  - Run an Agent
-  - Create a Workflow
-  - Run a Workflow
+  - Quick Start
   - Examples
+  - Documentation
 - How to develop
-  - Development documentation
   - Set up
   - Validate changes
-  - Contribute an Agent integration
+  - Contribute
   - License
+
+# Why Deer Workflow
+
+Deer Workflow is a code-first implementation of **[Graph Engineering](https://www.aibuilderclub.com/blog/graph-engineering-guide-2026)**: TypeScript defines the valid execution paths, while Coding Agents perform the semantic work inside each node.
+
+- **Code is the plan.** Control flow, phases, inputs, and failure handling live
+  in reviewable TypeScript rather than an opaque Agent conversation.
+- **Agents are replaceable.** Codex is the default runtime, Claude Code is
+  built in, and the public Agent interface remains vendor-neutral.
+- **Execution is observable.** Interactive runs provide a phase-aware TUI;
+  automation can consume a stable JSONL event stream.
 
 # How to use
 
-## Prerequisites
+## Quick Start
 
-Install [Bun](https://bun.sh) and
-Codex CLI, then sign in:
-
-[Bun](https://bun.sh) is a fast, Node.js-compatible JavaScript runtime and
-toolkit; see its [installation guide](https://bun.sh/docs/installation).
-
-```bash
-npm install -g @openai/codex
-codex login
-codex --version
-```
-
-Codex CLI and Codex Desktop are separate installations. Installing the Desktop
-app does not install the `codex` terminal command.
-
-## Install the CLI
-
-Install the released CLI from npm:
+Install [Bun](https://bun.sh) and sign in to
+Codex CLI, then install the released CLI:
 
 ```bash
 bun install --global @deerwork-ai/deer-workflow
-deer-workflow --help
 ```
 
-Running `bun install` without `--global` only installs dependencies for the
-current project. It does not install the `deer-workflow` command globally.
-
-## Run an Agent
-
-```bash
-deer-workflow agent "Inspect this repository"
-```
-
-## Create a Workflow
-
-Describe the orchestration you need. The command runs the bundled
-`workflow-creator` Skill through Codex and writes generated source to stdout:
+Describe the orchestration you want. Deer Workflow asks Codex to apply the
+bundled `workflow-creator` Skill and writes a
+runnable TypeScript module:
 
 ```bash
 deer-workflow create \
-  "Research several independent angles, verify the findings, and synthesize a report" \
+  "Create a Workflow that accepts a topics string array, researches each topic in parallel, and synthesizes a report" \
   > workflow.ts
 ```
 
-Alternatively, install the bundled Skill for your Agents, then ask any Agent
-that supports Agent Skills to create a Workflow:
+Run the generated Workflow with its example input:
 
 ```bash
-deer-workflow skill install
+deer-workflow run ./workflow.ts \
+  --input '{"topics":["Agent Skills","Dynamic Workflows"]}'
 ```
 
-The command copies the Skill into existing `~/.agents/skills` and
-`~/.claude/skills` directories and reports which destinations it changed or
-skipped.
+Interactive terminals show phases and Markdown logs in a live TUI. For
+servers, CI, and process pipelines, add `--print` or `-p` to stream one JSON
+event per stdout line.
 
-## Run a Workflow
-
-```bash
-deer-workflow run ./workflow.ts --input '{"question":"Why has Neo Labs recently emerged as a new force in AI?"}'
-```
-
-Interactive runs show `meta.phases` and rendered Markdown logs in a live
-two-pane TUI, together with the Workflow name, module path, working directory,
-and an animated highlight on the active phase. In the default mode, redirected
-stderr remains JSONL for automation.
-
-Use `--print` / `-p` when running on servers or in automation such as CI/CD,
-task queues, process pipelines, and event collectors. It exposes a stable
-stdout Event Stream with one JSON event per line:
-
-```bash
-deer-workflow run ./workflow.ts --print \
-  --input '{"question":"Why has Neo Labs recently emerged as a new force in AI?"}'
-```
+Want to understand or edit the generated module? Continue with the
+Getting Started guide.
 
 ## Examples
 
-Run Deep Research:
+- Deep Research discovers research
+  angles, investigates them in parallel, verifies claims, and produces an
+  interactive HTML report.
+- Blog Writer plans an article, drafts its
+  sections through a pipeline, reviews them, and returns structured output.
 
-```bash
-deer-workflow run ./examples/deep-research/workflow.ts \
-  --input '{"question":"How are Agent Skills and Dynamic Workflows evolving?","outputPath":"./report.html"}'
-```
+These examples live in the repository. Clone or download it before running
+their documented commands.
 
-Run Blog Writer:
+## Documentation
 
-```bash
-deer-workflow run ./examples/blog-writer/workflow.ts \
-  --input '{"topic":"The Emerging Trends of Neo Labs","audience":"Agent builders"}'
-```
-
-These paths refer to files in this repository. Clone or download the repository
-before running them.
+- Getting Started — learn the execution model and build a
+  Workflow step by step.
+- API Reference — inspect exact functions, types, events, and
+  runtime behavior.
+- Workflow Creator Skill — see the
+  instructions used to generate Workflow modules.
+- 简体中文文档
 
 # How to develop
 
-## Development documentation
-
-- Getting Started
-- API Reference
-- Workflow Creator Skill
-- 中文开发文档
-
-The API Reference covers Agents, Flow Controls, Workflow Events, Logging,
-Runner behavior, JSON Schema output, and programmatic usage.
-
 ## Set up
 
-Clone the repository, then install its local dependencies and Git hooks:
+Clone the repository and install local dependencies and Git hooks:
 
 ```bash
 git clone https://github.com/deerwork-ai/deer-workflow.git
@@ -179,7 +127,7 @@ cd deer-workflow
 bun install
 ```
 
-Run the CLI directly from source while developing:
+Run the CLI directly from source:
 
 ```bash
 bun run dev -- --help
@@ -193,10 +141,14 @@ Run the complete quality gate before submitting changes:
 bun run check
 ```
 
-## Contribute an Agent integration
+## Contribute
 
 Codex CLI is the default Agent runtime, not an architectural dependency.
-Contributions for other Coding Agent integrations are welcome.
+`ClaudeAgent` ships as another built-in harness; integrations for other Coding
+Agents are welcome.
+
+See the Getting Started guide for the
+full command reference.
 
 ## License
 
