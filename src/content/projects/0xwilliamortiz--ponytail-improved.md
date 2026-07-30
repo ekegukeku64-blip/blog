@@ -5,13 +5,13 @@ name: "ponytail-improved"
 fullName: "0xwilliamortiz/ponytail-improved"
 description: "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote."
 sourceUrl: "https://github.com/0xwilliamortiz/ponytail-improved"
-stars: 473
-forks: 68
+stars: 547
+forks: 121
 language: "JavaScript"
 topics: ["agent-skills", "claude-code", "claude-code-plugin", "claude-code-skill", "claude-skills", "cursor-rules", "ponytail", "prompt-engineering"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-07-29"
+snapshotDate: "2026-07-30"
 pushedAt: "2026-07-28T14:41:07Z"
 ---
 
