@@ -5,14 +5,14 @@ name: "talivia"
 fullName: "talivia-group/talivia"
 description: "Open-source, self-hosted revenue-first analytics for founders: web analytics, Session Replay, revenue attribution, and customer revenue integrations. datafast alternative"
 sourceUrl: "https://github.com/talivia-group/talivia"
-stars: 411
-forks: 27
+stars: 527
+forks: 42
 language: "TypeScript"
 topics: ["analytics", "bing", "datafast", "dodopayments", "google-search", "lemonsqueezy", "polar", "product-analytics"]
 license: "MIT"
 homepage: "https://talivia.com"
 defaultBranch: "main"
-snapshotDate: "2026-07-30"
+snapshotDate: "2026-08-01"
 pushedAt: "2026-07-29T07:57:14Z"
 ---
 

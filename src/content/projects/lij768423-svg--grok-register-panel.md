@@ -5,14 +5,15 @@ name: "grok-register-panel"
 fullName: "lij768423-svg/grok-register-panel"
 description: "Grok register engine (Camoufox) + live web monitor panel"
 sourceUrl: "https://github.com/lij768423-svg/grok-register-panel"
-stars: 183
-forks: 60
+stars: 309
+forks: 96
 language: "Python"
 topics: []
 license: "MIT"
+homepage: "https://linux.do"
 defaultBranch: "main"
-snapshotDate: "2026-07-30"
-pushedAt: "2026-07-29T15:19:04Z"
+snapshotDate: "2026-08-01"
+pushedAt: "2026-07-31T06:17:32Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -44,9 +45,21 @@ Based on AaronL725/grok-register (MIT).
 | 反检测浏览器 | [Camoufox](https://camoufox.com/)（Gecko 层指纹） |
 | 出口预检 | 启动前解析出口 IP / ASN，命中黑名单直接换口 |
 | 风控早停 | `botFlagSource=1` + `policy=deny` 时跳过后续 OAuth，避免无效重试 |
-| 编排器 | 多轮 batch、风控满 N 暂停、ASN 自动扩黑 |
-| **Live 面板** | 启停、并发、再跑 N、黑名单、时段成功率；**写操作需 MONITOR_TOKEN** |
-| 日志脱敏 | 代理 `user:pass@` 与邮箱在 JSONL / 控制台脱敏；auth 文件 0600 |
+| 编排器 | 多轮 batch、风控满 N 暂停、ASN 自动扩黑；规则写入 JSON 状态，不修改源码 |
+| **Live 面板** | 启停、并发、再跑 N、黑名单、时段成功率和账号补录；操作 API 需 `MONITOR_TOKEN` |
+| 外部代理池 | 面板单条/批量导入、去重、探活、启停、删除；记录出口 IP、ASN、延迟和冷却状态 |
+| 邮箱域名池 | 自有域名/子域名导入、provider 绑定、连续拒绝阈值、自动拉黑、活跃数限制和手动重置 |
+| 失败恢复 | 待处理 SSO / accounts 文本补录 CPA，跳过已有账号，成功后自动出队 |
+| 安全存储 | 代理、账号、SSO、日志、auth 与运行状态默认使用 owner-only 权限 |
+
+## 界面预览
+
+
+  
+  
+
+
+控制台集中展示任务参数、批次进度、时段成功率、账号补录和黑名单状态；图片会跟随 GitHub 的深浅主题自动切换。
 
 ## 架构示意
 
@@ -64,7 +77,7 @@ Based on AaronL725/grok-register (MIT).
 ┌─────────────────┐
 │ webui/monitor   │  读 log/register_results.jsonl · CPA 目录
 │ :8787 Live 面板 │  启停 run_until_100 / run_batch_headless
-│ + Bearer token  │  浏览器填「面板 Token」→ localStorage
+│ + Bearer token  │  浏览器填「访问令牌」→ localStorage
 └─────────────────┘
 ```
 
@@ -100,11 +113,15 @@ cp config.example.json config.json
 
 | 字段 | 说明 |
 |------|------|
-| `email_provider` | `cloudflare` / `duckmail` / `yyds` / `mailnest` / … |
+| `email_provider` | `cloudflare` / `duckmail` / `yyds` / `mailnest` / `cloudmail` / `moemail` |
 | `defaultDomains` | 临时邮域名（如二级 CF 域） |
 | `cloudflare_*` / `duckmail_*` 等 | 对应邮箱 API |
+| `moemail_api_base` | MoeMail 站点根 URL，例如 `https://mail.example.com` |
+| `moemail_api_key` | MoeMail OpenAPI 的 `X-API-Key` |
+| `moemail_domain` | 可选固定域名；留空时自动读取 `/api/config` 的可用域名 |
+| `moemail_expiry_ms` | `3600000` / `86400000` / `604800000` / `0`，分别为 1 小时、1 天、7 天、永久 |
 | `proxy` | 默认 HTTP 代理，如 `http://127.0.0.1:7890` |
-| `proxies.txt` | 可选；多行代理，多 worker 轮换端口 |
+| `proxies.txt` | 可选的旧版多行代理文件；未配置面板代理池时继续兼容 |
 | `register_workers` | 并发浏览器数（建议先 2～3） |
 | `register_count` | 单次目标数量 |
 | `cpa_auto_add` | 是否 SSO→OAuth 并写入 auth |
@@ -122,6 +139,14 @@ cp config.example.json config.json
 | `PANEL_INCLUDE_TAIL` | `0` | `1` 时状态接口附带原始日志尾部（可能含敏感信息，默认关） |
 | `CPA_AUTH_DIR` | `./cpa_auth` | 编排器 / 面板统计 CPA 数量 |
 | `BATCH_LOG` | 自动发现最新 `log/batch*.log` | 面板跟踪的日志 |
+| `BLACKLIST_STATE_FILE` | `./log/blacklist_state.json` | 运行时 ASN 黑名单状态 |
+| `GROK_BATCH_IDLE_TIMEOUT` | `360` | batch 子进程连续无输出多少秒后自动重建（最小 60 秒） |
+| `GROK_BATCH_MAX_RESTARTS` | `8` | 单批发生驱动崩溃或卡死时最多自动恢复次数 |
+| `PROXY_POOL_STATE_FILE` | `./log/proxy_pool.json` | 外部代理池凭据、健康与冷却状态，文件权限 `0600` |
+| `PROXY_NETWORK_COOLDOWN_SECONDS` | `90` | 运行时网络异常的短冷却秒数 |
+| `PROXY_RISK_COOLDOWN_SECONDS` | `1800` | 注册风控后的长冷却秒数 |
+| `EMAIL_PROVIDER_CONFIG_FILE` | `./config.json` | 面板邮箱服务配置文件；保存时保持 `0600` |
+| `EMAIL_DOMAIN_POOL_STATE_FILE` | `./log/email_domain_pool.json` | 邮箱域名池状态与规则，文件权限 `0600` |
 
 生成 token 示例：
 
@@ -149,6 +174,9 @@ python webui/monitor.py
 1. 页面顶部 **控制** 区找到 **面板 Token** 输入框  
 2. 填入与 `MONITOR_TOKEN` **相同**的字符串（自动写入 `localStorage`）  
 3. 设模式 / workers / batch 数量 / 再跑 N / 风控满 N → **启动**
+4. 需要多出口时打开顶部 **代理池**，导入代理并等待检测完成
+5. 打开顶部 **邮箱服务**，选择 provider、填写对应参数，保存后执行一次连接测试
+6. 需要多个自有收信域名轮换时，再展开 **域名轮换 · 高级设置** 导入域名并保存规则
 
 也可在控制台手动写入：
 
@@ -171,6 +199,10 @@ unauthorized: set MONITOR_TOKEN and pass Authorization: Bearer
 xvfb-run -a python -u run_batch_headless.py 20 3
 #                        数量↑        并发↑
 ```
+
+单批由独立监督进程运行。Playwright/Camoufox 驱动崩溃，或连续超过
+`GROK_BATCH_IDLE_TIMEOUT` 没有输出时，监督进程会结束故障子进程并按原子进度文件
+继续剩余数量；已经写入的账号、SSO 和 CPA 文件不会回滚。
 
 **C. 编排器**
 
@@ -203,10 +235,44 @@ python grok_register_ttk.py
 
 | 接口 | 鉴权 |
 |------|------|
-| `GET /` · `GET /api/health` · `GET /api/status` 等读接口 | 默认可匿名（便于看进度） |
-| `POST /api/start` · `/api/stop` · `/api/control` · `/api/blacklist/reset` | 必须 `Authorization: Bearer ` |
+| `GET /` · `GET /api/health` | 可匿名；不返回运行数据 |
+| `GET /api/status` · `/api/stats` · `/api/control` · `/api/blacklist` · `/api/recovery` · `/api/proxies` · `/api/email-domains` | 配置了 Token 后必须鉴权 |
+| `POST /api/start` · `/api/stop` · `/api/control` · `/api/blacklist/reset` · `/api/recovery/*` · `/api/proxies/*` · `/api/email-domains/*` | 必须 `Authorization: Bearer ` |
+| `PATCH /api/proxies/{id}` · `DELETE /api/proxies/{id}` · `PATCH/DELETE /api/email-domains/{id}` | 必须 `Authorization: Bearer ` |
 
 前端 `api()` 会从 Token 输入框 / `localStorage.MONITOR_TOKEN` / `window.MONITOR_TOKEN` 自动带头。
+
+### 外部代理池
+
+- 支持单条或批量粘贴 `http://user:pass@host:port`、`host:port:user:pass`，也兼容 HTTPS / SOCKS URL
+- 导入时规范化并去重，随后后台并发探活；GET 接口轮询检测进度
+- API 和 UI 只返回脱敏端点及 `has_auth`，不会返回代理账号或密码
+- worker 只选择“健康 + 启用”的条目，并在每个新账号创建浏览器前热加载一次
+- 一个账号从注册、SSO 到 OAuth 始终固定同一代理，不会中途更换出口
+- 网络异常进入短冷却，注册风控进入长冷却；邮箱域名、验证码或邮箱 API 错误不处罚代理
+- 面板池已有条目但没有健康代理时任务会明确停止，不会绕过状态回退到旧文件
+- `proxies.txt` 可从界面导入；只有面板池完全未配置时，worker 才直接兼容旧文件 / `config.proxy`
+
+代理池不抓取、不分发公共代理，只管理操作者自己提供的外部代理。
+
+### 邮箱服务与高级域名轮换
+
+- 顶部“邮箱服务”统一配置 `cloudflare`、`duckmail`、`yyds`、`mailnest`、`cloudmail`、`moemail`
+- 切换服务商时只显示该服务实际支持的字段；保存后新的注册任务读取 `config.json`
+- 已保存的 API Key、JWT 和密码不会通过接口或页面回显；密钥输入留空会保留原值，必须点“清除”并保存才会删除
+- “测试当前提供商”使用表单中的未保存内容做非破坏性连通性检查，不会改写 `config.json`
+- `config.json` 以原子方式更新并保持 `0600`，现有无关配置项不会被覆盖
+
+域名轮换位于邮箱服务页的高级设置中：
+
+- 支持导入根域名或已有子域名，并绑定 `cloudflare`、`cloudmail`、`moemail`、`yyds` provider
+- 每个 provider 可设置最大活跃域名数；超出部分待命，活跃域名停用或拉黑后自动补位
+- xAI 明确拒绝邮箱域名时累计连续失败，达到阈值后自动拉黑；成功提交邮箱后清零连续失败
+- 邮箱 API、验证码超时和普通网络异常不会处罚域名，避免把基础设施故障误判成域名质量问题
+- 通过“启用”“重置”“删除”管理条目；对应 provider 的面板池配置后，域名池耗尽不会回退旧配置
+- `duckmail` 与 `mailnest` 的域名由上游服务分配，不能在面板中伪造自定义域名池
+
+域名池只保存域名和运行统计，不保存邮箱账号密码或 provider 密钥。
 
 ### 时段成功率
 
@@ -221,7 +287,23 @@ python grok_register_ttk.py
 
 - 下号前解析出口 ASN，命中则换 sticky / 代理口  
 - 编排器在风控累计到阈值后，对「几乎只有失败」的 ASN 扩黑  
+- 自动扩展写入 `log/blacklist_state.json`，不会改写或执行 Python 源码
 - 面板可 **刷新列表**；**重置** 为写操作，同样需要 Token  
+
+### 账号补录
+
+- **补录待处理**：读取 `accounts/sso_pending.txt`，跳过 CPA 已存在邮箱，成功一条立即原子出队
+- **扫描全部账号**：扫描 `accounts/*.txt` 并对缺失 CPA 的记录执行转换，不删除原账号文件
+- 补录运行在独立子进程，面板可查看数量、上次结果和停止任务
+- 命令行等价入口：
+
+```bash
+python sso_to_auth_json.py \
+  --sso accounts/sso_pending.txt \
+  --from-config config.json \
+  --consume-success \
+  --report-json log/recovery_report.json
+```
 
 ## 工程实践备忘（非教程承诺）
 
@@ -249,7 +331,12 @@ python grok_register_ttk.py
 ├── webui/
 │   ├── monitor.py             # Live 面板 HTTP 服务
 │   ├── security_utils.py      # redact / token 校验
-│   └── blacklist_ops.py       # 黑名单读写 / 重置（包相对路径）
+│   ├── blacklist_store.py     # 锁保护的 JSON 黑名单状态
+│   ├── proxy_store.py         # 外部代理池、探活、冷却与脱敏视图
+│   ├── email_domain_store.py  # 邮箱域名池、拒绝阈值与轮换状态
+│   ├── process_utils.py       # 当前项目实例的进程发现 / 停止
+│   ├── recovery_ops.py        # SSO / accounts 异步补录
+│   └── blacklist_ops.py       # 面板黑名单接口
 ├── email_providers/
 ├── tests/                     # 结构 / 脱敏 / chdir 冒烟
 ├── scripts/                   # xvfb 辅助脚本
@@ -264,11 +351,15 @@ python grok_register_ttk.py
 ## 自检
 
 ```bash
-# 无需 pytest；直接跑
-python3 tests/test_security_utils.py
-python3 tests/test_panel_structure.py
-python3 tests/test_no_live_hardcode.py
-python3 tests/test_batch_chdir_import.py
+# 无需 pytest；运行全部发布检查
+PYTHON_BIN=.venv/bin/python scripts/run_tests.sh
+```
+
+部署前还应执行：
+
+```bash
+.venv/bin/python -m pip check
+.venv/bin/python scripts/harden_runtime_permissions.py .
 ```
 
 ## 常见问题
@@ -283,10 +374,16 @@ A: 默认关闭防泄密。需要时 `export PANEL_INCLUDE_TAIL=1` 后重启 `mo
 A: CPA 已达旧目标。面板填大 **再跑 N 个** 再启动；编排器用 `add_count` 抬目标。
 
 **Q: 全是「无法解析出口 IP」？**  
-A: 代理挂了 / 流量耗尽 / dialer 下游失败。先 `curl -x http://127.0.0.1:端口 https://httpbin.org/ip` 探活。
+A: 打开顶部“代理池”查看异常和冷却原因，重新检测后只启用健康条目。旧版单代理仍可用 `curl -x http://127.0.0.1:端口 https://httpbin.org/ip` 单独探活。
+
+**Q: 提示“面板代理池没有健康且启用的代理”？**
+A: 导入项尚未检测、已停用、检测失败或仍在冷却。先在代理池页面执行“检测全部”；面板池已配置时不会回退复用旧文件中的坏代理。
+
+**Q: 邮箱域名被自动拉黑，或域名池没有可用项？**
+A: 只有 xAI 明确拒绝邮箱域名才会累计。打开“邮箱服务”并展开“域名轮换 · 高级设置”查看连续拒绝次数，确认 provider 与域名绑定正确；可手动重置或启用其它待命域名。邮箱 API、验证码超时不会触发域名拉黑。
 
 **Q: 邮箱 API 401？**  
-A: 与代理无关，检查 `config.json` 里对应 provider 的 key / auth_mode。
+A: 打开“邮箱服务”检查对应 provider 的 Key / JWT / `auth_mode`，保存后点“测试当前提供商”。页面不会回显已保存密钥，输入框留空表示保留原值。
 
 **Q: `Address already in use` / 面板打不开？**  
 A: 8787 被其它进程占用（例如同机其它服务）。换 `MONITOR_PORT`，或先释放端口。绑定失败**不会**自动改绑 `0.0.0.0`。
@@ -297,15 +394,19 @@ A: 主要在 macOS 与无界面 Linux 验证；Windows 需自备显示/依赖，
 **Q: 面板和真实进程不一致？**  
 A: 看 `log/orch100-stdout.log` 与最新 `log/batch-*.log`；欢迎提 issue / PR。
 
+**Q: accounts 文本或待处理 SSO 怎么补录 CPA？**
+A: 在控制台使用“账号补录”。待处理模式成功后自动出队；扫描全部账号模式会保留原始文本，并跳过本地 CPA 已存在邮箱。
+
 ## 安全
 
 - **必须**设置 `MONITOR_TOKEN`；不要把 token 提交进仓库或贴进公开 issue  
-- **不要提交** `config.json`、`accounts/`、`cpa_auth/`、`proxies.txt`、真实 stickies、`log/monitor.token`  
+- **不要提交** `config.json`、`accounts/`、`cpa_auth/`、`proxies.txt`、`log/proxy_pool.json`、`log/email_domain_pool.json`、真实 stickies、`log/monitor.token`
 - `.gitignore` 已忽略上述路径  
-- 代理凭据与邮箱在结果 JSONL / 控制台走 `redact_proxy` / `mask_email`  
-- 新写 auth 文件权限 0600、父目录 0700（`sso_to_auth_json`）  
+- 运行数据、日志、PID、代理和账号文件使用 0600，父目录使用 0700
+- API 响应带 CSP、禁止 iframe、安全类型与 Referrer Policy；请求体上限 64 KiB
+- 停止任务只匹配当前项目根目录，不按全系统模糊命令行误杀
 - 开源前自查：`grep -R api_key --include='*.json' .`（勿提交真实配置）  
-- 面板默认**不**回传原始日志尾；仅本机调试可开 `PANEL_INCLUDE_TAIL=1`
+- 面板默认**不**回传原始日志尾；生产环境固定 `PANEL_INCLUDE_TAIL=0`
 
 ## 更新记录（摘录）
 
@@ -318,9 +419,24 @@ A: 看 `log/orch100-stdout.log` 与最新 `log/batch-*.log`；欢迎提 issue / 
 | 稳定性 | `from __future__` 置顶；`Path` 先于 `chdir`；workers DOM id 拆分 |
 | 结果流 | `register_results.jsonl` 仅 JSON 行 |
 
+## Star History
+
+
+  
+    
+    
+  
+
+
+图表根据 GitHub Stargazer 时间戳生成，由 GitHub Actions 每日更新，不依赖第三方绘图接口。
+
+## 友情链接
+
+- [LINUX DO](https://linux.do) — 新的理想型社区
+
 ## License
 
-MIT — 见 NOTICE 对 AaronL725/grok-register 的归属说明。
+MIT — 见 NOTICE 对 AaronL725/grok-register 的归属说明。面板内嵌 Geist 字体使用 SIL OFL 1.1。
 
 ## 致谢
 

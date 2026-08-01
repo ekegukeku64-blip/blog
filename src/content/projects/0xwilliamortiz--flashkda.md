@@ -5,13 +5,13 @@ name: "FlashKDA"
 fullName: "0xwilliamortiz/FlashKDA"
 description: "FlashKDA: memory-efficient KDA kernels for training and decode"
 sourceUrl: "https://github.com/0xwilliamortiz/FlashKDA"
-stars: 190
-forks: 25
+stars: 193
+forks: 27
 language: "Cuda"
 topics: ["cuda", "kimi", "kimi-k2", "kimi-k3", "moonshot", "moonshot-ai"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-07-30"
+snapshotDate: "2026-08-01"
 pushedAt: "2026-07-29T18:30:18Z"
 ---
 
