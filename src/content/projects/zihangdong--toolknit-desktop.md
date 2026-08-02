@@ -5,14 +5,14 @@ name: "toolknit-desktop"
 fullName: "ZihangDong/toolknit-desktop"
 description: "多功能工具箱 · 桌面端开源版 | 音视频/图片/PDF/AI 一站式处理"
 sourceUrl: "https://github.com/ZihangDong/toolknit-desktop"
-stars: 153
-forks: 18
+stars: 177
+forks: 25
 language: "JavaScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-01"
-pushedAt: "2026-07-31T08:12:56Z"
+snapshotDate: "2026-08-02"
+pushedAt: "2026-08-01T05:16:29Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -55,6 +55,21 @@ ToolKnit 是一个多功能桌面工具箱,把日常会用到的音视频处理�
 > **这个桌面端是 ToolKnit 网页端的开源配套版本。**
 > 网页端功能更完整、免安装、跨平台、即开即用,推荐优先使用:
 > **[toolknit.com](https://toolknit.com)**
+
+### 适合谁用?
+
+- 不想把文件上传到各种在线工具网站的**隐私敏感用户**
+- 希望一个软件搞定 PDF/图片/音视频/AI 的**效率工作者**
+- 需要离线环境下处理文件的**学生/办公人群**
+- 想学习 Tauri + 原生 JavaScript 桌面应用开发的**开发者**
+
+## 路线图
+
+- [x] v1.0: 开源纯净版
+- [ ] v1.2: 自定义背景、默认保存路径、更多格式转换、CLI 支持
+- [ ] 后续: 插件化、更多工具
+
+欢迎提交 Issue 提建议!
 
 ## 功能特性
 
@@ -197,6 +212,12 @@ ToolKnit 网页端([toolknit.com](https://toolknit.com))是功能更完整的在
 | 音视频处理 | ffmpeg(内置打包,无需额外安装) |
 | AI 模型 | DeepSeek / OpenAI / 通义千问 / Moonshot(用户自配 Key) |
 | ML 模型 | whisper(语音识别)、yolov8(水印检测)(模型文件需自行下载) |
+
+## Star 历史
+
+感谢每一位 Star 支持者的鼓励! 🌟
+
+*图片：Star History Chart*
 
 ## 开源协议
 

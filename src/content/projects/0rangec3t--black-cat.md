@@ -5,14 +5,14 @@ name: "Black-cat"
 fullName: "0rangec3t/Black-cat"
 description: "Claude Code RedTeam Skill — Hypothesis-Driven Cognitive Architecture。一个假设-证据驱动的红队skill"
 sourceUrl: "https://github.com/0rangec3t/Black-cat"
-stars: 94
-forks: 11
-language: "未知"
+stars: 166
+forks: 23
+language: "Python"
 topics: ["pentest", "pentest-tools", "red-team"]
 license: "未标注"
 defaultBranch: "master"
-snapshotDate: "2026-07-31"
-pushedAt: "2026-07-30T10:21:25Z"
+snapshotDate: "2026-08-02"
+pushedAt: "2026-07-31T09:38:37Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -45,54 +45,131 @@ Claude code Redteam skill
 | 失败处理 | 跳到下一步（sqlmap negative = 没有 SQLi） | **证伪产生新假设**（sqlmap negative = 大概率 ORM → 转查 Mass Assignment） |
 | 证据 | 孤立截图 | **可追溯因果链** Observation → Reproduction → Impact |
 | 目标切换 | 不支持 | **状态机重启**：进入新网段 → 新 RECON |
-| 运行时追踪 | 无或分散文件 | **单文档 Engagement Tracker**（Active/Confirmed/Killed 三类状态） |
+| 运行时追踪 | 无或分散文件 | **单一 JSONL Ledger**（hypothesis/evidence/verdict） |
 | 上下文管理 | 全部加载 | **显式文件路由**，活跃技术目录默认 1 个、最多 2 个 |
-| 清理义务 | 无 | **Cleanup Ledger** 追踪所有工件 |
-| 决策记录 | 隐式 | **显式 Decision Log** 记录每个 Gate 的选择和理由 |
+| 清理义务 | 无 | **Artifact + Evidence** 追踪清理状态 |
+| 决策记录 | 隐式 | **Verdict reason** 记录每个 Gate 的选择和理由 |
+| 交付校验 | 无 | **`verify --report` 机器关口**：REPORT 前 confirmed 三角色闭环、无遗留 provisional |
+
+## v1.1.0 更新内容
+
+### 调整：授权 Gate 一次性确认
+
+- 授权在**加载 skill 时确认一次**，此后整个会话不再重复确认；超出锁定范围或存在歧义的操作**默认先做**，仅在授权文档明确禁止时才不做。
+- 消除了中途越界时的暂停询问流程，减少打断。
+
+### 新增：provisional 裁决 + REPORT 机器关口
+
+- `case_ledger.py verdict --status provisional`：只需 observation+reproduction 即可推进，「验证即 PoC」时不再要求先写完整证据链；impact 到 POST-EXPLOIT 补齐、confirmed 在此后追加。
+- 新增 `case_ledger.py verify --report`：REPORT 前**机器校验**所有 confirmed 三角色闭环、无遗留 provisional，缺了直接报错。
+- 黑板新增「已确认·待补影响」分组。
+
+### 新增：黑板自动折叠
+
+- 黑板超过 8000 字符时自动折叠已了结（暂缓）假设与过长的活跃证据列表，带「已折叠 N 条」标记，**不静默截断**；完整明细始终在 `case/evidence-validation.md`。
+- 大规模多资产 case 不再因状态累积而溢出。
+
+### 新增：运行时适配与工具降级
+
+- SKILL.md 新增运行时小节：Unix 命令按平台映射到 Windows 等价（`Resolve-DnsName` / `curl.exe` / `Select-String` 等），工具缺失按「首选 → 替代 → 手动/API → 记录限制」降级链处理。
+- 硬性规则：**禁止虚构命令输出**——工具未安装或执行失败时如实标注。
+
+### 调整：状态机分模式
+
+- L2 状态表拆分 Focused / Engagement 两档：Focused 默认不建 ledger、≥1 个 Active 假设；Engagement ≥2 个、全部走 ledger。
+- 解决单目标与多资产模式的产出要求矛盾（原「Focused 一个假设」与「ENUMERATE 至少 2 个 Active」冲突）。
+
+### 新增：中文案件黑板
+
+- 使用 `case/ledger.jsonl` 作为 hypothesis / evidence / verdict 的唯一机器真相源，保持 append-only，不再维护并行 tracker。
+- Claude Code 通过 `.claude/settings.json` 的 `SessionStart` Hook，自动注入**已确认事实、已确认·待补影响（provisional）、活跃/暂缓假设和错误状态**。
+- 每次写入后由 CLI 返回中文黑板增量，让 agent 在长会话和上下文压缩后仍能恢复当前判断。
+- 自动生成 `case/evidence-validation.md`，作为可阅读、可审计的证据验证报告；该文件由 ledger 重建，不手工维护。
+- 原始响应、日志和截图统一放入 `case/artifacts/`，ledger 只记录相对路径、SHA-256 和短摘要。
+
+### 修复：黑板运行时稳定性
+
+- 报告渲染改用唯一随机临时文件，避免并发运行互相覆盖。
+- Windows 文件被短暂占用时自动重试替换，失败后清理残留 `.tmp` 文件。
+- 报告内容没有变化时跳过重写，减少无意义的文件变更和 Hook 抖动。
+- 非 UTF-8 或损坏的可视化报告可从 JSONL ledger 自动重建。
+- 将 **Ledger Integrity** 与 **Report I/O** 错误分开报告，避免把渲染失败误判为证据链损坏。
+
+### 新增：独立 Recon 技术目录
+
+- 新增 `techniques/recon.md`，把信息收集从 Web 漏洞利用中拆出，减少单文件体积和无关上下文加载。
+- 增加版本控制与备份泄露、Wayback/Common Crawl 历史 URL、被动 DNS、SPF/DMARC、ASN/BGP/C 段和邮件头源站定位。
+- 增加国内 Recon 路径：ICP 备案反查、FOFA `fid` 聚类与蜜罐降噪、微信小程序、APP 静态提取、股权穿透和 ENScan_GO 聚合。
+
+### 调整：Web 技术目录收敛
+
+- `techniques/web.md` 只负责 Web/API 漏洞发现与利用，Recon 信号显式路由到 `techniques/recon.md`。
+- 根 Skill 继续采用显式文件路由：默认只加载 1 个 technique，跨域任务最多加载 2 个，避免 Skill 随能力增长而臃肿。
+
+### 从 v1.0.0 升级
+
+- 保留仓库根目录的 `.claude/settings.json`，否则 Claude Code 不会在 `SessionStart` 自动加载案件黑板。
+- 旧版 `engagement-tracker.md` 已由 `case/ledger.jsonl` 取代；可视化结果查看 `case/evidence-validation.md`。
+- 不要手工编辑生成报告；需要恢复时运行 `python -X utf8 skills/pentest-redteam/scripts/case_ledger.py render case`。
 
 ## 架构
 
 ```
 ┌─────────────────────────────────────────────┐
-│  SKILL.md (98 行)                           │
-│  L1: 7 个强制约束                            │
+│  SKILL.md（轻量核心）                        │
+│  L1: 授权与硬约束                            │
 │  L2: 有回边的 State Machine + Decision Gates │
 │  L3: 信号 → 动作链                           │
 ├─────────────────────────────────────────────┤
-│  6 个 technique 文件（显式文件路由）          │
+│  7 个 technique 文件（显式文件路由）          │
 │  信号→假设→验证→证实→证伪→升级               │
 │  默认 1 个，最多 2 个                        │
 ├─────────────────────────────────────────────┤
-│  Engagement Tracker (运行时唯一真相源)       │
-│  ⚡ Active → ✅ Confirmed / ❌ Killed         │
-│  evidence/{id}/ 独立证据目录                 │
+│  case/ledger.jsonl (唯一机器真相源)          │
+│  hypothesis → evidence → verdict             │
+│  artifacts/ + 自动生成 evidence-validation.md│
 └─────────────────────────────────────────────┘
 ```
 
 ### 文件结构
 
 ```
+.claude/settings.json            # SessionStart Hook：注入案件黑板
 skills/pentest-redteam/
 ├── SKILL.md                     # L1+L2+L3 核心框架
 ├── techniques/
-│   ├── web.md                   # 信息收集 + 漏洞发现 + Web 利用
+│   ├── web.md                   # Web漏洞发现 + 利用
+│   ├── recon.md                  # 信息收集：通用资产发现 + 国内拓线（测绘引擎/小程序/APP/股权）
 │   ├── ad.md                    # 内网三阶段：信息收集→OPSEC横向→提权维持
 │   ├── cloud.md                 # 容器逃逸/K8s/IAM/Serverless
 │   ├── evasion.md               # 免杀/EDR对抗/C2隐匿 + BOF开发 + Telemetry分散
 │   ├── database.md              # MySQL/PG/MSSQL/Oracle/NoSQL
 │   └── reversing.md             # APK/IPA/EXE/固件逆向
+├── scripts/
+│   └── case_ledger.py           # hypothesis/evidence/verdict + provisional + verify --report / render / blackboard
 └── templates/
-    ├── engagement-tracker.md    # 复制到工作区 ./engagement-tracker.md 作运行时唯一真相源
     ├── finding-report.md        # 单个 Finding 格式
     └── engagement-report.md     # 最终报告模板
+
+case/
+├── ledger.jsonl                 # 唯一机器真相源
+├── evidence-validation.md       # 自动生成的可视化证据报告
+└── artifacts/                   # 原始响应、日志、截图
 ```
 
 ## 攻击面覆盖
 
-### Web 渗透
+### 信息收集（recon.md）
+**通用**
 - CDN 绕过 + 内部主机名泄露（多引擎 SSL 证书/Favicon/CT 日志全量采样）
 - JS Source Map 源码还原 + 端点提取（unwebpack-sourcemap → LinkFinder → SecretFinder）
 - 企业拓线（GA/Hotjar 追踪 ID 反向查询 + ICP 备案反查 + CI/CD 制品扫描）
+- 补充 Recon（版本控制/备份泄露 + Wayback/CommonCrawl 历史 URL + 被动 DNS 反查 + SPF/DMARC 关联 + ASN/C 段 + 邮件头找源站）
+**国内特有**
+- 测绘引擎进阶（ICP 备案号反查主体 + FOFA fid 聚类 + 蜜罐净化 + == / != / ip_ports 降噪 + body 找裸奔源站 + 测试环境定向）
+- 企业拓线（微信小程序 wxapkg 反编译 + 七麦/点点 APP 反查与静态提取 + 天眼查股权穿透 + ENScan_GO 多维聚合）
+
+### Web 渗透（web.md）
 - API Fuzzing（Kiterunner 路由爆破 + HTTP Method 切换 + deprecated 端点）
 - GraphQL 攻击面（Introspection / 别名过载 / 批处理 / 订阅劫持，跳过 DoS）
 - 供应链攻击（6 生态依赖混淆 + CI/CD 审计 + Octoscan repo-jacking 检测）
@@ -199,6 +276,8 @@ skills/pentest-redteam/
 
 或直接在对话中描述目标，skill 会自动按信号匹配技术目录。
 
-**授权声明**：本 skill 仅用于已明确授权的渗透测试。使用前确认目标授权范围、操作深度和时间窗口。
+**授权声明**：本 skill 仅用于已明确授权的渗透测试。授权在加载 skill 时一次性确认，此后按锁定范围执行；超出授权范围的操作默认先做，仅在授权文档明确禁止时才不做。
 
 ## 未完待续......
+
+## Star 趋势

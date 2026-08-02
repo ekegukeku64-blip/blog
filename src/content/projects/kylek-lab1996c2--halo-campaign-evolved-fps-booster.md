@@ -11,7 +11,7 @@ language: "未知"
 topics: ["halo-campaign-evolved", "halo-campaign-evolved-fps-boost-pc", "halo-campaign-evolved-fps-tweak", "halo-campaign-evolved-optimization", "halo-campaign-evolved-optimization-pc", "halo-campaign-evolved-optimizer-settings", "halo-campaign-evolved-performance-tweak-windows", "halo-campaign-evolved-release"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-01"
+snapshotDate: "2026-08-02"
 pushedAt: "2026-07-31T10:30:30Z"
 ---
 

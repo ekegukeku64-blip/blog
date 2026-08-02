@@ -5,13 +5,13 @@ name: "ratchet"
 fullName: "0xwilliamortiz/ratchet"
 description: "Your agent reads the rules. This checks whether it followed them."
 sourceUrl: "https://github.com/0xwilliamortiz/ratchet"
-stars: 402
-forks: 43
+stars: 408
+forks: 83
 language: "JavaScript"
 topics: ["ai-agents", "claude-code", "claude-code-plugin", "claude-skills", "code-quality", "developer-tools", "hooks", "llm"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-01"
+snapshotDate: "2026-08-02"
 pushedAt: "2026-07-31T20:31:05Z"
 ---
 

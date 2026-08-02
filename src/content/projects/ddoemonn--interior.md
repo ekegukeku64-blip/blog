@@ -5,14 +5,14 @@ name: "interior"
 fullName: "ddoemonn/interior"
 description: "micro-interactions for react, built for the half-second after a click"
 sourceUrl: "https://github.com/ddoemonn/interior"
-stars: 325
-forks: 10
+stars: 394
+forks: 11
 language: "TypeScript"
 topics: ["animation", "micro-interactions", "motion", "react", "ui-components"]
 license: "MIT"
 homepage: "https://interior.dev"
 defaultBranch: "main"
-snapshotDate: "2026-08-01"
+snapshotDate: "2026-08-02"
 pushedAt: "2026-07-31T14:02:53Z"
 ---
 
