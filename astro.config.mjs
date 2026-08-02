@@ -8,7 +8,6 @@ import remarkInternalProjectLinks from './scripts/remark-internal-project-links.
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-console.log('[CF-DEBUG] SITE_URL=' + JSON.stringify(process.env.SITE_URL) + ' BASE_PATH=' + JSON.stringify(process.env.BASE_PATH));
 const site = process.env.SITE_URL?.trim() || 'https://ekegukeku64-blip.github.io';
 const requestedBase = process.env.BASE_PATH?.trim() || '/blog';
 const base = requestedBase === '/'
