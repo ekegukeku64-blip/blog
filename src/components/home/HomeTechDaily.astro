@@ -2,7 +2,7 @@
   <div class="home-daily-inner">
     <div class="flex items-center justify-between mb-8">
       <h2 class="section-kicker">技术日报</h2>
-      <a href="https://ekegukeku64-blip.github.io/tech-daily/" target="_blank" rel="noopener" class="home-posts-all">
+      <a href={techDailyUrl} target="_blank" rel="noopener" class="home-posts-all">
         查看全部 &rarr;
       </a>
     </div>
@@ -12,12 +12,12 @@
   </div>
 </section>
 
-<script is:inline>
+<script is:inline define:vars={{ techDailyUrl }}>
 document.addEventListener('astro:page-load', async () => {
   const grid = document.getElementById('tech-daily-grid');
   if (!grid) return;
   try {
-    const resp = await fetch('https://ekegukeku64-blip.github.io/tech-daily/sitemap-0.xml');
+    const resp = await fetch(techDailyUrl + 'sitemap-0.xml');
     const xml = await resp.text();
     const matches = [...xml.matchAll(/<loc>(https:\/\/[^<]*daily-tech-(\d{4}-\d{2}-\d{2})[^<]*)<\/loc>/g)];
     matches.sort((a, b) => b[2].localeCompare(a[2]));

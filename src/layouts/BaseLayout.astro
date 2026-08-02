@@ -31,6 +31,7 @@ const {
   ogType = 'website',
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const siteRootURL = new URL(import.meta.env.BASE_URL, Astro.site);
 const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.pathname === '/';
 ---
 <!doctype html>
@@ -46,7 +47,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
     <link rel="apple-touch-icon" href={`${import.meta.env.BASE_URL}apple-touch-icon.svg`} />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="alternate" type="application/rss+xml" title="枫迹博客 RSS" href={new URL('/blog/rss.xml', Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title="枫迹博客 RSS" href={new URL(`${import.meta.env.BASE_URL}rss.xml`, Astro.site)} />
     <meta property="og:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -60,25 +61,23 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <meta name="twitter:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
     <meta name="author" content="又逢雨季" />
     <title>{title} | 枫迹博客</title>
-    <script is:inline type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Blog",
-        "name": "枫迹博客",
-        "description": "一个关于技术、设计与生活的博客",
-        "url": "https://ekegukeku64-blip.github.io/blog/",
-        "author": { "@type": "Person", "name": "又逢雨季" },
-        "inLanguage": "zh-CN"
-      }
-    </script>
-    <script is:inline type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "枫迹博客",
-        "url": "https://ekegukeku64-blip.github.io/blog/"
-      }
-    </script>
+        <script is:inline type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "枫迹博客",
+      "description": "一个关于技术、设计与生活的博客",
+      "url": siteRootURL.href,
+      "author": { "@type": "Person", "name": "又逢雨季" },
+      "inLanguage": "zh-CN"
+    })} />
+
+        <script is:inline type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "枫迹博客",
+      "url": siteRootURL.href
+    })} />
+
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>

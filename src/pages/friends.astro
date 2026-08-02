@@ -5,7 +5,7 @@ const friends = [
   {
     name: '技术日报',
     desc: 'GitHub 热门 + 技术圈每日动态',
-    url: 'https://ekegukeku64-blip.github.io/tech-daily/',
+    url: (import.meta.env.PUBLIC_TECH_DAILY_URL?.trim() || 'https://ekegukeku64-blip.github.io/tech-daily/'),
     avatar: '📰',
   },
 ];

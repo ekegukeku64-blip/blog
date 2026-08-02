@@ -4,10 +4,11 @@
 
 set -euo pipefail
 
-HOST="ekegukeku64-blip.github.io"
+HOST="${INDEXNOW_HOST:-ekegukeku64-blip.github.io}"
+BASE_PATH="${INDEXNOW_BASE_PATH:-/blog}"
 KEY="31d49cf6fd0c3b7df2bf0376e03a1ebf"
-KEY_URL="https://${HOST}/blog/${KEY}.txt"
-SITEMAP_URL="https://${HOST}/blog/sitemap-0.xml"
+KEY_URL="https://${HOST}${BASE_PATH}/${KEY}.txt"
+SITEMAP_URL="https://${HOST}${BASE_PATH}/sitemap-0.xml"
 
 echo "[IndexNow] Fetching sitemap from ${SITEMAP_URL}"
 

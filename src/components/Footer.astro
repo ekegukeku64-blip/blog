@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 const year = new Date().getFullYear();
 const base = import.meta.env.BASE_URL;
+const techDailyUrl = import.meta.env.PUBLIC_TECH_DAILY_URL?.trim() || 'https://ekegukeku64-blip.github.io/tech-daily/';
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
 const recentPosts = allPosts
@@ -70,7 +71,7 @@ const recentPosts = allPosts
         <div class="flex flex-col gap-2">
           <a href="https://github.com/ekegukeku64-blip" target="_blank" rel="noopener" class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">GitHub</a>
           <a href={`${base}rss.xml`} target="_blank" class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">RSS 订阅</a>
-          <a href="https://ekegukeku64-blip.github.io/tech-daily/" target="_blank" rel="noopener" class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">技术日报</a>
+          <a href={techDailyUrl} target="_blank" rel="noopener" class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">技术日报</a>
         </div>
       </div>
     </div>
