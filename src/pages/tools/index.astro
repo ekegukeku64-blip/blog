@@ -46,6 +46,16 @@ const categories = [
       { name: 'GitHub 查看', desc: '不跳转直接看仓库 README', icon: 'GH', slug: 'github' },
     ],
   },
+  {
+    name: '实用增强',
+    desc: '图片、加密与链接的日常黑科技',
+    accent: '05',
+    tools: [
+      { name: '图片转 Base64', desc: '图片转 Data URL 文本', icon: 'IMG', slug: 'picbase64' },
+      { name: '文本加密', desc: 'AES 加密/解密一段文字', icon: '锁', slug: 'cipher' },
+      { name: '链接批量处理', desc: '提取、去重、清理链接', icon: '链', slug: 'linktool' },
+    ],
+  },
 ];
 const workflows = [
   {
@@ -98,7 +108,16 @@ const totalTools = categories.reduce((sum, cat) => sum + cat.tools.length, 0);
       </div>
     </div>
 
-    <section class="tool-workflows ink-reveal" aria-labelledby="tool-workflows-heading">
+        <section class="us-banner ink-reveal">
+      <div>
+        <span class="inline-block px-3 py-1 text-[11px] font-sans tracking-[0.28em] text-accent dark:text-dark-accent border border-accent/25 dark:border-dark-accent/25 mb-3 uppercase">Userscripts</span>
+        <h2 class="font-display text-2xl md:text-3xl font-bold text-text dark:text-dark-text mb-2">油猴脚本合集</h2>
+        <p class="text-text-muted dark:text-dark-text-muted font-serif text-sm leading-relaxed">给常用网站加「外挂」：下载、去广告、增强阅读。收录开源且维护活跃的脚本。</p>
+      </div>
+      <a href={`${import.meta.env.BASE_URL}tools/userscripts/`} class="us-banner-link">去看看 &rarr;</a>
+    </section>
+
+<section class="tool-workflows ink-reveal" aria-labelledby="tool-workflows-heading">
       <div class="tool-workflows-head">
         <span>Workflow</span>
         <div>
@@ -548,6 +567,37 @@ const totalTools = categories.reduce((sum, cat) => sum + cat.tools.length, 0);
           transform: none !important;
         }
       }
-    </style>
+          .us-banner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        margin-bottom: 2.5rem;
+        padding: 1.75rem 2rem;
+        border: 1px solid var(--border-glass-strong);
+        border-radius: 24px;
+        background:
+          linear-gradient(145deg, rgba(32,45,68,0.55), rgba(6,10,18,0.28)),
+          radial-gradient(circle at 100% 0%, rgba(226,238,248,0.10), transparent 40%);
+        backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+        box-shadow: var(--shadow-glass);
+      }
+      .us-banner-link {
+        flex-shrink: 0;
+        padding: 0.6rem 1.4rem;
+        border-radius: 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #fff;
+        background: var(--color-accent);
+        transition: background 0.2s, transform 0.2s;
+      }
+      .us-banner-link:hover {
+        background: var(--color-accent-light);
+        transform: translateY(-1px);
+      }
+
+</style>
   </div>
 </BaseLayout>
