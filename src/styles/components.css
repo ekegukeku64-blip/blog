@@ -223,9 +223,7 @@ nav a, button {
   border: 1px solid var(--border-glass);
   border-radius: 20px;
   box-shadow: var(--shadow-glass-floating);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  transition:
+  -webkit-  transition:
     transform 0.4s var(--interactive-ease),
     border-color 0.4s var(--interactive-ease),
     box-shadow 0.4s var(--interactive-ease),
@@ -413,9 +411,7 @@ header.header-hidden { transform: translateY(-100%); }
     radial-gradient(ellipse at 50% 0%, rgba(226, 238, 248, 0.08), transparent 70%);
   border-bottom: 1px solid var(--border-glass-strong);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28), var(--glass-rim);
-  backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
-  transition:
+  -webkit-  transition:
     border-color var(--motion-base) var(--ease-standard),
     box-shadow var(--motion-slow) var(--ease-emphasized),
     transform var(--motion-slow) var(--ease-emphasized);
@@ -511,14 +507,10 @@ header.header-scrolled .header-glass {
 @media (max-width: 768px) {
   .card,
   .card-flat {
-    backdrop-filter: blur(12px) saturate(125%);
-    -webkit-backdrop-filter: blur(12px) saturate(125%);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.46), var(--inner-glass);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.46), var(--inner-glass);
   }
 
   .header-glass {
-    backdrop-filter: blur(16px) saturate(130%);
-    -webkit-backdrop-filter: blur(16px) saturate(130%);
   }
 }
 
