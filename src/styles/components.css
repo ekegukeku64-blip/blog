@@ -24,12 +24,10 @@ nav a, nav button {
 
 .js .blur-reveal {
   opacity: 0;
-  filter: blur(4px);
-  transform: translateY(24px) scale(0.98);
-  transition: opacity 1s var(--interactive-ease),
-              filter 1s var(--interactive-ease),
-              transform 1s var(--interactive-ease);
-  will-change: opacity, filter, transform;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--interactive-ease),
+              transform 0.5s var(--interactive-ease);
+  will-change: opacity, transform;
 }
 
 .js .blur-reveal.is-focused {

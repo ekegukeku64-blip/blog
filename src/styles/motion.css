@@ -52,12 +52,10 @@ html.is-navigating body.page-entrance::after {
 
 .js .reveal-target {
   opacity: 0;
-  filter: blur(4px);
-  transform: translateY(20px) scale(0.992);
-  transition: opacity var(--motion-slow) var(--ease-standard),
-              filter var(--motion-slow) var(--ease-standard),
-              transform var(--motion-page) var(--ease-emphasized);
-  will-change: opacity, filter, transform;
+  transform: translateY(12px);
+  transition: opacity 0.45s var(--ease-standard),
+              transform 0.45s var(--ease-emphasized);
+  will-change: opacity, transform;
 }
 
 .js .reveal-target.is-revealed {

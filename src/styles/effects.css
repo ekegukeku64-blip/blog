@@ -4,10 +4,8 @@
   inset: 0;
   z-index: -10;
   background:
-    radial-gradient(circle at 18% 18%, rgba(122, 149, 175, 0.18), transparent 38%),
-    radial-gradient(circle at 82% 78%, rgba(200, 142, 82, 0.15), transparent 40%),
-    radial-gradient(circle at 58% 8%, rgba(226, 238, 248, 0.055), transparent 32%),
-    linear-gradient(135deg, #050711 0%, #0b1120 46%, #111827 100%);
+    radial-gradient(circle at 22% 20%, rgba(122, 149, 175, 0.14), transparent 42%),
+    linear-gradient(135deg, #060913 0%, #0b1220 55%, #10192b 100%);
   pointer-events: none;
   overflow: hidden;
 }
@@ -21,22 +19,15 @@
 }
 
 .global-bg-layer::before {
-  background:
-    radial-gradient(ellipse at 28% 24%, rgba(226, 238, 248, 0.085), transparent 42%),
-    radial-gradient(ellipse at 68% 18%, rgba(122, 149, 175, 0.080), transparent 48%),
-    linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0.055) 46%, transparent 68%);
-  filter: blur(28px);
-  opacity: 0.78;
-  animation: ambientMist 24s ease-in-out infinite alternate;
+  background: radial-gradient(ellipse at 30% 26%, rgba(226, 238, 248, 0.06), transparent 44%);
+  filter: blur(30px);
+  opacity: 0.6;
 }
 
 .global-bg-layer::after {
-  background:
-    radial-gradient(ellipse at 12% 92%, rgba(200, 142, 82, 0.13), transparent 36%),
-    radial-gradient(ellipse at 90% 8%, rgba(122, 149, 175, 0.08), transparent 34%);
-  filter: blur(34px);
-  opacity: 0.62;
-  animation: ambientMist 30s ease-in-out infinite alternate-reverse;
+  background: radial-gradient(ellipse at 86% 10%, rgba(122, 149, 175, 0.06), transparent 36%);
+  filter: blur(32px);
+  opacity: 0.5;
 }
 
 .global-bg-video {
