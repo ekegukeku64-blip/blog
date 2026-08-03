@@ -87,24 +87,7 @@ const activityItems = [
 
 <BaseLayout title="首页" description="枫迹 — AI 工具、真实试错和普通人能用的经验">
   <div class="home-page">
-    <div class="home-page-orbit home-page-orbit--cold"></div>
-    <div class="home-page-orbit home-page-orbit--warm"></div>
-    <div class="home-page-spine"></div>
-    <div class="home-live-strip" aria-label="站点动态">
-      <div class="home-live-strip-track">
-        <div class="home-live-strip-group">
-          {activityItems.map((item) => (
-            <span>{item}</span>
-          ))}
-        </div>
-        <div class="home-live-strip-group" aria-hidden="true">
-          {activityItems.map((item) => (
-            <span>{item}</span>
-          ))}
-        </div>
-      </div>
-    </div>
-    <div class="home-section-stack">
+                <div class="home-section-stack">
       <HomeHero
         focusCards={focusCards}
         postCount={allPosts.length}

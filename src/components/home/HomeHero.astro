@@ -40,37 +40,7 @@ const { focusCards, postCount, thisMonth, wordCount, streak } = Astro.props;
         </a>
       </div>
 
-      <div class="home-focus-row" aria-label="内容方向">
-        {focusCards.map((card) => (
-          <a href={card.href} class="home-focus-chip">
-            <span>{card.label}</span>
-            <span>{card.text}</span>
-          </a>
-        ))}
-      </div>
-    </div>
-
-    <div class="home-hero-stats">
-      <div class="home-stats-float">
-        <div class="home-stats-card">
-          <div class="home-stats-label">文章</div>
-          <div class="home-stats-number">{postCount}</div>
-          <div class="home-stats-bar" style="width: 100%"></div>
-
-          <div class="home-stats-label" style="margin-top: 1.25rem">本月</div>
-          <div class="home-stats-number">{thisMonth}</div>
-          <div class="home-stats-bar" style={`width: ${Math.min(thisMonth / 5 * 100, 100)}%`}></div>
-
-          <div class="home-stats-label" style="margin-top: 1.25rem">字数</div>
-          <div class="home-stats-number">{wordCount}</div>
-          <div class="home-stats-bar" style="width: 80%"></div>
-
-          {streak > 0 && (
-            <p class="home-stats-streak">连续更新 {streak} 天</p>
-          )}
-        </div>
-      </div>
-    </div>
+      
   </div>
 </section>
 
@@ -109,12 +79,12 @@ const { focusCards, postCount, thisMonth, wordCount, streak } = Astro.props;
 .home-hero-inner {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
-  gap: clamp(3rem, 7vw, 7rem);
-  max-width: 1200px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 920px;
   margin: 0 auto;
   align-items: center;
-  min-height: 66vh;
+  min-height: 72vh;
+  text-align: center;
 }
 
 .home-hero-inner::before {
@@ -155,6 +125,7 @@ const { focusCards, postCount, thisMonth, wordCount, streak } = Astro.props;
 .home-hero-kicker-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -219,6 +190,7 @@ const { focusCards, postCount, thisMonth, wordCount, streak } = Astro.props;
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2.5rem;
+  justify-content: center;
 }
 
 .home-hero-btn {
