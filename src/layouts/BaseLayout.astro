@@ -46,6 +46,7 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
     <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
     <link rel="apple-touch-icon" href={`${import.meta.env.BASE_URL}apple-touch-icon.svg`} />
+    <link rel="manifest" href={`${import.meta.env.BASE_URL}manifest.webmanifest`} />
     <link rel="canonical" href={canonicalURL} />
     <link rel="alternate" type="application/rss+xml" title="枫迹博客 RSS" href={new URL(`${import.meta.env.BASE_URL}rss.xml`, Astro.site)} />
     <meta property="og:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
@@ -93,6 +94,12 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
           const gv = document.getElementById('global-bg-video');
           if (gv) gv.play().catch(() => {});
         }
+      }
+
+      if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register(baseUrl + 'sw.js').catch(() => {});
+        });
       }
       document.addEventListener('astro:after-swap', () => {
         document.documentElement.classList.add('dark');
