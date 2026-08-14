@@ -5,12 +5,7 @@ const base = import.meta.env.BASE_URL;
 const navLinks = [
   { href: `${base}home/`, label: '首页' },
   { href: `${base}blog/`, label: '文章' },
-  { href: `${base}archive/`, label: '归档' },
-  { href: `${base}tags/`, label: '标签' },
   { href: `${base}tools/`, label: '工具' },
-  { href: `${base}github-daily/`, label: '日报' },
-  { href: `${base}friends/`, label: '友链' },
-  { href: `${base}guestbook/`, label: '留言' },
   { href: `${base}about/`, label: '关于' },
 ];
 
@@ -106,7 +101,7 @@ const currentPath = Astro.url.pathname;
       <a
         href={`${import.meta.env.BASE_URL}rss.xml`}
         class="header-action px-4 py-2.5 rounded-lg text-sm font-medium transition-colors text-text-secondary hover:text-text hover:bg-white/5 flex items-center gap-2"
-        style="--mobile-nav-index: 9"
+        style="--mobile-nav-index: 4"
         target="_blank"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

@@ -78,7 +78,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p class="text-sm text-text-muted dark:text-dark-text-muted">
         「博学之，审问之，慎思之，明辨之，笃行之。」— 《中庸》
       </p>
+
+    <div class="mt-14 pt-8 border-t border-white/5">
+      <h2 class="font-display text-base font-bold text-text mb-4">更多</h2>
+      <div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+        <a href={`${import.meta.env.BASE_URL}friends/`} class="text-text-secondary hover:text-accent transition-colors">友链</a>
+        <a href={`${import.meta.env.BASE_URL}guestbook/`} class="text-text-secondary hover:text-accent transition-colors">留言</a>
+        <a href={`${import.meta.env.BASE_URL}bookmarks/`} class="text-text-secondary hover:text-accent transition-colors">我的收藏</a>
+        <a href={`${import.meta.env.BASE_URL}projects/`} class="text-text-secondary hover:text-accent transition-colors">项目资料库</a>
+        <a href={`${import.meta.env.BASE_URL}github-daily/`} class="text-text-secondary hover:text-accent transition-colors">GitHub 日报</a>
+      </div>
     </div>
+        </div>
   </div>
 </BaseLayout>
 
