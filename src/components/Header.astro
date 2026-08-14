@@ -14,7 +14,7 @@ const currentPath = Astro.url.pathname;
 
 <header class="sticky top-0 z-50 w-full px-4 md:px-8">
   <div class="header-glass max-w-6xl mx-auto rounded-3xl backdrop-blur-[20px] border border-white/[0.06]">
-  <nav class="px-4 h-14 flex items-center justify-between md:px-6">
+  <nav class="px-4 h-12 flex items-center justify-between md:px-6">
     <a href={import.meta.env.BASE_URL} class="logo-text text-xl font-semibold text-text hover:text-[#c8d6e8] transition-all duration-500" style="font-family: var(--font-display);">枫迹</a>
 
     <div id="desktop-nav-rail" class="nav-rail hidden lg:flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.04] p-1">
@@ -43,7 +43,7 @@ const currentPath = Astro.url.pathname;
       <SearchBar />
       <a
         href={`${base}bookmarks/`}
-        class="header-action inline-flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary hover:text-accent hover:bg-white/5 transition-colors"
+        class="header-action inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:text-accent hover:bg-white/5 transition-colors"
         aria-label="我的收藏"
         title="我的收藏"
       >
@@ -53,7 +53,7 @@ const currentPath = Astro.url.pathname;
       </a>
       <a
         href={`${import.meta.env.BASE_URL}rss.xml`}
-        class="header-action hidden sm:inline-flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary hover:text-accent hover:bg-white/5 transition-colors"
+        class="header-action hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:text-accent hover:bg-white/5 transition-colors"
         aria-label="RSS 订阅"
         target="_blank"
       >
@@ -64,7 +64,7 @@ const currentPath = Astro.url.pathname;
       <!-- Mobile menu button -->
       <button
         id="mobile-menu-toggle"
-        class="header-action lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary hover:text-text hover:bg-white/5 transition-colors"
+        class="header-action lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:text-text hover:bg-white/5 transition-colors"
         aria-label="菜单"
         aria-controls="mobile-menu"
         aria-expanded="false"
