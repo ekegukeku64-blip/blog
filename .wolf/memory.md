@@ -12,3 +12,4 @@
 | 14:25 | designqc: captured 2 screenshots (28KB, ~5000 tok) | /home/ | ready for eval | ~0 |
 | 14:31 | completed homepage visual upgrade verification | home.astro, home components, components.css | build passed; /home/ screenshots reviewed; code review clean | ~4k |
 | 14:38 | OpenWolf daily maintenance | .wolf/cerebrum.md, .wolf/memory.md, .wolf/buglog.json | stale blur preference updated; maintenance path bug logged; token audit completed | ~4k |
+| 17:05 | integrated privacy-preserving browser translation controls | TranslationControl.astro, Header.astro | build passed; desktop/mobile interaction, dynamic translation, restore, and ClientRouter cleanup verified | ~7k |

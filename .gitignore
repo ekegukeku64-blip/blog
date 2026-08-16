@@ -47,3 +47,6 @@ test_write/
 !public/hero/*.png
 dist_old/
 .git.bak/
+
+# jCodeMunch local venv (D-drive install)
+.venv-jcm/

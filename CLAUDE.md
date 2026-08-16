@@ -7,7 +7,7 @@ Astro v6 个人博客，部署到 GitHub Pages。
 - **框架**: Astro v6
 - **CSS**: Tailwind CSS v4
 - **内容**: MDX + Markdown
-- **部署**: GitHub Pages (gh-pages 分支)
+- **部署**: GitHub Pages（GitHub Actions Pages）
 - **站点**: https://ekegukeku64-blip.github.io/blog/
 
 ## 项目结构
@@ -106,7 +106,7 @@ npm run indexnow     # 手动提交 sitemap URL 到 IndexNow
 
 ## 部署
 
-推送到 main 分支后，GitHub Actions 自动构建并部署到 gh-pages 分支。
+推送到 main 分支后，GitHub Actions 自动构建并部署到 GitHub Pages。
 
 ```bash
 git add .
