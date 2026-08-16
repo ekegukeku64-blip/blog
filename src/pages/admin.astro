@@ -287,7 +287,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const ids = Array.from(selectedIds)
     if (ids.length === 0) return
     try {
-      await Promise.all(ids.map(id => updateDoc(doc(db, 'comments', id), { status })))
+      await Promise.all(ids.map(id => updateDoc(doc(db!, 'comments', id), { status })))
       selectedIds.clear()
       await loadComments()
     } catch (error) {
@@ -352,9 +352,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const action = btn.getAttribute('data-action')!
         if (action === 'delete' && !confirm('确定删除？')) return
         try {
-          if (action === 'approve') await updateDoc(doc(db, 'comments', id), { status: 'approved' })
-          else if (action === 'reject') await updateDoc(doc(db, 'comments', id), { status: 'rejected' })
-          else if (action === 'delete') await deleteDoc(doc(db, 'comments', id))
+          if (action === 'approve') await updateDoc(doc(db!, 'comments', id), { status: 'approved' })
+          else if (action === 'reject') await updateDoc(doc(db!, 'comments', id), { status: 'rejected' })
+          else if (action === 'delete') await deleteDoc(doc(db!, 'comments', id))
           selectedIds.delete(id)
           await loadComments()
         } catch (e) {
@@ -380,7 +380,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       container.innerHTML = '<p class="text-center text-text-muted dark:text-dark-text-muted py-8" role="status">正在加载评论…</p>'
     }
     try {
-      const q = query(collection(db, 'comments'), orderBy('createdAt', 'desc'))
+      const q = query(collection(db!, 'comments'), orderBy('createdAt', 'desc'))
       const snapshot = await getDocs(q)
       allComments = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Comment & { id: string }))
       renderStats(allComments)
@@ -422,7 +422,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       authStatus.textContent = message
       authStatus.classList.toggle('hidden', !message)
     }
-    if (!isFirebaseConfigured) {
+    if (!isFirebaseConfigured || !db) {
       setAuthStatus('评论后台尚未配置 Firebase 环境变量。')
       loginGoogle?.setAttribute('disabled', '')
       loginGithub?.setAttribute('disabled', '')

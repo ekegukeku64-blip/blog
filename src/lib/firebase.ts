@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp, type FirebaseApp } from 'firebase/app'
 import {
   getAuth,
   signInWithPopup,
@@ -6,6 +6,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   GithubAuthProvider,
+  type Auth,
   type User,
 } from 'firebase/auth'
 import {
@@ -21,6 +22,7 @@ import {
   deleteDoc,
   getDocs,
   serverTimestamp,
+  type Firestore,
   type Timestamp,
 } from 'firebase/firestore'
 
@@ -36,26 +38,35 @@ export const isFirebaseConfigured = Object.values(firebaseConfig).every(
   value => typeof value === 'string' && value.trim().length > 0,
 )
 
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
-const db = getFirestore(app)
+// 未配置 Firebase 环境变量时不初始化 SDK，保证模块可被页面安全导入，
+// 普通博客页面构建与访问不受影响。
+const app: FirebaseApp | null = isFirebaseConfigured ? initializeApp(firebaseConfig) : null
+export const auth: Auth | null = app ? getAuth(app) : null
+export const db: Firestore | null = app ? getFirestore(app) : null
 
 const googleProvider = new GoogleAuthProvider()
 const githubProvider = new GithubAuthProvider()
 
 export function loginWithGoogle() {
+  if (!auth) return Promise.reject(new Error('Firebase 未配置，无法登录'))
   return signInWithPopup(auth, googleProvider)
 }
 
 export function loginWithGithub() {
+  if (!auth) return Promise.reject(new Error('Firebase 未配置，无法登录'))
   return signInWithPopup(auth, githubProvider)
 }
 
 export function logout() {
+  if (!auth) return Promise.reject(new Error('Firebase 未配置，无法退出登录'))
   return signOut(auth)
 }
 
 export function onAuth(callback: (user: User | null) => void) {
+  if (!auth) {
+    // 未配置时静默处理：不执行任何 Firebase 认证操作
+    return () => {}
+  }
   return onAuthStateChanged(auth, callback)
 }
 
@@ -73,8 +84,6 @@ export type Comment = {
 export type { User }
 
 export {
-  auth,
-  db,
   serverTimestamp,
   collection,
   addDoc,

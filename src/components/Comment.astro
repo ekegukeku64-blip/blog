@@ -36,7 +36,7 @@
       class="comment-input px-4 py-3 rounded-xl text-sm w-full resize-y"></textarea>
     <div class="flex items-center justify-between">
       <p id="comment-submit-status" class="text-xs text-text-muted dark:text-dark-text-muted font-sans" role="status" aria-live="polite">评论提交后会先进入审核</p>
-      <button type="submit"
+      <button type="submit" id="comment-submit-btn"
         class="comment-submit px-6 py-2.5 rounded-xl text-sm font-sans font-medium cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 dark:hover:shadow-dark-accent/20">
         发送
       </button>
@@ -261,7 +261,7 @@
     list.innerHTML = comments.map(c => {
       const photoURL = safeImageUrl(c.photoURL)
       const avatarHtml = photoURL
-        ? `<img src="${escapeHtml(photoURL)}" alt="${escapeHtml(c.displayName)}" />`
+        ? `<img src="${escapeHtml(photoURL)}" alt="${escapeHtml(c.displayName)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
         : `<div class="comment-avatar-fallback">${escapeHtml(c.displayName).charAt(0).toUpperCase()}</div>`
       const deleteBtn = currentUser && currentUser.uid === c.uid
         ? `<div class="comment-delete"><button data-id="${escapeHtml(c.id)}">删除</button></div>`
@@ -284,7 +284,7 @@
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id')
         if (id && confirm('确定删除这条评论？')) {
-          await deleteDoc(doc(db, 'comments', id))
+          await deleteDoc(doc(db!, 'comments', id))
         }
       })
     })
@@ -293,7 +293,7 @@
   function subscribeComments(list: HTMLElement) {
     if (unsubscribe) unsubscribe()
     const q = query(
-      collection(db, 'comments'),
+      collection(db!, 'comments'),
       where('pageId', '==', pageId),
       where('status', '==', 'approved')
     )
@@ -336,7 +336,7 @@
       authStatus.textContent = message
       authStatus.classList.toggle('hidden', !message)
     }
-    if (!isFirebaseConfigured) {
+    if (!isFirebaseConfigured || !db) {
       authPrompt?.classList.add('hidden')
       list.innerHTML = '<p class="comment-empty" role="status">留言功能暂未配置</p>'
       return
@@ -379,10 +379,15 @@
       const textarea = document.getElementById('comment-content') as HTMLTextAreaElement | null
       const content = textarea?.value.trim().slice(0, 2000)
       if (!content) return
+      const submitBtn = document.getElementById('comment-submit-btn') as HTMLButtonElement | null
+      if (submitBtn) {
+        submitBtn.disabled = true
+        submitBtn.textContent = '正在提交...'
+      }
 
       try {
         if (submitStatus) submitStatus.textContent = '正在提交...'
-        await addDoc(collection(db, 'comments'), {
+        await addDoc(collection(db!, 'comments'), {
           pageId,
           uid: currentUser.uid,
           displayName: String(currentUser.displayName || currentUser.email || '匿名').slice(0, 200),
@@ -396,6 +401,11 @@
       } catch (e) {
         console.error('Failed to post comment:', e)
         if (submitStatus) submitStatus.textContent = '提交失败，请重试'
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false
+          submitBtn.textContent = '发送'
+        }
       }
     }, { signal: controller.signal })
     window.__commentCleanup = () => {
