@@ -94,9 +94,9 @@ function formatDate(date: Date) {
     {heroImage && <meta name="twitter:image" content={new URL(`${import.meta.env.BASE_URL}${heroImage.replace(/^\//, '')}`, Astro.site)} />}
     <script is:inline type="application/ld+json" set:html={articleStructuredData} />
   </Fragment>
-  <article class="post-article max-w-3xl mx-auto px-6 pt-16 pb-10">
+  <article class="post-article max-w-[46rem] mx-auto px-6 pt-12 pb-10">
     <!-- Header: centered typography -->
-    <header class="post-header text-center mb-10">
+    <header class="post-header text-center mb-8">
       {noindex ? (
         <span class="reveal-target inline-block text-[11px] tracking-[0.35em] uppercase text-text-muted mb-6 font-sans">
           {category}
@@ -107,7 +107,7 @@ function formatDate(date: Date) {
         </a>
       )}
 
-      <h1 class="post-transition-title text-5xl md:text-6xl font-bold leading-tight mb-5 text-text" style="font-family: var(--font-display); letter-spacing: 0.04em; view-transition-name: post-title;">
+      <h1 class="post-transition-title text-[2.5rem] md:text-5xl font-bold leading-tight mb-4 text-text" style="font-family: var(--font-display); letter-spacing: 0.04em; view-transition-name: post-title;">
         {title}
       </h1>
 

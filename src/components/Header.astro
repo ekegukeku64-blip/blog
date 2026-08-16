@@ -14,7 +14,7 @@ const currentPath = Astro.url.pathname;
 
 <header class="sticky top-0 z-50 w-full px-4 md:px-8">
   <div class="header-glass max-w-6xl mx-auto rounded-3xl backdrop-blur-[20px] border border-white/[0.06]">
-  <nav class="px-4 h-12 flex items-center justify-between md:px-6">
+  <nav class="px-4 h-14 flex items-center justify-between md:px-6">
     <a href={import.meta.env.BASE_URL} class="logo-text text-xl font-semibold text-text hover:text-[#c8d6e8] transition-all duration-500" style="font-family: var(--font-display);">枫迹</a>
 
     <div id="desktop-nav-rail" class="nav-rail hidden lg:flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.04] p-1">
@@ -41,26 +41,35 @@ const currentPath = Astro.url.pathname;
     <div class="flex items-center gap-1">
       <TranslationControl />
       <SearchBar />
-      <a
-        href={`${base}bookmarks/`}
-        class="header-action inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:text-accent hover:bg-white/5 transition-colors"
-        aria-label="我的收藏"
-        title="我的收藏"
-      >
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-        </svg>
-      </a>
-      <a
-        href={`${import.meta.env.BASE_URL}rss.xml`}
-        class="header-action hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:text-accent hover:bg-white/5 transition-colors"
-        aria-label="RSS 订阅"
-        target="_blank"
-      >
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z" />
-        </svg>
-      </a>
+      <!-- 更多：收藏 / RSS（次要功能收纳） -->
+      <div id="more-menu-wrap" class="relative">
+        <button
+          id="more-menu-toggle"
+          class="header-action hidden sm:inline-flex h-9 items-center gap-1 px-2.5 rounded-lg text-text-secondary hover:text-text hover:bg-white/5 transition-colors"
+          aria-label="更多"
+          aria-controls="more-menu"
+          aria-expanded="false"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5h.01M12 12h.01M12 19h.01" />
+          </svg>
+          <span class="text-xs">更多</span>
+        </button>
+        <div id="more-menu" class="more-menu hidden absolute right-0 top-full mt-2 w-44 rounded-xl border border-white/[0.08] bg-[rgba(15,23,42,0.96)] backdrop-blur-xl shadow-xl overflow-hidden" aria-hidden="true">
+          <a href={`${base}bookmarks/`} class="flex items-center gap-2.5 px-4 py-3 text-sm text-text-secondary hover:text-text hover:bg-white/5 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            我的收藏
+          </a>
+          <a href={`${base}rss.xml`} target="_blank" class="flex items-center gap-2.5 px-4 py-3 text-sm text-text-secondary hover:text-text hover:bg-white/5 transition-colors border-t border-white/5">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z" />
+            </svg>
+            RSS 订阅
+          </a>
+        </div>
+      </div>
       <!-- Mobile menu button -->
       <button
         id="mobile-menu-toggle"
@@ -108,6 +117,16 @@ const currentPath = Astro.url.pathname;
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z" />
         </svg>
         RSS 订阅
+      </a>
+      <a
+        href={`${base}bookmarks/`}
+        class="header-action px-4 py-2.5 rounded-lg text-sm font-medium transition-colors text-text-secondary hover:text-text hover:bg-white/5 flex items-center gap-2"
+        style="--mobile-nav-index: 5"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+        我的收藏
       </a>
     </div>
   </div>
@@ -204,6 +223,30 @@ const currentPath = Astro.url.pathname;
       setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
     });
     menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMenuOpen(false)));
+    // 更多下拉（收藏 / RSS）
+    const moreToggle = document.getElementById('more-menu-toggle');
+    const moreMenu = document.getElementById('more-menu');
+    if (moreToggle && moreMenu && moreToggle.dataset.moreReady !== 'true') {
+      moreToggle.dataset.moreReady = 'true';
+      const closeMore = () => {
+        moreMenu.classList.add('hidden');
+        moreMenu.setAttribute('aria-hidden', 'true');
+        moreToggle.setAttribute('aria-expanded', 'false');
+      };
+      moreToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = moreMenu.classList.contains('hidden');
+        moreMenu.classList.toggle('hidden', !open);
+        moreMenu.setAttribute('aria-hidden', String(!open));
+        moreToggle.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', (e) => {
+        if (!(e.target instanceof Element) || !moreMenu.closest('#more-menu-wrap')?.contains(e.target)) closeMore();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMore();
+      });
+    }
   };
 
   window.__initHeader();

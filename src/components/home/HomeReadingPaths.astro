@@ -27,8 +27,8 @@ const { paths } = Astro.props;
 <section class="home-reading-paths reveal-target" aria-labelledby="reading-paths-heading">
   <div class="home-reading-paths-header">
     <div>
-      <h2 id="reading-paths-heading" class="section-kicker">阅读路线</h2>
-      <p class="home-reading-paths-subtitle">不知道从哪篇开始，就按这几条线索读。</p>
+      <h2 id="reading-paths-heading" class="section-kicker">从这里开始</h2>
+      <p class="home-reading-paths-subtitle">第一次来？从这三条线里选一条，先认识这个博客。</p>
     </div>
     <a href={`${import.meta.env.BASE_URL}blog/`} class="home-reading-paths-all">所有文章 &rarr;</a>
   </div>
@@ -37,6 +37,7 @@ const { paths } = Astro.props;
     {paths.map((path, index) => (
       <article class="home-reading-path-card" style={`--path-index: '${String(index + 1).padStart(2, '0')}'`}>
         <span class="home-reading-path-label">{path.label}</span>
+        {index === 1 && <span class="home-reading-path-featured">网站特色</span>}
         <h3>{path.title}</h3>
         <p>{path.description}</p>
         <div class="home-reading-path-posts">
@@ -135,6 +136,20 @@ const { paths } = Astro.props;
   transform: translateY(-3px);
   border-color: var(--border-warm);
   box-shadow: 0 28px 76px rgba(0,0,0,0.50), var(--glow-warm), var(--glass-rim-strong);
+}
+
+.home-reading-path-featured {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.22rem 0.6rem;
+  border: 1px solid rgba(200, 142, 82, 0.28);
+  border-radius: 999px;
+  background: rgba(200, 142, 82, 0.08);
+  color: rgba(236, 196, 140, 0.9);
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  vertical-align: middle;
 }
 
 .home-reading-path-label {

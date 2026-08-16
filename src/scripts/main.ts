@@ -8,5 +8,6 @@ import './interaction-feedback'
 import './interaction-lens'
 import './cursor-glow'
 import './background-parallax'
+import './cjk-spacing'
 
 export {}
