@@ -11,8 +11,8 @@ language: "Go"
 topics: ["control-panel", "dashboard", "golang", "oci", "oracle-cloud", "oracle-cloud-infrastructure", "typescript", "vue3"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-21"
-pushedAt: "2026-08-20T09:20:04Z"
+snapshotDate: "2026-08-22"
+pushedAt: "2026-08-21T07:12:15Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

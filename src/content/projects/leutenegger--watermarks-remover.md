@@ -5,13 +5,13 @@ name: "watermarks-remover"
 fullName: "Leutenegger/watermarks-remover"
 description: "Remove multi-vendor AI provenance traces: Unicode text sanitization, statistical rewriting techniques, and C2PA/metadata stripping from PNG/JPEG/SVG/PDF/DOCX/HTML/MD files"
 sourceUrl: "https://github.com/Leutenegger/watermarks-remover"
-stars: 913
-forks: 94
+stars: 929
+forks: 95
 language: "Python"
 topics: ["claude", "claude-code", "claude-skills", "codex", "codex-cli", "codex-desktop", "codex-plugin", "codex-skill"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-20"
+snapshotDate: "2026-08-22"
 pushedAt: "2026-08-19T15:23:40Z"
 ---
 

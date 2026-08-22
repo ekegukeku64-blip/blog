@@ -5,13 +5,13 @@ name: "github-farm"
 fullName: "d4ncboz/github-farm"
 description: "Production-grade, AI-Agent-friendly multi-platform OAuth harvesting and session management framework for AI Gateways."
 sourceUrl: "https://github.com/d4ncboz/github-farm"
-stars: 87
+stars: 104
 forks: 8
 language: "Python"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-21"
+snapshotDate: "2026-08-22"
 pushedAt: "2026-08-20T03:30:59Z"
 ---
 
