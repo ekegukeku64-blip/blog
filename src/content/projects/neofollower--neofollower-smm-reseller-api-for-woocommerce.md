@@ -5,14 +5,14 @@ name: "Neofollower-SMM-Reseller-API-for-Woocommerce"
 fullName: "Neofollower/Neofollower-SMM-Reseller-API-for-Woocommerce"
 description: "Official NeoFollower WordPress plugin for selling SMM reseller services through WooCommerce with automated API order fulfillment, service sync, status tracking and balance monitoring."
 sourceUrl: "https://github.com/Neofollower/Neofollower-SMM-Reseller-API-for-Woocommerce"
-stars: 92
+stars: 108
 forks: 0
 language: "PHP"
 topics: ["api-integration", "automation", "ecommerce", "marketing-automation", "neofollower", "open-source", "order-fulfillment", "php"]
 license: "GPL-2.0"
 homepage: "https://wordpress.org/plugins/neofollower-smm-reseller-api-for-woocommerce/"
 defaultBranch: "main"
-snapshotDate: "2026-08-22"
+snapshotDate: "2026-08-23"
 pushedAt: "2026-08-20T08:14:00Z"
 ---
 

@@ -6,12 +6,12 @@ fullName: "Leutenegger/coldcard-airgap"
 description: "Offline utilities for Coldcard hardware wallet users: PSBT inspection, BIP39/dice entropy, Seed XOR split/combine, BBQr encode/decode, output descriptors, and firmware verification guidance. Companion to official Coldcard firmware. Not affiliated with Coinkite."
 sourceUrl: "https://github.com/Leutenegger/coldcard-airgap"
 stars: 608
-forks: 79
+forks: 78
 language: "Python"
 topics: ["airgap", "airgap-devkit", "airgap-download", "airgap-setup", "airgap-tutorial", "bitcoin", "bitcoin-wallet", "coldcard"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-22"
+snapshotDate: "2026-08-23"
 pushedAt: "2026-08-20T23:24:07Z"
 ---
 

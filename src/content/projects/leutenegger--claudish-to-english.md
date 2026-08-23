@@ -5,13 +5,13 @@ name: "claudish-to-english"
 fullName: "Leutenegger/claudish-to-english"
 description: "Claude Code plugin that rewrites each assistant message into plain language on screen only. Local ollama by default; also codex CLI, Anthropic, or any OpenAI-compatible API. Fail-open. Optional Markdown rewrite."
 sourceUrl: "https://github.com/Leutenegger/claudish-to-english"
-stars: 579
+stars: 581
 forks: 61
 language: "Shell"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-22"
+snapshotDate: "2026-08-23"
 pushedAt: "2026-08-21T20:25:06Z"
 ---
 

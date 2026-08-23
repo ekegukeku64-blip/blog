@@ -5,14 +5,14 @@ name: "Neofollower-SMM-Panel-API"
 fullName: "Neofollower/Neofollower-SMM-Panel-API"
 description: "Official NeoFollower SMM Panel Reseller API documentation and code examples for PHP, Python, JavaScript, Go and cURL. Browse services, place orders, track status and check balance."
 sourceUrl: "https://github.com/Neofollower/Neofollower-SMM-Panel-API"
-stars: 63
+stars: 107
 forks: 0
 language: "未知"
 topics: ["api", "api-documentation", "go", "javascript", "marketing-automation", "neofollower", "php", "python"]
 license: "MIT"
 homepage: "https://neofollower.com"
 defaultBranch: "main"
-snapshotDate: "2026-08-21"
+snapshotDate: "2026-08-23"
 pushedAt: "2026-08-20T08:00:14Z"
 ---
 

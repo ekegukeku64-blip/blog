@@ -5,14 +5,14 @@ name: "oa-design"
 fullName: "OpenLabs-so/oa-design"
 description: "The Open Analytics design language as an agent skill: component recipes with type-checked source, token CSS, and a CLI. Works with Claude Code, Cursor, or any agent."
 sourceUrl: "https://github.com/OpenLabs-so/oa-design"
-stars: 109
+stars: 112
 forks: 5
 language: "TypeScript"
 topics: ["agent-skill", "ai-agents", "analytics", "claude-code", "design-system", "motion", "react", "tailwindcss"]
 license: "MIT"
 homepage: "https://getopen.so"
 defaultBranch: "main"
-snapshotDate: "2026-08-22"
+snapshotDate: "2026-08-23"
 pushedAt: "2026-08-20T19:25:29Z"
 ---
 

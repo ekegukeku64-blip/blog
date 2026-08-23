@@ -5,13 +5,13 @@ name: "getcontact-cli"
 fullName: "xdreizein666/getcontact-cli"
 description: "GetContact CLI adalah project Python untuk melakukan lookup nomor telepon lewat API GetContact, tanpa aplikasi Android dan tanpa browser."
 sourceUrl: "https://github.com/xdreizein666/getcontact-cli"
-stars: 365
-forks: 84
+stars: 459
+forks: 110
 language: "Python"
 topics: []
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-08-22"
+snapshotDate: "2026-08-23"
 pushedAt: "2026-08-21T16:30:24Z"
 ---
 
