@@ -5,15 +5,15 @@ name: "threeui"
 fullName: "MengTo/threeui"
 description: "Open-source ThreeUI Community catalog with live interactive components and complete Community source."
 sourceUrl: "https://github.com/MengTo/threeui"
-stars: 1918
-forks: 196
+stars: 2935
+forks: 292
 language: "HTML"
 topics: ["react", "shaders", "threejs", "ui-components", "webgl"]
 license: "MIT"
 homepage: "https://threeui.com"
 defaultBranch: "main"
-snapshotDate: "2026-08-23"
-pushedAt: "2026-08-22T18:55:55Z"
+snapshotDate: "2026-08-24"
+pushedAt: "2026-08-23T11:56:33Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

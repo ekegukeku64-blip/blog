@@ -5,14 +5,14 @@ name: "scroll-craft"
 fullName: "nateherkai/scroll-craft"
 description: "Claude Code skill for premium scroll-driven websites. Scroll becomes the timeline, on a real design floor, verified by screenshotting its own scroll."
 sourceUrl: "https://github.com/nateherkai/scroll-craft"
-stars: 118
-forks: 23
+stars: 500
+forks: 86
 language: "JavaScript"
 topics: ["accessibility", "agent-skills", "ai-web-design", "anthropic", "claude-code", "claude-code-plugin", "creative-coding", "design-system"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-23"
-pushedAt: "2026-08-22T20:02:32Z"
+snapshotDate: "2026-08-24"
+pushedAt: "2026-08-23T21:29:51Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
