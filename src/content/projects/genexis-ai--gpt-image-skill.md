@@ -1,0 +1,451 @@
+---
+title: "GENEXIS-AI/gpt-image-skill"
+owner: "GENEXIS-AI"
+name: "gpt-image-skill"
+fullName: "GENEXIS-AI/gpt-image-skill"
+description: "Generate GPT images from Codex or Claude Code using a ChatGPT subscription, without the Images API."
+sourceUrl: "https://github.com/GENEXIS-AI/gpt-image-skill"
+stars: 90
+forks: 9
+language: "JavaScript"
+topics: ["agent-skills", "chatgpt", "claude-code", "codex", "gpt-image", "image-generation"]
+license: "未标注"
+defaultBranch: "main"
+snapshotDate: "2026-08-27"
+pushedAt: "2026-08-27T06:23:44Z"
+---
+
+> 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
+
+# GPT Image Skill
+
+*图片：Validate skill*
+
+Generate and edit GPT images from Codex, Claude Code, or another compatible local agent through the user's **ChatGPT subscription**. Direct prompts stay unchanged; when the user delegates several different designs, the agent develops a distinct image-ready prompt for each concept. Real reference files pass into generation, results stay in the active project, and ready outputs run with bounded parallelism.
+
+```text
+install skill → Sign in with ChatGPT → direct prompt or delegated concept prompts + local image inputs
+              → single generate or bounded parallel batch
+              → built-in $imagegen → /generated-images/*.png
+```
+
+> This repository does not call the OpenAI Images API and does not create a separately billed Images API request. Built-in image generation still consumes included ChatGPT/Codex usage and remains subject to plan and workspace limits. OpenAI notes that image generations use included limits 3–5× faster on average than similar non-image turns, depending on quality and size, so parallel batches should stay intentional and small.
+
+*图片：GPT Image Skill smoke test*
+
+*图片：GPT Image Skill reference edit smoke test*
+
+## Install by pasting one prompt into an agent
+
+Paste this into Codex, Claude Code, or another local coding agent:
+
+```text
+Install and verify GPT Image Skill for the current user from:
+
+https://github.com/GENEXIS-AI/gpt-image-skill
+
+For this task, I authorize read-only environment checks; a persistent clone or safe fast-forward update;
+user-level installation of missing Git, a supported Node.js 22+ LTS, and Codex CLI;
+creation of the gpt-image links for Codex and Claude Code; and starting Sign in with ChatGPT device authorization.
+
+Read AGENT_INSTALL.md at the repository root and follow it as the one-time installation contract.
+Do not use the Images API, OPENAI_API_KEY, or API-key login. Do not generate a live image yet.
+Pause only if administrator privileges are required, an unrelated existing path would be changed,
+local changes would be discarded, or existing Codex authentication would need to be replaced.
+Otherwise, install the required components, run bootstrap --target all --yes --json,
+and continue until bootstrap's consolidated readiness report shows best_practice_pass=true.
+Do not add a separate doctor, plan, inspect, or no-image generation check when bootstrap passes.
+Finally, report the persistent clone path, both installed skill paths, and ChatGPT-auth evidence.
+Then give me the brief getting_started guide in my language: common aspect ratios,
+quality phrases, one creation example, and one reference or revision example.
+Do not use unexplained jargon such as "dry-run"; call it a setup check that does not create an image.
+```
+
+This prompt authorizes ordinary user-level setup without authorizing administrator elevation, destructive changes, replacement of existing authentication, a live generation, or a GitHub Star. The full boundary is in AGENT_INSTALL.md.
+
+After setup, invoke `$gpt-image` in Codex or `/gpt-image` in Claude Code. The host loads the concise skill only for image tasks; it does not need to reread this README on every request.
+
+## What the agent shows after installation
+
+The installing agent should end with a small guide like this, translated into the user's language:
+
+```text
+GPT Image Skill is ready. No image was generated during setup.
+
+Common aspect-ratio requests: 1:1, 16:9, 9:16, 4:3, 3:4
+Quality phrases: draft, high quality, high detail / final quality
+
+Try:
+$gpt-image Create a cozy reading room at sunset, 16:9, high quality.
+/gpt-image Use @references/character.png as the character reference and place it in a rainy city, 9:16, high quality.
+```
+
+These are common natural-language requests, not a fixed API size list. Other framing or dimension requests can be written normally, and exact pixel dimensions may vary with built-in image generation. The guide appears once after installation rather than after every image.
+
+## Design principles
+
+### 1. The prompt is authoritative—and so is delegated creative intent
+
+For one direct image or edit, the skill forwards the user's image request unchanged. It does not “improve” a short prompt with unsolicited details. A request such as “make five different poster designs” is different: it explicitly asks the agent to develop five creative concepts. The agent preserves the shared subject, references, brand, text, ratio, and other constraints, then sends one complete, meaningfully different image prompt per output. Job numbers remain in IDs and filenames, never in image prompts.
+
+### 2. References are files, not descriptions
+
+The bridge requires a readable local PNG, JPEG, or WebP path for each reference. It passes those files into the actual `$imagegen` call. It never replaces an unresolved reference with a text description and continues anyway.
+
+In Claude Code:
+
+- Prefer `@path/to/image.png` or an explicit filesystem path.
+- A pasted or dragged image visible in Claude is not automatically inherited by a nested `codex exec` process.
+- If Claude exposes an exact readable temporary attachment path, the agent copies that exact file into `/generated-images/inputs/` and uses the copy.
+- If Claude exposes no path, save the image inside the project and provide that path before generation.
+- The skill does not guess from `~/.claude/image-cache`; choosing “the newest image” could select the wrong or private file.
+
+### 3. Revisions always edit the latest result
+
+Each bridge invocation is ephemeral. For “change the result you just made,” the agent must use the previous generated output as the next `--edit-target` and reattach every still-needed reference. Reusing the original source is a different operation and loses the prior edit.
+
+### 4. Normal generation stays light
+
+The default path is:
+
+```text
+quick ChatGPT-auth check → one generation → minimal PNG sanity check → PATH + inline Markdown
+```
+
+Planning, the setup check that does not create an image (`--dry-run`), `capabilities --json`, `inspect --input`, and detailed JSON remain available for troubleshooting. They are not required before a normal image request.
+
+### 5. Parallelism is explicit and bounded
+
+`generate` remains the one-image happy path. For two or more outputs, the skill automatically batches every job whose inputs already exist. Different design concepts run independently; same-design variants may run together while reading one shared edit target or design reference. Only an output-to-input dependency creates another stage. The batch checks ChatGPT auth once and uses default concurrency 2, maximum 4, with no Doctor, planning, inspection, or automatic retries per job.
+
+## Features
+
+- Uses Codex's built-in `$imagegen` under **Sign in with ChatGPT**
+- Uses a host-native `image_gen` tool directly when the calling host already exposes one
+- Blocks `OPENAI_API_KEY`, API-key Codex login, and Images API fallback
+- Installs the same `gpt-image` skill for Codex and Claude Code
+- Preserves direct prompts verbatim and honors delegated multi-concept design work
+- Supports one or multiple references with deterministic attachment order
+- Supports existing-image edits, follow-up revisions, variations, compositing, transparency, exact text, and dense-layout drafts
+- Supports bounded parallel generation for independent concepts and shared-anchor variations
+- Saves only inside the active workspace and avoids overwrite by default
+- Returns `PATH=...` and absolute `MARKDOWN=...` after normal generation
+- Supports macOS, Linux, native Windows, and WSL2
+
+## Workflow map
+
+| Intent | Bridge arguments |
+| --- | --- |
+| Text-to-image | `--mode generate` |
+| New image guided by a reference | `--mode generate --reference PATH` |
+| Multiple references | Repeat `--reference`; add matching `--reference-role` only for explicit roles |
+| Change an existing image | `--mode edit --edit-target PATH` |
+| Change the last generated image | Use the last returned path as the new `--edit-target` |
+| Variation | `--mode variation --edit-target PATH` |
+| Transparent output | Use `--background transparent` only when requested |
+| Same design, different styles | Repeat `--mode variation --edit-target SAME_PATH` in a batch |
+| Same identity, different scenes | Repeat `--mode generate --reference SAME_PATH` in a batch |
+| Different designs in parallel | Give each batch job its own prompt and references |
+
+The edit target is Image 1. Supporting references follow in command-line order.
+
+## Requirements and environments
+
+- Node.js 22 or newer; the [current supported LTS](https://nodejs.org/en/download) is recommended.
+- Git when installing from GitHub.
+- Codex CLI signed in with ChatGPT, unless the calling host provides native `image_gen`.
+- A ChatGPT/Codex plan and workspace that permit image generation.
+
+| Environment | Status | Keep together |
+| --- | --- | --- |
+| macOS | Supported | macOS Node.js, Codex, clone, and workspace |
+| Linux | Supported | Linux Node.js, Codex, clone, and workspace |
+| Native Windows | Supported | Windows Node.js, Codex, junctions, and workspace |
+| WSL2 | Supported | Keep the complete toolchain on the Linux side |
+| WSL1 | Unsupported | Move to WSL2 or native Windows |
+
+## Manual installation
+
+Use a persistent clone because the installed skill links point to it.
+
+### macOS, Linux, and WSL2
+
+```bash
+REPOSITORY_URL="https://github.com/GENEXIS-AI/gpt-image-skill"
+INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/gpt-image-skill"
+
+git clone "$REPOSITORY_URL" "$INSTALL_DIR"
+cd "$INSTALL_DIR"
+node ./gpt-image/scripts/validate_skill.mjs
+node ./gpt-image/scripts/gpt_image.mjs bootstrap --target all --yes --json
+```
+
+Keep WSL2 clones under the Linux home directory, not `/mnt/c`.
+
+### Native Windows PowerShell
+
+```powershell
+$RepositoryUrl = "https://github.com/GENEXIS-AI/gpt-image-skill"
+$InstallDir = Join-Path $env:LOCALAPPDATA "gpt-image-skill"
+
+git clone $RepositoryUrl $InstallDir
+Set-Location $InstallDir
+node .\gpt-image\scripts\validate_skill.mjs
+node .\gpt-image\scripts\gpt_image.mjs bootstrap --target all --yes --json
+```
+
+Installed locations:
+
+- Codex: `~/.agents/skills/gpt-image`
+- Claude Code: `~/.claude/skills/gpt-image`
+- Native Windows: `$env:USERPROFILE\.agents\skills\gpt-image` and `$env:USERPROFILE\.claude\skills\gpt-image`
+
+macOS, Linux, and WSL2 use symlinks. Native Windows uses directory junctions. Existing unrelated paths are never replaced.
+
+A successful bootstrap includes:
+
+```json
+{
+  "ok": true,
+  "status": "ready",
+  "doctor": {
+    "platform_supported": true,
+    "node_supported": true,
+    "codex_available": true,
+    "chatgpt_subscription_login": true,
+    "api_environment_forwarded": false,
+    "best_practice_pass": true
+  },
+  "getting_started": {
+    "present_in_user_language": true,
+    "common_aspect_ratios": [
+      { "ratio": "1:1" },
+      { "ratio": "16:9" },
+      { "ratio": "9:16" },
+      { "ratio": "4:3" },
+      { "ratio": "3:4" }
+    ]
+  }
+}
+```
+
+The user completes browser or device authorization personally. The skill never requests or reads a password, token, API key, or `~/.codex/auth.json`.
+
+## Usage
+
+Codex:
+
+```text
+$gpt-image A cobalt-blue glass robot on a warm off-white background.
+```
+
+Claude Code:
+
+```text
+/gpt-image A cobalt-blue glass robot on a warm off-white background.
+```
+
+Direct runner:
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs generate \
+  --prompt "A cobalt-blue glass robot on a warm off-white background." \
+  --out "generated-images/glass-robot.png"
+```
+
+### Reference-guided generation
+
+In Claude Code, give the skill a stable path:
+
+```text
+/gpt-image Use @references/robot.png as the character reference. Draw it riding a bicycle.
+```
+
+Direct runner:
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs generate \
+  --mode generate \
+  --prompt "Draw this character riding a bicycle." \
+  --reference "/absolute/path/robot.png" \
+  --out "generated-images/robot-bicycle.png"
+```
+
+### Edit and continue editing
+
+First edit:
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs generate \
+  --mode edit \
+  --prompt "Replace the bicycle basket with a small wooden crate." \
+  --edit-target "generated-images/robot-bicycle.png" \
+  --out "generated-images/robot-bicycle-crate.png"
+```
+
+Follow-up edit—use the edited result, not the original:
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs generate \
+  --mode edit \
+  --prompt "Make the wooden crate dark green." \
+  --edit-target "generated-images/robot-bicycle-crate.png" \
+  --out "generated-images/robot-bicycle-green-crate.png"
+```
+
+### Multiple references
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs generate \
+  --prompt "Use Image 1 for the character and Image 2 for the bicycle design." \
+  --reference "/absolute/path/character.png" \
+  --reference-role "character" \
+  --reference "/absolute/path/bicycle.png" \
+  --reference-role "bicycle design" \
+  --out "generated-images/combined.png"
+```
+
+### Parallel multiple images
+
+The skill chooses one of three structures without asking the user to know the CLI:
+
+- **Shared-anchor variations:** every job reads the same existing design. Use `variation` for the same composition in different styles, or use the design as the first reference when identity moves into different scenes or layouts.
+- **Delegated concepts:** “different designs,” “concepts,” “directions,” “options,” or “alternatives” asks the agent to develop one complete creative prompt per output while preserving shared constraints and references.
+- **Repeated renders:** a count without requested differences—or an explicit request to use the same prompt—reuses the exact image prompt.
+
+For shared-anchor style variations, create a workspace-local manifest such as `image-jobs.json`:
+
+```json
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "watercolor",
+      "mode": "variation",
+      "prompt": "Keep the same design and render it in watercolor style.",
+      "edit_target": "references/base-design.png",
+      "references": ["references/watercolor-style.png"],
+      "reference_roles": ["style reference for this output"],
+      "out": "generated-images/design-watercolor.png"
+    },
+    {
+      "id": "clay",
+      "mode": "variation",
+      "prompt": "Keep the same design and render it in clay style.",
+      "edit_target": "references/base-design.png",
+      "references": ["references/clay-style.png"],
+      "reference_roles": ["style reference for this output"],
+      "out": "generated-images/design-clay.png"
+    }
+  ]
+}
+```
+
+Then run:
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs batch \
+  --manifest "image-jobs.json" \
+  --concurrency 2
+```
+
+Several jobs may read the same anchor safely. Attach only the style reference relevant to that output after the shared design anchor; do not attach every style reference to every job. For different design concepts, omit the shared `edit_target` and give each job its own standalone creative prompt and relevant references. Do not append “this is the Nth option”; `id` and `out` already carry that metadata.
+
+If no common design image exists, generate the first requested output and use its returned path as the anchor for the remaining parallel variants. The skill does not generate an extra hidden anchor that consumes additional subscription usage. A batch output cannot feed another job in that same batch; mixed workflows run ready jobs in stages.
+
+Each job returns its own `PATH[id]` and `MARKDOWN[id]`. The runner does not retry failed jobs automatically and never switches to the Images API when a subscription limit is reached. See Image and reference workflows for independent-concept and mixed-dependency examples.
+
+### Optional troubleshooting
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs doctor --json
+node ./gpt-image/scripts/gpt_image.mjs guide
+node ./gpt-image/scripts/gpt_image.mjs capabilities --json
+node ./gpt-image/scripts/gpt_image.mjs inspect --input "generated-images/combined.png" --json
+node ./gpt-image/scripts/gpt_image.mjs plan --prompt "test" --reference "/path/reference.png" --out "generated-images/test.png" --json
+# Check sign-in and paths without creating an image:
+node ./gpt-image/scripts/gpt_image.mjs generate --prompt "test" --out "generated-images/test.png" --dry-run --json
+# Check a batch manifest and scheduling without sign-in or image generation:
+node ./gpt-image/scripts/gpt_image.mjs batch --manifest "image-jobs.json" --check-only --json
+```
+
+## Why generated images no longer have SHA receipts
+
+SHA-256 identifies exact bytes. It is useful for proving that a downloaded installer is the same file that was inspected, but it does not tell whether a generated image followed the prompt or used a reference correctly. Requiring hashes on every input and output added work and receipt noise without improving the normal user result.
+
+Generated images now receive only lightweight file/signature checks. `verify-installers` still reports SHA-256 because installer integrity is a meaningful security use:
+
+```bash
+node ./gpt-image/scripts/gpt_image.mjs verify-installers --json
+```
+
+## Subscription and privacy safeguards
+
+- Removes `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, and `CODEX_ACCESS_TOKEN` from Codex child processes.
+- Blocks generation unless redacted diagnostics establish ChatGPT authentication.
+- Calls `codex login status` once on the normal generation path; Codex Doctor is used only for explicit or ambiguous diagnosis.
+- Checks authentication once for a live batch, not once per job; no diagnostic command runs per job.
+- Contains no OpenAI Images API endpoint or `/v1/images` request.
+- Never reads auth files and never writes the generated image outside the active workspace.
+- Never overwrites an existing image unless `--overwrite` is explicit.
+
+## Skill best-practice checks
+
+- [x] One focused job: subscription-backed GPT image generation, workspace save, and inline preview
+- [x] Concise `SKILL.md` with task-specific references loaded only when needed
+- [x] Exact prompt fidelity with no inferred art direction
+- [x] Stable-path and actual-attachment contract for Claude Code references
+- [x] Last-output-as-edit-target contract for follow-up revisions
+- [x] Direct generation by default; planning, no-image setup checks, and detailed receipts are optional
+- [x] Shared-anchor variations and independent concepts use bounded parallel batches; one auth check and zero diagnostic gates per job
+- [x] One-time, user-language getting-started guide with ratio and quality examples
+- [x] Minimal output validation without generated-image hashes
+- [x] Node.js 22+, macOS, Linux, native Windows, and WSL2 setup guidance
+- [x] Ubuntu, macOS, and Windows CI on Node.js 22 and 24
+- [x] A GitHub Star is opt-in and never automatic
+
+## Update
+
+```bash
+INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/gpt-image-skill"
+git -C "$INSTALL_DIR" pull --ff-only
+node "$INSTALL_DIR/gpt-image/scripts/gpt_image.mjs" bootstrap --target all --yes --json
+```
+
+Native Windows PowerShell:
+
+```powershell
+$InstallDir = Join-Path $env:LOCALAPPDATA "gpt-image-skill"
+git -C $InstallDir pull --ff-only
+node "$InstallDir\gpt-image\scripts\gpt_image.mjs" bootstrap --target all --yes --json
+```
+
+## Project structure
+
+```text
+.
+├── AGENT_INSTALL.md
+├── README.md
+├── generated-images/
+└── gpt-image/
+    ├── SKILL.md
+    ├── agents/openai.yaml
+    ├── references/
+    │   ├── image-workflows.md
+    │   ├── platform-setup.md
+    │   └── subscription-runtime.md
+    └── scripts/
+        ├── gpt_image.mjs
+        └── validate_skill.mjs
+```
+
+Official references:
+
+- [OpenAI: Image generation](https://learn.chatgpt.com/docs/image-generation)
+- [OpenAI: Image inputs](https://learn.chatgpt.com/docs/image-inputs)
+- [OpenAI: Build skills](https://learn.chatgpt.com/docs/build-skills)
+- [Claude Code: Work with images](https://code.claude.com/docs/en/tutorials)
+
+## Star the project
+
+If GPT Image Skill worked well for you, consider starring the repository. It helps others discover the project and supports future improvements. An agent may suggest this after a successful setup or image, but it must never click Star without an explicit user request.
