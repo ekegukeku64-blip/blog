@@ -5,14 +5,14 @@ name: "opengrok"
 fullName: "OnlyTerp/opengrok"
 description: "Run any model in Grok Bot — one-command setup, model picker UI, evidence-based provider wire maps, and an update-proof doctor. Not farming you, arming you."
 sourceUrl: "https://github.com/OnlyTerp/opengrok"
-stars: 106
-forks: 15
+stars: 299
+forks: 31
 language: "Python"
 topics: ["ai-agents", "grok", "llm", "model-router", "openai-compatible", "windows"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-28"
-pushedAt: "2026-08-27T20:27:56Z"
+snapshotDate: "2026-08-29"
+pushedAt: "2026-08-28T20:41:01Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -85,6 +85,13 @@ real token).
 - `provider-maps.cjs` — Contract A: direct body maps (client-side lanes)
 - `provider-maps-hop.cjs` — Contract B: `applyHarnessControls()` for hop lanes — this is what ships on the box
 
+**Cloud agents need one more step.** Stock Grok Bot cloud hosts do not read
+`model-bindings.json` — a saved binding is ignored until you install the
+binding consumer into the host. `tools/apply-box-patch.py` does that (anchored,
+idempotent, backs up first), and `tools/file-relay.py` is the box-side file
+relay the picker pushes bindings to. See CLOUD-HOST for
+the full local → push → patch → bounce → verify flow.
+
 ## 🛡️ Update-proof by design
 
 Grok Bot updates silently rewrite its bundle. Instead of hoping:
@@ -129,7 +136,7 @@ Run it, paste the verdict into a PR with the capture attached.
 
 - ✅ Working today: Grok, GLM, Claude plans, Gemini (incl. fast lane), DeepSeek, local llama.cpp
 - 🧪 Pattern proven, capture pending: OpenRouter, Groq, Mistral, xAI OAuth
-- 📄 Docs: MODEL-GUIDELINES · BYOK vs hop · FAILURE-MODES · ROADMAP
+- 📄 Docs: MODEL-GUIDELINES · BYOK vs hop · FAILURE-MODES · CLOUD-HOST · ROADMAP
 
 ---
 

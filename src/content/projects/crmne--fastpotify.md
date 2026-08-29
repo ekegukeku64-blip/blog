@@ -5,15 +5,15 @@ name: "fastpotify"
 fullName: "crmne/fastpotify"
 description: "Spotify, native and fast. One lightweight Rust app for your whole library, local playback, and Spotify Connect on Linux, macOS, and Windows."
 sourceUrl: "https://github.com/crmne/fastpotify"
-stars: 243
-forks: 11
+stars: 408
+forks: 23
 language: "Rust"
 topics: ["audio", "cross-platform", "desktop-app", "egui", "gui", "librespot", "linux", "macos"]
 license: "MIT"
 homepage: "https://fastpotify.rocks"
 defaultBranch: "main"
-snapshotDate: "2026-08-28"
-pushedAt: "2026-08-28T10:58:25Z"
+snapshotDate: "2026-08-29"
+pushedAt: "2026-08-28T16:21:13Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -79,7 +79,9 @@ as one ordinary desktop application rather than a shell plugin.
 - **One instance.** Launching it again surfaces the window that is already
   open instead of starting a rival copy, on every platform.
 - **Desktop integration.** MPRIS on Linux, so media keys, the shell, and
-  `playerctl` see Fastpotify like any other player.
+  `playerctl` see Fastpotify like any other player. On macOS and Windows,
+  `fastpotify next` and its siblings drive the running app from a terminal,
+  a launcher, or a hotkey.
 
 ## Install
 
@@ -115,6 +117,9 @@ and on Debian or Ubuntu:
 ```bash
 sudo apt install libasound2-dev libpulse-dev libxkbcommon-dev libwayland-dev
 ```
+
+With [Nix](https://nixos.org), `nix develop` provides all of it, along with
+the exact toolchain `rust-toolchain.toml` pins.
 
 Titles in a script the interface font does not cover -- Chinese, Japanese,
 Korean, Arabic, Hebrew, Thai, the Indic scripts and a dozen more -- are drawn
@@ -168,6 +173,33 @@ Settings → Account.
 | `Ctrl+Q` | Quit |
 
 On macOS, `Cmd` replaces `Ctrl`.
+
+## Controlling it from outside
+
+On Linux, Fastpotify is an MPRIS player, so `playerctl --player=fastpotify
+play-pause` already works.
+
+macOS and Windows have no such bus, so the same verbs are subcommands. They
+talk to the instance already running and print nothing on success:
+
+```
+fastpotify play-pause          fastpotify volume 40
+fastpotify play                fastpotify volume-up [percent]
+fastpotify pause               fastpotify volume-down [percent]
+fastpotify next                fastpotify mute
+fastpotify previous            fastpotify shuffle
+fastpotify seek 15             fastpotify repeat
+fastpotify seek -- -15         fastpotify show
+fastpotify now-playing [--raw]
+```
+
+`now-playing` prints one readable line; `--raw` prints the fields
+tab-separated — state, title, artists, album, position_ms, duration_ms,
+volume, shuffle, repeat — for a script that wants one of them. A verb exits
+non-zero when Fastpotify is not running.
+
+That is enough for a launcher such as Raycast or Alfred to drive playback
+through its own script commands.
 
 ## Settings
 

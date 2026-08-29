@@ -5,13 +5,13 @@ name: "media-inference-worker"
 fullName: "framepipe-dev/media-inference-worker"
 description: "Small client for media model inference"
 sourceUrl: "https://github.com/framepipe-dev/media-inference-worker"
-stars: 109
-forks: 33
+stars: 209
+forks: 58
 language: "Python"
 topics: []
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-08-27"
+snapshotDate: "2026-08-29"
 pushedAt: "2026-08-26T04:00:49Z"
 ---
 
