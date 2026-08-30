@@ -5,13 +5,13 @@ name: "confetti"
 fullName: "rhevorn/confetti"
 description: "Confetti — one VS Code extension for toml, yaml, ini, nginx, dotenv, gitignore, hosts, and 16+ config files. Local, fast, no telemetry."
 sourceUrl: "https://github.com/rhevorn/confetti"
-stars: 154
+stars: 155
 forks: 0
 language: "TypeScript"
 topics: ["configuration-files", "developer-tools", "dotenv", "formatter", "gitignore", "nginx", "syntax-highlighting", "toml"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-29"
+snapshotDate: "2026-08-30"
 pushedAt: "2026-08-27T12:30:27Z"
 ---
 

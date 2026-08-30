@@ -5,14 +5,14 @@ name: "codex-with-chatgpt"
 fullName: "XiaoDuoYa/codex-with-chatgpt"
 description: "ChatGPT thinks. Codex works. Use ChatGPT as the planning brain while keeping the Codex harness."
 sourceUrl: "https://github.com/XiaoDuoYa/codex-with-chatgpt"
-stars: 515
-forks: 50
+stars: 994
+forks: 113
 language: "TypeScript"
 topics: ["ai-agents", "chatgpt", "codex", "mcp", "model-context-protocol", "oauth"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-29"
-pushedAt: "2026-08-29T03:55:40Z"
+snapshotDate: "2026-08-30"
+pushedAt: "2026-08-30T01:38:49Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

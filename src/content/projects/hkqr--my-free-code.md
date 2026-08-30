@@ -5,13 +5,13 @@ name: "my-free-code"
 fullName: "hkqr/my-free-code"
 description: "Open-source multi-provider AI gateway for Claude Code and other coding agents, with model routing, streaming, tools, reasoning, fallbacks, and local model support"
 sourceUrl: "https://github.com/hkqr/my-free-code"
-stars: 150
-forks: 52
+stars: 276
+forks: 97
 language: "Python"
 topics: ["ai", "claude-code", "free-claude-api", "multi-provider", "multi-provider-llm"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-29"
+snapshotDate: "2026-08-30"
 pushedAt: "2026-08-28T09:02:17Z"
 ---
 

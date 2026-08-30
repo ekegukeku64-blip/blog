@@ -5,13 +5,13 @@ name: "snagtime"
 fullName: "nateherkai/snagtime"
 description: "Free, self-hostable scheduling app with booking links, Google Calendar sync, SMTP notifications, and Stripe test payments."
 sourceUrl: "https://github.com/nateherkai/snagtime"
-stars: 188
-forks: 53
+stars: 254
+forks: 79
 language: "TypeScript"
 topics: ["google-calendar", "nextjs", "prisma", "scheduling", "self-hosted", "stripe"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-29"
+snapshotDate: "2026-08-30"
 pushedAt: "2026-08-28T12:30:56Z"
 ---
 

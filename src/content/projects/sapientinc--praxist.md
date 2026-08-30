@@ -5,14 +5,14 @@ name: "PRAXIST"
 fullName: "sapientinc/PRAXIST"
 description: "Autonomous research system for measurable, computer-executable research."
 sourceUrl: "https://github.com/sapientinc/PRAXIST"
-stars: 954
-forks: 120
+stars: 3212
+forks: 362
 language: "Python"
 topics: []
 license: "NOASSERTION"
 homepage: "https://praxist.sapient.inc/en/docs"
 defaultBranch: "main"
-snapshotDate: "2026-08-28"
+snapshotDate: "2026-08-30"
 pushedAt: "2026-08-28T02:24:32Z"
 ---
 

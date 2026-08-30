@@ -5,13 +5,13 @@ name: "metamask-desktop"
 fullName: "MetaMask-AI/metamask-desktop"
 description: "🌐 🔌 The MetaMask desktop app enables browsing Ethereum blockchain enabled websites"
 sourceUrl: "https://github.com/MetaMask-AI/metamask-desktop"
-stars: 333
+stars: 783
 forks: 91
 language: "CSS"
 topics: ["bitcoin", "bitcoin-wallet", "crypto", "cryptocoins", "cryptocompare-api", "cryptocurrency", "dapp", "ethereum"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-08-29"
+snapshotDate: "2026-08-30"
 pushedAt: "2026-08-28T08:52:47Z"
 ---
 
