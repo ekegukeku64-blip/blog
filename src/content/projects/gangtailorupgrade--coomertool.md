@@ -5,13 +5,13 @@ name: "CoomeRtool"
 fullName: "GangTailorUpgrade/CoomeRtool"
 description: "Coomer Tool"
 sourceUrl: "https://github.com/GangTailorUpgrade/CoomeRtool"
-stars: 39
-forks: 0
+stars: 665
+forks: 1
 language: "Python"
 topics: ["coomer", "coomer-download", "coomer-downloader", "coomer-party", "coomer-porn", "coomer-st", "coomer-su", "kemomo"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-08-31"
+snapshotDate: "2026-09-01"
 pushedAt: "2026-08-31T00:32:19Z"
 ---
 
