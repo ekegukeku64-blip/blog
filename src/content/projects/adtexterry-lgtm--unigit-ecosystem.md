@@ -5,14 +5,14 @@ name: "unigit-ecosystem"
 fullName: "adtexterry-lgtm/unigit-ecosystem"
 description: "UNIGIT public brand and ecosystem hub — AI should work for everyone."
 sourceUrl: "https://github.com/adtexterry-lgtm/unigit-ecosystem"
-stars: 63
+stars: 130
 forks: 0
 language: "JavaScript"
 topics: ["agentic-ai", "ai-tools", "ai-workbench", "ecosystem", "mcp", "productivity", "unigit"]
 license: "MIT"
 homepage: "https://unigit.ai/"
 defaultBranch: "main"
-snapshotDate: "2026-09-03"
+snapshotDate: "2026-09-05"
 pushedAt: "2026-09-02T12:51:17Z"
 ---
 

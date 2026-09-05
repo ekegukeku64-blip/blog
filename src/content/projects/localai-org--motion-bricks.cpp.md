@@ -5,13 +5,13 @@ name: "motion-bricks.cpp"
 fullName: "localai-org/motion-bricks.cpp"
 description: "NVIDIA MotionBricks ported to GGML/C++; dynamically generates animations from keyframes using a neural network. Can be used in games or with robots"
 sourceUrl: "https://github.com/localai-org/motion-bricks.cpp"
-stars: 51
-forks: 2
+stars: 127
+forks: 9
 language: "C++"
 topics: []
 license: "Apache-2.0"
 defaultBranch: "main"
-snapshotDate: "2026-09-03"
+snapshotDate: "2026-09-05"
 pushedAt: "2026-09-02T13:37:34Z"
 ---
 
