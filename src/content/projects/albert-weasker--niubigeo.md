@@ -5,14 +5,14 @@ name: "niubigeo"
 fullName: "Albert-Weasker/niubigeo"
 description: "Open-source AI brand visibility and competitor reports"
 sourceUrl: "https://github.com/Albert-Weasker/niubigeo"
-stars: 416
-forks: 33
+stars: 462
+forks: 34
 language: "TypeScript"
 topics: []
 license: "Apache-2.0"
 defaultBranch: "main"
-snapshotDate: "2026-09-05"
-pushedAt: "2026-09-04T09:25:29Z"
+snapshotDate: "2026-09-06"
+pushedAt: "2026-09-06T03:08:03Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -21,7 +21,13 @@ pushedAt: "2026-09-04T09:25:29Z"
 
 **Enter a domain and see whether AI recommends you, which competitors appear, and which sources shape the answer.**
 
-简体中文 · Quick start · Releases · Packages · Compare tools
+Next Preview · 简体中文 · Quick start · Releases · Packages · Compare tools
+
+
+  NiubiGEO Next Preview is available:
+  Read the redesigned AI domain-recognition monitor
+  ·
+  查看简体中文预告
 
 
 *图片：Alpha*
@@ -32,6 +38,9 @@ pushedAt: "2026-09-04T09:25:29Z"
 
 
 ---
+
+> [!IMPORTANT]
+> **NiubiGEO Next Preview is available.** The next version moves from one-time AI visibility audits to long-term AI domain-recognition monitoring. Read the preview / 简体中文.
 
 ## You shipped a product. Does AI know it exists?
 

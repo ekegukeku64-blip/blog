@@ -5,15 +5,15 @@ name: "superlocal"
 fullName: "R44VC0RP/superlocal"
 description: "An email client & provider gateway so you can build your best email experience. "
 sourceUrl: "https://github.com/R44VC0RP/superlocal"
-stars: 170
-forks: 5
+stars: 173
+forks: 7
 language: "TypeScript"
 topics: ["email", "fast", "local-first"]
 license: "未标注"
 homepage: "https://super.local"
 defaultBranch: "main"
-snapshotDate: "2026-09-05"
-pushedAt: "2026-09-05T02:13:13Z"
+snapshotDate: "2026-09-06"
+pushedAt: "2026-09-06T00:08:02Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
