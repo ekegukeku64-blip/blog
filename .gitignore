@@ -35,6 +35,14 @@ test_write/
 # environment variables
 .env
 .env.production
+# local Pages Functions secrets (PBKDF2 pepper) - never commit
+.dev.vars
+
+# Cloudflare Pages / D1 local state and the API stub build output
+.pages-dist/
+.wrangler/
+# Firestore export and the SQL generated from it (contains user data)
+scripts/data/
 
 # macOS-specific files
 .DS_Store

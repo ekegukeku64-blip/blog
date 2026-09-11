@@ -1,3 +1,7 @@
+# Shell scripts also run on macOS and inside CI, where a CRLF shebang fails with
+# "bad interpreter: /usr/bin/env bash^M".
+*.sh text eol=lf
+
 src/content/projects/*.md whitespace=-trailing-space
 firestore.indexes.json whitespace=-blank-at-eof
 src/content/posts/daily-*.md whitespace=-trailing-space

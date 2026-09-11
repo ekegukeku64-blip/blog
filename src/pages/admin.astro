@@ -9,14 +9,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
       </svg>
       <p class="text-text-muted dark:text-dark-text-muted mb-4">请先登录</p>
-      <div class="flex justify-center gap-3">
-        <button id="admin-login-google" class="px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text hover:bg-accent/10 dark:hover:bg-dark-accent/10 transition-colors">
-          Google 登录
+      <form id="admin-auth-form" class="mx-auto max-w-sm space-y-3 text-left" novalidate>
+        <label for="admin-auth-email" class="sr-only">邮箱</label>
+        <input id="admin-auth-email" type="email" autocomplete="email" placeholder="管理员邮箱" required
+          class="w-full rounded-xl border border-border/40 dark:border-dark-border/40 bg-surface-alt dark:bg-dark-surface-alt px-4 py-3 text-sm text-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-accent/40" />
+        <label for="admin-auth-password" class="sr-only">密码</label>
+        <input id="admin-auth-password" type="password" autocomplete="current-password" placeholder="密码" required
+          class="w-full rounded-xl border border-border/40 dark:border-dark-border/40 bg-surface-alt dark:bg-dark-surface-alt px-4 py-3 text-sm text-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-accent/40" />
+        <button type="submit" id="admin-auth-submit"
+          class="w-full px-6 py-2.5 rounded-xl text-sm font-medium bg-accent text-white cursor-pointer transition-colors">
+          登录
         </button>
-        <button id="admin-login-github" class="px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text hover:bg-accent/10 dark:hover:bg-dark-accent/10 transition-colors">
-          GitHub 登录
-        </button>
-      </div>
+      </form>
       <p id="admin-auth-status" class="mt-4 text-sm text-red-500 hidden" role="status" aria-live="polite"></p>
     </div>
 
@@ -188,12 +192,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <script>
   import {
-    isFirebaseConfigured, onAuth, loginWithGoogle, loginWithGithub,
-    db, collection, query, orderBy, getDocs,
-    doc, updateDoc, deleteDoc,
+    isFirebaseConfigured, onAuth, login,
+    adminListComments, adminSetStatus, deleteComment,
     type Comment,
-  } from '../lib/firebase'
-  import { ADMIN_UIDS } from '../lib/adminUids'
+  } from '../lib/api'
 
   declare global {
     interface Window {
@@ -287,7 +289,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const ids = Array.from(selectedIds)
     if (ids.length === 0) return
     try {
-      await Promise.all(ids.map(id => updateDoc(doc(db!, 'comments', id), { status })))
+      await Promise.all(ids.map(id => adminSetStatus(id, status)))
       selectedIds.clear()
       await loadComments()
     } catch (error) {
@@ -352,9 +354,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const action = btn.getAttribute('data-action')!
         if (action === 'delete' && !confirm('确定删除？')) return
         try {
-          if (action === 'approve') await updateDoc(doc(db!, 'comments', id), { status: 'approved' })
-          else if (action === 'reject') await updateDoc(doc(db!, 'comments', id), { status: 'rejected' })
-          else if (action === 'delete') await deleteDoc(doc(db!, 'comments', id))
+          if (action === 'approve') await adminSetStatus(id, 'approved')
+          else if (action === 'reject') await adminSetStatus(id, 'rejected')
+          else if (action === 'delete') await deleteComment(id)
           selectedIds.delete(id)
           await loadComments()
         } catch (e) {
@@ -380,9 +382,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       container.innerHTML = '<p class="text-center text-text-muted dark:text-dark-text-muted py-8" role="status">正在加载评论…</p>'
     }
     try {
-      const q = query(collection(db!, 'comments'), orderBy('createdAt', 'desc'))
-      const snapshot = await getDocs(q)
-      allComments = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Comment & { id: string }))
+      allComments = await adminListComments()
       renderStats(allComments)
       renderComments()
     } catch (error) {
@@ -405,8 +405,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const noAccess = document.getElementById('admin-no-access')
     const panel = document.getElementById('admin-panel')
     const userInfo = document.getElementById('admin-user-info')
-    const loginGoogle = document.getElementById('admin-login-google')
-    const loginGithub = document.getElementById('admin-login-github')
+    const authForm = document.getElementById('admin-auth-form') as HTMLFormElement | null
+    const authEmail = document.getElementById('admin-auth-email') as HTMLInputElement | null
+    const authPassword = document.getElementById('admin-auth-password') as HTMLInputElement | null
+    const authSubmit = document.getElementById('admin-auth-submit')
     const authStatus = document.getElementById('admin-auth-status')
     const searchInput = document.getElementById('admin-comment-search') as HTMLInputElement | null
     const selectPage = document.getElementById('admin-select-page') as HTMLButtonElement | null
@@ -422,19 +424,32 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       authStatus.textContent = message
       authStatus.classList.toggle('hidden', !message)
     }
-    if (!isFirebaseConfigured || !db) {
-      setAuthStatus('评论后台尚未配置 Firebase 环境变量。')
-      loginGoogle?.setAttribute('disabled', '')
-      loginGithub?.setAttribute('disabled', '')
+    if (!isFirebaseConfigured) {
+      setAuthStatus('评论后台尚未配置 API 地址（PUBLIC_API_BASE）。')
+      authSubmit?.setAttribute('disabled', '')
       return
     }
 
-
-    loginGoogle?.addEventListener('click', async () => {
-      try { setAuthStatus(''); await loginWithGoogle() } catch (e) { console.error(e); setAuthStatus('登录失败，请检查弹窗或浏览器拦截设置。') }
-    }, { signal: controller.signal })
-    loginGithub?.addEventListener('click', async () => {
-      try { setAuthStatus(''); await loginWithGithub() } catch (e) { console.error(e); setAuthStatus('登录失败，请检查弹窗或浏览器拦截设置。') }
+    authForm?.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      const email = authEmail?.value.trim() || ''
+      const password = authPassword?.value || ''
+      if (!email || !password) { setAuthStatus('请填写邮箱和密码'); return }
+      if (authSubmit) {
+        authSubmit.setAttribute('disabled', 'disabled')
+        authSubmit.textContent = '登录中...'
+      }
+      try {
+        setAuthStatus('')
+        await login(email, password)
+      } catch (error) {
+        setAuthStatus(error instanceof Error ? error.message : '登录失败，请重试')
+      } finally {
+        if (authSubmit) {
+          authSubmit.removeAttribute('disabled')
+          authSubmit.textContent = '登录'
+        }
+      }
     }, { signal: controller.signal })
 
     // 筛选按钮
@@ -489,7 +504,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         return
       }
 
-      if (!ADMIN_UIDS.includes(user.uid)) {
+      if (!user.isAdmin) {
         gate.classList.add('hidden')
         noAccess?.classList.remove('hidden')
         panel.classList.add('hidden')
