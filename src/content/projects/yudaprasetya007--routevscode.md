@@ -11,7 +11,7 @@ language: "JavaScript"
 topics: ["9router", "ai", "chatgpt", "claude", "copilot", "deepseek", "local-proxy", "model-switcher"]
 license: "MIT"
 defaultBranch: "master"
-snapshotDate: "2026-09-10"
+snapshotDate: "2026-09-11"
 pushedAt: "2026-09-10T01:25:05Z"
 ---
 
