@@ -5,14 +5,14 @@ name: "3dviz-pro-max"
 fullName: "viettranx/3dviz-pro-max"
 description: "Agent skill for creative 3D visualization: turn an idea into a Three.js/Blender scene worth exploring. Claude Code + Codex plugin, 223 recipes, 440 knowledge records, 22 proved kits, 37 runnable studies."
 sourceUrl: "https://github.com/viettranx/3dviz-pro-max"
-stars: 143
-forks: 26
+stars: 179
+forks: 29
 language: "JavaScript"
 topics: ["3d", "agent-skill", "blender", "claude-code", "codex", "gltf", "threejs", "visualization"]
 license: "MIT"
 homepage: "https://3dviz.dev"
 defaultBranch: "main"
-snapshotDate: "2026-09-11"
+snapshotDate: "2026-09-12"
 pushedAt: "2026-09-11T01:01:12Z"
 ---
 

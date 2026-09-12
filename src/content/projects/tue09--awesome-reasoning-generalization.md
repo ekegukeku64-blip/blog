@@ -5,13 +5,13 @@ name: "awesome-reasoning-generalization"
 fullName: "tue09/awesome-reasoning-generalization"
 description: "Awesome paper list for reasoning generalization in LLMs."
 sourceUrl: "https://github.com/tue09/awesome-reasoning-generalization"
-stars: 137
+stars: 140
 forks: 4
 language: "Python"
 topics: ["awesome", "generalization", "out-of-distribution", "reasoning"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-09-11"
+snapshotDate: "2026-09-12"
 pushedAt: "2026-09-10T09:25:34Z"
 ---
 

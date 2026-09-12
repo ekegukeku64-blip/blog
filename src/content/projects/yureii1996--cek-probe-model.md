@@ -11,8 +11,8 @@ language: "Python"
 topics: []
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-09-11"
-pushedAt: "2026-09-10T02:47:30Z"
+snapshotDate: "2026-09-12"
+pushedAt: "2026-09-11T07:01:15Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -35,10 +35,10 @@ python -m venv .venv
 pip install requests
 ```
 
-Salin `.env.example` menjadi `.env`, lalu set variable secara manual. PowerShell tidak otomatis membaca `.env`, jadi contoh paling sederhana:
+Salin `.env.example` menjadi `.env`, lalu set variable secara manual. Script sekarang otomatis membaca `.env` dari folder yang sama:
 
 ```powershell
-$env:EUROUTER_API_KEYS = "replace-with-authorized-key"
+$env:API_KEYS = "replace-with-authorized-key"
 python .\cek_model_fast.py
 ```
 

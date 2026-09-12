@@ -5,13 +5,13 @@ name: "routeVSCODE"
 fullName: "yudaprasetya007/routeVSCODE"
 description: "⚡ Zero-reload dynamic AI model switcher & local proxy for VSCode Copilot Chat via 9Router"
 sourceUrl: "https://github.com/yudaprasetya007/routeVSCODE"
-stars: 326
+stars: 327
 forks: 0
 language: "JavaScript"
 topics: ["9router", "ai", "chatgpt", "claude", "copilot", "deepseek", "local-proxy", "model-switcher"]
 license: "MIT"
 defaultBranch: "master"
-snapshotDate: "2026-09-11"
+snapshotDate: "2026-09-12"
 pushedAt: "2026-09-10T01:25:05Z"
 ---
 
