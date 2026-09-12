@@ -28,9 +28,11 @@ jobs:
       - run: npm test
       - run: npm run check
       - run: python3 scripts/generate_daily_digest.py --self-test
+      # Astro/Vite only exposes PUBLIC_* values that come from a .env file, not
+      # from the process environment, so the value has to be written out first.
+      - name: Write .env for the build
+        run: echo "PUBLIC_API_BASE=${{ vars.PUBLIC_API_BASE }}" >> .env
       - run: npm run build
-        env:
-          PUBLIC_API_BASE: ${{ vars.PUBLIC_API_BASE }}
 
       - uses: actions/upload-pages-artifact@v5
         with:
