@@ -5,13 +5,13 @@ name: "cek-probe-model"
 fullName: "yureii1996/cek-probe-model"
 description: "Untuk cek model apakah maskingan atau bukan"
 sourceUrl: "https://github.com/yureii1996/cek-probe-model"
-stars: 354
+stars: 260
 forks: 0
 language: "Python"
 topics: []
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-09-12"
+snapshotDate: "2026-09-13"
 pushedAt: "2026-09-11T07:01:15Z"
 ---
 

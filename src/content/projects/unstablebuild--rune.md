@@ -5,14 +5,14 @@ name: "rune"
 fullName: "unstablebuild/rune"
 description: "the development environment for pros"
 sourceUrl: "https://github.com/unstablebuild/rune"
-stars: 232
-forks: 14
+stars: 396
+forks: 22
 language: "Go"
 topics: ["agent-orchestration", "ai", "cli", "coding-agents", "developer-tool", "devtools", "go", "golang"]
 license: "GPL-3.0"
 homepage: "https://rune.build"
 defaultBranch: "main"
-snapshotDate: "2026-09-12"
+snapshotDate: "2026-09-13"
 pushedAt: "2026-09-11T20:32:05Z"
 ---
 
