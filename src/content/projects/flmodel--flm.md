@@ -5,13 +5,13 @@ name: "flm"
 fullName: "FLModel/flm"
 description: "Train and chat with a frozen language model coupled to the full retained MaleCNS fly connectome."
 sourceUrl: "https://github.com/FLModel/flm"
-stars: 67
+stars: 68
 forks: 13
 language: "未知"
 topics: []
 license: "NOASSERTION"
 defaultBranch: "main"
-snapshotDate: "2026-09-15"
+snapshotDate: "2026-09-16"
 pushedAt: "2026-09-11T21:51:26Z"
 ---
 
