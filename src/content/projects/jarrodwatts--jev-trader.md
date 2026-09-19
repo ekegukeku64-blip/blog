@@ -5,13 +5,13 @@ name: "jev-trader"
 fullName: "jarrodwatts/jev-trader"
 description: "One AI trade decision every Monad block. Jev on Kuru MON-USDC."
 sourceUrl: "https://github.com/jarrodwatts/jev-trader"
-stars: 57
-forks: 11
+stars: 908
+forks: 171
 language: "TypeScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-17"
+snapshotDate: "2026-09-19"
 pushedAt: "2026-09-17T02:48:22Z"
 ---
 

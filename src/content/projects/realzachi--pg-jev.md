@@ -5,15 +5,15 @@ name: "pg-jev"
 fullName: "realZachi/pg-jev"
 description: "Ask your Postgres tables questions in plain language. A PostgreSQL extension powered by TypeSafe's Jev."
 sourceUrl: "https://github.com/realZachi/pg-jev"
-stars: 56
-forks: 4
-language: "Python"
+stars: 172
+forks: 10
+language: "Shell"
 topics: []
 license: "NOASSERTION"
 homepage: "https://pgjev.com"
 defaultBranch: "master"
-snapshotDate: "2026-09-18"
-pushedAt: "2026-09-18T03:17:54Z"
+snapshotDate: "2026-09-19"
+pushedAt: "2026-09-18T19:23:51Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -21,6 +21,7 @@ pushedAt: "2026-09-18T03:17:54Z"
 # jev — ask your Postgres tables questions in plain language
 
 *图片：CI*
+[*图片：PGXN*](https://pgxn.org/dist/jev/)
 *图片：License*
 [*图片：Website*](https://pgjev.com)
 
@@ -33,7 +34,7 @@ instead of generated text. No index, no embeddings, no vector column.
 Website: [pgjev.com](https://pgjev.com)
 
 ```sql
-CREATE EXTENSION jev;
+CREATE EXTENSION jev CASCADE;
 
 SELECT * FROM people WHERE jev(people, 'the name is European');
 
@@ -54,30 +55,75 @@ joins, `GROUP BY`, `LIMIT`, `ORDER BY jev_prob(...)`.
 
 ## How it works
 
-1. `jev(table, 'condition')` receives the row as a composite value. On the first call for a table + condition
-   the extension reads the whole table ahead (up to `jev.max_prefetch_rows`).
-2. Rows are packed `jev.batch_size` per request into one shared *state*
+1. `jev(table, 'condition')` receives the row as a composite value. The first call for a table + condition starts a
+   read-ahead that streams the table in physical order (TID range scans; `OFFSET` pages for views), so memory stays
+   constant whatever the table size.
+2. Rows are packed `jev.batch_size` (20) per request into one shared *state*
    (`{"condition": ..., "rows": [...]}`) with one yes/no [Noul](https://docs.typesafe.ai/primitives/noul)
-   question per row. Jev evaluates all questions over one state in parallel, which is far cheaper than one
-   request per row.
-3. Requests run concurrently (`jev.concurrency`). Answers are cached per row content for the session, so
-   re-running, changing the threshold or sorting by probability is free.
-4. Rows from a subquery or CTE (anonymous `record` type) can't be read ahead and are judged one request at a
-   time. Put `jev()` on base tables when you can.
+   question per row. Jev evaluates all questions over one state in parallel, which amortises the ~270-token
+   request overhead (about 435 tokens for one row alone vs 175 per row in batches of 20).
+3. Up to 2 × `jev.concurrency` requests are in flight over persistent HTTPS connections, and every row is answered
+   as soon as its batch returns, so a `LIMIT` stops the read-ahead after the in-flight window, and rows that cheaper
+   predicates filter out before `jev()` runs (`WHERE age > 60 AND jev(...)`) are skipped rather than judged.
+4. Answers are cached per row content for the session, so re-running, changing the threshold or sorting by
+   probability is free. Rows from a subquery or CTE (anonymous `record` type) can't be read ahead and are judged
+   one request at a time; put `jev()` on base tables or views when you can.
 
-Measured on a 129-row table: first run ≈ 1 s, 4 requests, ≈ 21k input tokens, ≈ $0.0009. Second run ≈ 6 ms.
+Measured on a 2,000-row table from Europe (~190 ms to the API): first run ≈ 3.5 s in 100 requests, ≈ 296k input
+tokens, ≈ $0.012; second run ≈ 50 ms; `LIMIT 3` on a new condition ≈ 0.6 s. A new condition in a session that
+still holds its pooled connections (idle for less than `jev.keepalive`) takes ≈ 2.3 s: the first request on each
+fresh connection is the slow one. Version 0.1.0 needed 8.5 s (and 338k tokens) for the full query and 8.4 s for
+the `LIMIT`.
+
+### Why 20 rows per request
+
+Jev has to find `rows[i]` by position in the array, and that gets unreliable in long arrays. Against ground truth
+from structured columns (job title, EU membership, a phrase in a free-text field; 400 rows each), batches of 1–20
+rows were 100 % correct, batches of 40 were 92–98 % and batches of 80 were 77–94 %. Wider rows (1,000 characters)
+made no difference at 20. Naming rows instead of indexing them did not help. Batches of 20 cost 4 % more tokens than
+batches of 40 and are just as fast, because a request's latency barely depends on its size.
 
 ## Install
 
 Requirements: PostgreSQL 14–17 with `plpython3u` (package `postgresql-plpython3-NN` on Debian/Ubuntu,
-included in the EDB and Postgres.app builds), and a TypeSafe API key from https://console.typesafe.ai.
+included in the EDB and Postgres.app builds), a superuser, and a TypeSafe API key from https://console.typesafe.ai.
+Managed hosts that withhold superuser or `plpython3u` (Supabase, Neon, RDS, …) cannot run it; see
+[Where it runs](https://pgjev.com/docs/getting-started/where-it-runs).
+
+### With an AI agent (easiest)
+
+The repo ships an agent skill on [skills.sh](https://skills.sh). Install it into
+your project and tell Claude Code, Codex, Cursor or any other skill-aware agent to finish the job:
+
+```bash
+npx skills add realZachi/pg-jev
+```
+
+> Install pgjev on this server and set it up.
+
+The agent runs a preflight (PostgreSQL version, `plpython3u`, superuser), `pgxn install jev` or `make install` against the right
+`pg_config`, `CREATE EXTENSION jev CASCADE`, places the API key and runs a smoke test. Afterwards it also knows how
+to write cost-conscious `jev()` queries ("find the tickets where the customer threatens to cancel") and to explain
+what pgjev can do. The docs are readable as Markdown for agents too: append `.md` to any page under
+https://pgjev.com/docs (see [For agents](https://pgjev.com/docs/for-agents)).
+
+### From PGXN
+
+```bash
+pip install pgxnclient       # once; also available as `pgxn-client` in Debian/Ubuntu and Homebrew
+pgxn install jev             # downloads the release from pgxn.org and runs `make install` against pg_config on PATH
+psql -c "CREATE EXTENSION jev CASCADE"
+```
+
+Use `pgxn install jev --pg_config=/path/to/pg_config` (or `sudo pgxn install jev`) when the server's `pg_config`
+is not on PATH or the extension directory is not writable.
 
 ### From source (PGXS)
 
 ```bash
 git clone https://github.com/realZachi/pg-jev.git && cd pg-jev
 make install            # uses pg_config on PATH; or: make install PG_CONFIG=/path/to/pg_config
-psql -c "CREATE EXTENSION jev"   # requires superuser (plpython3u is an untrusted language)
+psql -c "CREATE EXTENSION jev CASCADE"   # superuser required (plpython3u is untrusted); CASCADE creates plpython3u
 ```
 
 ### Docker
@@ -85,7 +131,7 @@ psql -c "CREATE EXTENSION jev"   # requires superuser (plpython3u is an untruste
 ```bash
 docker build -t pg-jev .                       # add --build-arg PG_MAJOR=17 for another major
 docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=pw -e TYPESAFE_API_KEY=your-key pg-jev
-psql postgres://postgres:pw@localhost/postgres -c "CREATE EXTENSION jev"
+psql postgres://postgres:pw@localhost/postgres -c "CREATE EXTENSION jev CASCADE"
 ```
 
 ### API key
@@ -109,7 +155,7 @@ ALTER ROLE analyst SET jev.api_key = 'your-key';   -- persistent, per role
 | `jev_choice(row, question, options text[])` | text | The most likely option for the row |
 | `jev_confidence(row, question, kind, options)` | float8 | Confidence of a `score`/`choice` answer |
 | `jev_eval(row, question, kind, options)` | jsonb | Full raw answer (probabilities, legend, confidence) |
-| `jev_stats()` | jsonb | Requests, tokens, estimated cost, cache hits for this session |
+| `jev_stats()` | jsonb | Requests, tokens, estimated cost, cache hits, in-flight requests and pooled connections for this session |
 | `jev_cache_clear()` | void | Forget cached judgments |
 | `jev_version()` | text | Extension version |
 
@@ -124,12 +170,13 @@ All settings are plain GUCs: `SET jev. = ...`, `ALTER ROLE ... SET`, `ALTER DATA
 | `jev.api_key` | env `TYPESAFE_API_KEY` | TypeSafe API key |
 | `jev.model` | `jev-latest` | Model name or pinned version such as `jev-1.13.0` |
 | `jev.threshold` | `0.5` | Probability at which `jev()` returns true |
-| `jev.batch_size` | `40` | Rows per API request |
-| `jev.concurrency` | `6` | Parallel API requests |
-| `jev.max_prefetch_rows` | `5000` | Rows read ahead from the scanned table |
-| `jev.notices` | `on` | Emit a `NOTICE` per batch run with request count, tokens, estimated cost and time |
+| `jev.batch_size` | `20` | Rows per API request. Accuracy drops measurably above ~20–25 (see above) |
+| `jev.concurrency` | `16` | Parallel API requests; up to twice that many are queued ahead of the executor |
+| `jev.max_prefetch_rows` | `5000` | How far past a cache miss the read-ahead scans to find the requested row, and how many skipped rows it keeps for later requests (memory bound) |
+| `jev.notices` | `on` | Emit a progress `NOTICE` per finished request and a summary per table with request count, tokens, estimated cost and time |
 | `jev.api_url` | `https://api.typesafe.ai/v1/systemone` | Endpoint (proxies, mocks) |
-| `jev.timeout` | `90` | Seconds per API request |
+| `jev.timeout` | `30` | Seconds per API request. Waits are interruptible: `statement_timeout` and cancel requests apply within 250 ms |
+| `jev.keepalive` | `600` | Seconds a pooled API connection may sit idle before it is reconnected. The first request on a fresh connection costs a TLS handshake plus, measured, up to 1.5 s of server-side setup, so keep connections alive across queries; TCP keepalive probes catch silently dropped ones |
 | `jev.max_rows_per_statement` | `0` (off) | Abort a statement that would send more rows than this to the API. Spend guard for shared deployments |
 | `jev.max_chars_per_statement` | `0` (off) | Same, for characters of row data |
 
@@ -143,13 +190,13 @@ Jev answers the question you wrote, literally. A few things that help (more in t
 - Keep arithmetic, dates and exact matches in SQL; let the model judge meaning.
 - Look at the distribution with `jev_prob()` before picking a threshold. Ambiguous cases really do land
   near 0.5.
-- Send only the columns the judgment needs: `jev((SELECT r FROM (SELECT name, bio) r), ...)` is possible, but a
-  simpler pattern is a view with the relevant columns and `jev(view_alias, ...)` on the view.
+- Send only the columns the judgment needs: create a view with the relevant columns (and any pre-filter) and call
+  `jev(view_alias, ...)` on the view. Views are read ahead and batched like tables.
 
 ## Caveats
 
-- This is a full scan by design: every row goes to the API. Filter with indexed predicates first when the table
-  is large, or raise `jev.max_prefetch_rows` deliberately.
+- This is a full scan by design: every row the executor asks about goes to the API. Cheaper predicates in the same
+  `WHERE` run first and their rejects are skipped; a `LIMIT` stops early; `jev.max_rows_per_statement` caps spend.
 - Row contents are sent to a third-party API. Do not use it on data you may not share.
 - The cache lives in the backend session (PL/Python `GD`). Connection pools with many sessions each warm their
   own cache.
