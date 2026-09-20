@@ -5,13 +5,13 @@ name: "fast-jev-compaction"
 fullName: "tamaratran/fast-jev-compaction"
 description: "Claude Code plugin that replaces the compaction summary with Jev decisions: every tool call and result is scored in one fast request, stale ones are dropped or truncated, everything kept stays verbatim."
 sourceUrl: "https://github.com/tamaratran/fast-jev-compaction"
-stars: 3414
-forks: 175
+stars: 4387
+forks: 242
 language: "TypeScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-19"
+snapshotDate: "2026-09-20"
 pushedAt: "2026-09-18T04:45:31Z"
 ---
 

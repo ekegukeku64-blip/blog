@@ -5,13 +5,13 @@ name: "OrcaBonsai-27B-Uncensored"
 fullName: "Continuum-AI-Corp/OrcaBonsai-27B-Uncensored"
 description: "Runtime behavioral ablation for compressed LLMs. First target: Ternary Bonsai 2 27B — no weight modification or re-quantization. by OrcaRouter team"
 sourceUrl: "https://github.com/Continuum-AI-Corp/OrcaBonsai-27B-Uncensored"
-stars: 395
-forks: 38
+stars: 474
+forks: 53
 language: "Python"
 topics: []
 license: "NOASSERTION"
 defaultBranch: "main"
-snapshotDate: "2026-09-19"
+snapshotDate: "2026-09-20"
 pushedAt: "2026-09-18T12:58:46Z"
 ---
 
