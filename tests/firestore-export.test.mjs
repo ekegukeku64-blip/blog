@@ -65,62 +65,70 @@ test('signs a verifiable RS256 JWT and pages through Firestore', async () => {
   let assertionsSeen = 0
   let pagesServed = 0
 
-  await withFakeGoogle((req, res) => {
-    if (req.url === '/token' && req.method === 'POST') {
-      let body = ''
-      req.on('data', (chunk) => (body += chunk))
-      req.on('end', () => {
-        const params = new URLSearchParams(body)
-        const assertion = params.get('assertion')
-        assert.equal(params.get('grant_type'), 'urn:ietf:params:oauth:grant-type:jwt-bearer')
+  await withFakeGoogle(
+    (req, res) => {
+      if (req.url === '/token' && req.method === 'POST') {
+        let body = ''
+        req.on('data', (chunk) => (body += chunk))
+        req.on('end', () => {
+          const params = new URLSearchParams(body)
+          const assertion = params.get('assertion')
+          assert.equal(params.get('grant_type'), 'urn:ietf:params:oauth:grant-type:jwt-bearer')
 
-        // Independently verify the signature with the matching public key: this is
-        // the part that would silently break the real export.
-        const [headerPart, claimsPart, signaturePart] = assertion.split('.')
-        const ok = verify(
-          'RSA-SHA256',
-          Buffer.from(`${headerPart}.${claimsPart}`),
-          createPublicKey(publicKey),
-          Buffer.from(signaturePart, 'base64url'),
-        )
-        assert.equal(ok, true, 'JWT signature must verify against the public key')
+          // Independently verify the signature with the matching public key: this is
+          // the part that would silently break the real export.
+          const [headerPart, claimsPart, signaturePart] = assertion.split('.')
+          const ok = verify(
+            'RSA-SHA256',
+            Buffer.from(`${headerPart}.${claimsPart}`),
+            createPublicKey(publicKey),
+            Buffer.from(signaturePart, 'base64url'),
+          )
+          assert.equal(ok, true, 'JWT signature must verify against the public key')
 
-        const header = JSON.parse(Buffer.from(headerPart, 'base64url').toString('utf8'))
-        assert.equal(header.alg, 'RS256')
-        const claims = JSON.parse(Buffer.from(claimsPart, 'base64url').toString('utf8'))
-        assert.equal(claims.iss, 'svc@demo.iam.gserviceaccount.com')
-        assert.equal(claims.scope, 'https://www.googleapis.com/auth/datastore')
-        assert.ok(claims.exp > claims.iat)
+          const header = JSON.parse(Buffer.from(headerPart, 'base64url').toString('utf8'))
+          assert.equal(header.alg, 'RS256')
+          const claims = JSON.parse(Buffer.from(claimsPart, 'base64url').toString('utf8'))
+          assert.equal(claims.iss, 'svc@demo.iam.gserviceaccount.com')
+          assert.equal(claims.scope, 'https://www.googleapis.com/auth/datastore')
+          assert.ok(claims.exp > claims.iat)
 
-        assertionsSeen += 1
+          assertionsSeen += 1
+          res.writeHead(200, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ access_token: 'fake-token', expires_in: 3600 }))
+        })
+        return
+      }
+
+      assert.match(req.url, /\/v1\/projects\/demo\/databases\/\(default\)\/documents\/comments/)
+      assert.equal(req.headers.authorization, 'Bearer fake-token')
+
+      // Two pages, to prove pageToken handling rather than a single happy fetch.
+      pagesServed += 1
+      if (pagesServed === 1) {
+        assert.ok(!req.url.includes('pageToken'))
         res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ access_token: 'fake-token', expires_in: 3600 }))
+        res.end(
+          JSON.stringify({
+            documents: [doc('a'), doc('b', { status: 'pending' })],
+            nextPageToken: 'PAGE2',
+          }),
+        )
+      } else {
+        assert.ok(req.url.includes('pageToken=PAGE2'))
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ documents: [doc('c')] }))
+      }
+    },
+    async (base) => {
+      const { stdout } = await run(process.execPath, [SCRIPT], {
+        cwd: workdir,
+        env: { ...process.env, GOOGLE_TOKEN_URL: `${base}/token`, FIRESTORE_API_BASE: base },
       })
-      return
-    }
-
-    assert.match(req.url, /\/v1\/projects\/demo\/databases\/\(default\)\/documents\/comments/)
-    assert.equal(req.headers.authorization, 'Bearer fake-token')
-
-    // Two pages, to prove pageToken handling rather than a single happy fetch.
-    pagesServed += 1
-    if (pagesServed === 1) {
-      assert.ok(!req.url.includes('pageToken'))
-      res.writeHead(200, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify({ documents: [doc('a'), doc('b', { status: 'pending' })], nextPageToken: 'PAGE2' }))
-    } else {
-      assert.ok(req.url.includes('pageToken=PAGE2'))
-      res.writeHead(200, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify({ documents: [doc('c')] }))
-    }
-  }, async (base) => {
-    const { stdout } = await run(process.execPath, [SCRIPT], {
-      cwd: workdir,
-      env: { ...process.env, GOOGLE_TOKEN_URL: `${base}/token`, FIRESTORE_API_BASE: base },
-    })
-    assert.match(stdout, /wrote 3 document\(s\)/)
-    assert.match(stdout, /approved=2, pending=1/)
-  })
+      assert.match(stdout, /wrote 3 document\(s\)/)
+      assert.match(stdout, /approved=2, pending=1/)
+    },
+  )
 
   assert.equal(assertionsSeen, 1)
   assert.equal(pagesServed, 2)
@@ -143,7 +151,11 @@ test('--check-key validates the key without any network call', async () => {
   mkdirSync(join(workdir, 'scripts', 'data'), { recursive: true })
   writeFileSync(
     join(workdir, 'scripts', 'data', 'firebase-service-account.json'),
-    JSON.stringify({ project_id: 'demo', client_email: 'svc@demo.iam.gserviceaccount.com', private_key: privateKey }),
+    JSON.stringify({
+      project_id: 'demo',
+      client_email: 'svc@demo.iam.gserviceaccount.com',
+      private_key: privateKey,
+    }),
   )
 
   const { stdout } = await run(process.execPath, [SCRIPT, '--check-key'], { cwd: workdir })
@@ -155,14 +167,11 @@ test('--check-key validates the key without any network call', async () => {
 
 test('a missing key file fails with an actionable message', async () => {
   const workdir = mkdtempSync(join(tmpdir(), 'export-test-missing-'))
-  await assert.rejects(
-    run(process.execPath, [SCRIPT], { cwd: workdir }),
-    (error) => {
-      assert.match(error.stderr, /service account key not found/)
-      assert.match(error.stderr, /Project settings/)
-      return true
-    },
-  )
+  await assert.rejects(run(process.execPath, [SCRIPT], { cwd: workdir }), (error) => {
+    assert.match(error.stderr, /service account key not found/)
+    assert.match(error.stderr, /Project settings/)
+    return true
+  })
   rmSync(workdir, { recursive: true, force: true })
 })
 

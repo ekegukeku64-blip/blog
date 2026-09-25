@@ -1,25 +1,25 @@
 ---
-import '../styles/global.css';
-import '@fontsource/inter/400.css';
-import '@fontsource/inter/500.css';
-import '@fontsource/inter/600.css';
-import '@fontsource/inter/700.css';
-import '@fontsource/jetbrains-mono/400.css';
-import '@fontsource/noto-serif-sc/400.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import BackToTop from '../components/BackToTop.astro';
-import ReadingProgress from '../components/ReadingProgress.astro';
-import PageProgress from '../components/PageProgress.astro';
-import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
+import '@fontsource/jetbrains-mono/400.css'
+import '@fontsource/noto-serif-sc/400.css'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import BackToTop from '../components/BackToTop.astro'
+import ReadingProgress from '../components/ReadingProgress.astro'
+import PageProgress from '../components/PageProgress.astro'
+import { ClientRouter } from 'astro:transitions'
 
 interface Props {
-  title: string;
-  description?: string;
-  image?: string;
-  robots?: string;
-  pagefind?: boolean;
-  ogType?: 'website' | 'article';
+  title: string
+  description?: string
+  image?: string
+  robots?: string
+  pagefind?: boolean
+  ogType?: 'website' | 'article'
 }
 
 const {
@@ -29,11 +29,12 @@ const {
   robots = 'index, follow',
   pagefind = true,
   ogType = 'website',
-} = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const siteRootURL = new URL(import.meta.env.BASE_URL, Astro.site);
-const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.pathname === '/';
+} = Astro.props
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+const siteRootURL = new URL(import.meta.env.BASE_URL, Astro.site)
+const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.pathname === '/'
 ---
+
 <!doctype html>
 <html lang="zh-CN" class="dark">
   <head>
@@ -48,8 +49,23 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <link rel="apple-touch-icon" href={`${import.meta.env.BASE_URL}apple-touch-icon.svg`} />
     <link rel="manifest" href={`${import.meta.env.BASE_URL}manifest.webmanifest`} />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="alternate" type="application/rss+xml" title="枫迹博客 RSS" href={new URL(`${import.meta.env.BASE_URL}rss.xml`, Astro.site)} />
-    <meta property="og:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="枫迹博客 RSS"
+      href={new URL(`${import.meta.env.BASE_URL}rss.xml`, Astro.site)}
+    />
+    <meta
+      property="og:image"
+      content={
+        new URL(
+          image
+            ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}`
+            : `${import.meta.env.BASE_URL}hero/og-default.png`,
+          Astro.site,
+        )
+      }
+    />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />
@@ -59,42 +75,78 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(image ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}` : `${import.meta.env.BASE_URL}hero/og-default.png`, Astro.site)} />
+    <meta
+      name="twitter:image"
+      content={
+        new URL(
+          image
+            ? `${import.meta.env.BASE_URL}${image.replace(/^\//, '')}`
+            : `${import.meta.env.BASE_URL}hero/og-default.png`,
+          Astro.site,
+        )
+      }
+    />
     <meta name="author" content="又逢雨季" />
     <title>{title} | 枫迹博客</title>
-        <script is:inline type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Blog",
-      "name": "枫迹博客",
-      "description": "一个关于技术、设计与生活的博客",
-      "url": siteRootURL.href,
-      "author": { "@type": "Person", "name": "又逢雨季" },
-      "inLanguage": "zh-CN"
-    })} />
-
-        <script is:inline type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "枫迹博客",
-      "url": siteRootURL.href
-    })} />
-
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        name: '枫迹博客',
+        description: '一个关于技术、设计与生活的博客',
+        url: siteRootURL.href,
+        author: { '@type': 'Person', name: '又逢雨季' },
+        inLanguage: 'zh-CN',
+      })}
+    ></script>
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: '枫迹博客',
+        url: siteRootURL.href,
+      })}
+    ></script>
     <ClientRouter />
     <slot name="head" />
   </head>
   <body class={`min-h-screen flex flex-col${isEntrance ? ' page-entrance' : ''}`}>
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[1000] focus:rounded-lg focus:bg-surface focus:px-4 focus:py-3 focus:text-text focus:shadow-xl">跳到正文</a>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[1000] focus:rounded-lg focus:bg-surface focus:px-4 focus:py-3 focus:text-text focus:shadow-xl"
+    >
+      跳到正文
+    </a>
     <div class="global-bg-layer" aria-hidden="true">
-      <img id="global-bg-poster" class="global-bg-video" src={`${import.meta.env.BASE_URL}maple.jpg`} alt="" />
-      <video id="global-bg-video" class="global-bg-video"
+      <img
+        id="global-bg-poster"
+        class="global-bg-video"
+        src={`${import.meta.env.BASE_URL}maple.jpg`}
+        alt=""
+      />
+      <video
+        id="global-bg-video"
+        class="global-bg-video"
         poster={`${import.meta.env.BASE_URL}maple.jpg`}
         preload="metadata"
-        loop muted playsinline style="display:none">
-      </video>
+        loop
+        muted
+        playsinline
+        style="display:none"
+      ></video>
     </div>
     {!isEntrance && <ReadingProgress />}
     {!isEntrance && <Header />}
-    <main id="main-content" class="flex-1" data-pagefind-body={pagefind ? true : undefined} data-pagefind-ignore={pagefind ? undefined : true}>
+    <main
+      id="main-content"
+      class="flex-1"
+      data-pagefind-body={pagefind ? true : undefined}
+      data-pagefind-ignore={pagefind ? undefined : true}
+    >
       <slot />
     </main>
     {!isEntrance && <Footer />}

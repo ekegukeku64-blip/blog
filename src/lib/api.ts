@@ -169,7 +169,11 @@ export function onAuth(callback: Listener): () => void {
   }
 }
 
-export async function register(email: string, password: string, displayName: string): Promise<User> {
+export async function register(
+  email: string,
+  password: string,
+  displayName: string,
+): Promise<User> {
   const data = await request<{ token: string; user: User }>('/api/auth/register', {
     method: 'POST',
     body: { email, password, displayName },
@@ -244,10 +248,7 @@ export function subscribeComments(
   }
 }
 
-export async function createComment(input: {
-  pageId: string
-  content: string
-}): Promise<Comment> {
+export async function createComment(input: { pageId: string; content: string }): Promise<Comment> {
   const data = await request<{ comment: Parameters<typeof toComment>[0] }>('/api/comments', {
     method: 'POST',
     auth: true,

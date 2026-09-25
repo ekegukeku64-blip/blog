@@ -14,17 +14,25 @@ function initPageClickWave() {
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-  document.addEventListener('pointerdown', (event) => {
-    if (reduceMotion.matches) return
-    if (event.target instanceof Element && event.target.closest('a[href], button, [role="button"], summary, input, select, textarea')) return
-    const layer = window.__pageClickWaveLayer
-    if (!layer) return
-    layer.style.setProperty('--page-wave-x', `${event.clientX}px`)
-    layer.style.setProperty('--page-wave-y', `${event.clientY}px`)
-    layer.classList.remove('is-waving')
-    void layer.offsetWidth
-    layer.classList.add('is-waving')
-  }, { passive: true })
+  document.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (reduceMotion.matches) return
+      if (
+        event.target instanceof Element &&
+        event.target.closest('a[href], button, [role="button"], summary, input, select, textarea')
+      )
+        return
+      const layer = window.__pageClickWaveLayer
+      if (!layer) return
+      layer.style.setProperty('--page-wave-x', `${event.clientX}px`)
+      layer.style.setProperty('--page-wave-y', `${event.clientY}px`)
+      layer.classList.remove('is-waving')
+      void layer.offsetWidth
+      layer.classList.add('is-waving')
+    },
+    { passive: true },
+  )
 
   document.addEventListener('animationend', (event) => {
     const layer = window.__pageClickWaveLayer

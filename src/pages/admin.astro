@@ -1,27 +1,61 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro'
 ---
 
 <BaseLayout title="管理面板" description="博客后台管理" robots="noindex, nofollow" pagefind={false}>
   <div class="max-w-4xl mx-auto px-6 py-16">
     <div id="admin-gate" class="text-center py-20">
-      <svg class="w-16 h-16 mx-auto mb-4 text-text-muted dark:text-dark-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      <svg
+        class="w-16 h-16 mx-auto mb-4 text-text-muted dark:text-dark-text-muted"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="1.5"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+        />
       </svg>
       <p class="text-text-muted dark:text-dark-text-muted mb-4">请先登录</p>
       <form id="admin-auth-form" class="mx-auto max-w-sm space-y-3 text-left" novalidate>
-        <label for="admin-auth-email" class="sr-only">邮箱</label>
-        <input id="admin-auth-email" type="email" autocomplete="email" placeholder="管理员邮箱" required
-          class="w-full rounded-xl border border-border/40 dark:border-dark-border/40 bg-surface-alt dark:bg-dark-surface-alt px-4 py-3 text-sm text-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-accent/40" />
-        <label for="admin-auth-password" class="sr-only">密码</label>
-        <input id="admin-auth-password" type="password" autocomplete="current-password" placeholder="密码" required
-          class="w-full rounded-xl border border-border/40 dark:border-dark-border/40 bg-surface-alt dark:bg-dark-surface-alt px-4 py-3 text-sm text-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-accent/40" />
-        <button type="submit" id="admin-auth-submit"
-          class="w-full px-6 py-2.5 rounded-xl text-sm font-medium bg-accent text-white cursor-pointer transition-colors">
+        <label for="admin-auth-email" class="sr-only">
+          邮箱
+        </label>
+        <input
+          id="admin-auth-email"
+          type="email"
+          autocomplete="email"
+          placeholder="管理员邮箱"
+          required
+          class="w-full rounded-xl border border-border/40 dark:border-dark-border/40 bg-surface-alt dark:bg-dark-surface-alt px-4 py-3 text-sm text-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-accent/40"
+        />
+        <label for="admin-auth-password" class="sr-only">
+          密码
+        </label>
+        <input
+          id="admin-auth-password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="密码"
+          required
+          class="w-full rounded-xl border border-border/40 dark:border-dark-border/40 bg-surface-alt dark:bg-dark-surface-alt px-4 py-3 text-sm text-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-accent/40"
+        />
+        <button
+          type="submit"
+          id="admin-auth-submit"
+          class="w-full px-6 py-2.5 rounded-xl text-sm font-medium bg-accent text-white cursor-pointer transition-colors"
+        >
           登录
         </button>
       </form>
-      <p id="admin-auth-status" class="mt-4 text-sm text-red-500 hidden" role="status" aria-live="polite"></p>
+      <p
+        id="admin-auth-status"
+        class="mt-4 text-sm text-red-500 hidden"
+        role="status"
+        aria-live="polite"
+      ></p>
     </div>
 
     <div id="admin-no-access" class="hidden text-center py-20">
@@ -37,47 +71,119 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- 统计 -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
-          <p id="stat-total" class="text-2xl font-bold text-text dark:text-dark-text">-</p>
+          <p id="stat-total" class="text-2xl font-bold text-text dark:text-dark-text">
+            -
+          </p>
           <p class="text-xs text-text-muted dark:text-dark-text-muted">全部评论</p>
         </div>
         <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
-          <p id="stat-pending" class="text-2xl font-bold text-amber-500">-</p>
+          <p id="stat-pending" class="text-2xl font-bold text-amber-500">
+            -
+          </p>
           <p class="text-xs text-text-muted dark:text-dark-text-muted">待审核</p>
         </div>
         <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
-          <p id="stat-approved" class="text-2xl font-bold text-green-500">-</p>
+          <p id="stat-approved" class="text-2xl font-bold text-green-500">
+            -
+          </p>
           <p class="text-xs text-text-muted dark:text-dark-text-muted">已通过</p>
         </div>
         <div class="bg-surface-alt dark:bg-dark-surface-alt rounded-xl p-4 text-center">
-          <p id="stat-rejected" class="text-2xl font-bold text-red-500">-</p>
+          <p id="stat-rejected" class="text-2xl font-bold text-red-500">
+            -
+          </p>
           <p class="text-xs text-text-muted dark:text-dark-text-muted">已拒绝</p>
         </div>
       </div>
 
       <!-- 筛选 -->
       <div class="flex flex-wrap gap-2 mb-6">
-        <button data-filter="all" class="filter-btn px-4 py-2 text-sm rounded-lg bg-accent text-white">全部</button>
-        <button data-filter="pending" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">待审核</button>
-        <button data-filter="approved" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">已通过</button>
-        <button data-filter="rejected" class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text">已拒绝</button>
+        <button
+          data-filter="all"
+          class="filter-btn px-4 py-2 text-sm rounded-lg bg-accent text-white"
+        >
+          全部
+        </button>
+        <button
+          data-filter="pending"
+          class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text"
+        >
+          待审核
+        </button>
+        <button
+          data-filter="approved"
+          class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text"
+        >
+          已通过
+        </button>
+        <button
+          data-filter="rejected"
+          class="filter-btn px-4 py-2 text-sm rounded-lg bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text"
+        >
+          已拒绝
+        </button>
       </div>
       <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] mb-6">
-        <label class="sr-only" for="admin-comment-search">搜索评论</label>
-        <input id="admin-comment-search" type="search" placeholder="搜索作者、页面或评论内容" class="w-full min-h-11 px-4 py-2.5 rounded-lg border border-border/60 dark:border-dark-border/60 bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text focus:outline-none focus:border-accent" />
+        <label class="sr-only" for="admin-comment-search">
+          搜索评论
+        </label>
+        <input
+          id="admin-comment-search"
+          type="search"
+          placeholder="搜索作者、页面或评论内容"
+          class="w-full min-h-11 px-4 py-2.5 rounded-lg border border-border/60 dark:border-dark-border/60 bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text focus:outline-none focus:border-accent"
+        />
         <div class="flex flex-wrap gap-2">
-          <button id="admin-select-page" type="button" class="px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text">选择本页</button>
-          <button id="admin-batch-approve" type="button" disabled class="px-3 py-2 text-sm rounded-lg bg-green-600 text-white disabled:opacity-40 disabled:cursor-not-allowed">批量通过</button>
-          <button id="admin-batch-reject" type="button" disabled class="px-3 py-2 text-sm rounded-lg bg-red-500 text-white disabled:opacity-40 disabled:cursor-not-allowed">批量拒绝</button>
+          <button
+            id="admin-select-page"
+            type="button"
+            class="px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text"
+          >
+            选择本页
+          </button>
+          <button
+            id="admin-batch-approve"
+            type="button"
+            disabled
+            class="px-3 py-2 text-sm rounded-lg bg-green-600 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            批量通过
+          </button>
+          <button
+            id="admin-batch-reject"
+            type="button"
+            disabled
+            class="px-3 py-2 text-sm rounded-lg bg-red-500 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            批量拒绝
+          </button>
         </div>
       </div>
-
 
       <!-- 评论列表 -->
       <div id="admin-comments" class="space-y-4"></div>
       <div id="admin-pagination" class="hidden items-center justify-center gap-3 mt-6">
-        <button id="admin-page-prev" type="button" class="min-h-11 px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text disabled:opacity-40" aria-label="上一页">上一页</button>
-        <span id="admin-page-info" class="text-sm text-text-muted dark:text-dark-text-muted" aria-live="polite"></span>
-        <button id="admin-page-next" type="button" class="min-h-11 px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text disabled:opacity-40" aria-label="下一页">下一页</button>
+        <button
+          id="admin-page-prev"
+          type="button"
+          class="min-h-11 px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text disabled:opacity-40"
+          aria-label="上一页"
+        >
+          上一页
+        </button>
+        <span
+          id="admin-page-info"
+          class="text-sm text-text-muted dark:text-dark-text-muted"
+          aria-live="polite"
+        ></span>
+        <button
+          id="admin-page-next"
+          type="button"
+          class="min-h-11 px-3 py-2 text-sm rounded-lg border border-border/60 dark:border-dark-border/60 text-text dark:text-dark-text disabled:opacity-40"
+          aria-label="下一页"
+        >
+          下一页
+        </button>
       </div>
     </div>
   </div>
@@ -192,8 +298,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <script>
   import {
-    isFirebaseConfigured, onAuth, login,
-    adminListComments, adminSetStatus, deleteComment,
+    isFirebaseConfigured,
+    onAuth,
+    login,
+    adminListComments,
+    adminSetStatus,
+    deleteComment,
     type Comment,
   } from '../lib/api'
 
@@ -213,7 +323,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   function formatDate(ts: Comment['createdAt']) {
     if (!ts) return ''
     const d = ts.toDate()
-    return d.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    return d.toLocaleString('zh-CN', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   function escapeHtml(value: unknown) {
@@ -234,9 +349,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   function renderStats(comments: (Comment & { id: string })[]) {
     const total = comments.length
-    const pending = comments.filter(c => c.status === 'pending').length
-    const approved = comments.filter(c => c.status === 'approved').length
-    const rejected = comments.filter(c => c.status === 'rejected').length
+    const pending = comments.filter((c) => c.status === 'pending').length
+    const approved = comments.filter((c) => c.status === 'approved').length
+    const rejected = comments.filter((c) => c.status === 'rejected').length
     const el = (id: string) => document.getElementById(id)
     if (el('stat-total')) el('stat-total')!.textContent = String(total)
     if (el('stat-pending')) el('stat-pending')!.textContent = String(pending)
@@ -245,18 +360,26 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   function getFilteredComments() {
-    const byStatus = currentFilter === 'all'
-      ? allComments
-      : allComments.filter(comment => comment.status === currentFilter)
+    const byStatus =
+      currentFilter === 'all'
+        ? allComments
+        : allComments.filter((comment) => comment.status === currentFilter)
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase('zh-CN')
     if (!normalizedQuery) return byStatus
-    return byStatus.filter(comment =>
-      [comment.displayName, comment.pageId, comment.content]
-        .some(value => String(value || '').toLocaleLowerCase('zh-CN').includes(normalizedQuery))
+    return byStatus.filter((comment) =>
+      [comment.displayName, comment.pageId, comment.content].some((value) =>
+        String(value || '')
+          .toLocaleLowerCase('zh-CN')
+          .includes(normalizedQuery),
+      ),
     )
   }
 
-  function updateAdminControls(pageItems: (Comment & { id: string })[], totalItems: number, totalPages: number) {
+  function updateAdminControls(
+    pageItems: (Comment & { id: string })[],
+    totalItems: number,
+    totalPages: number,
+  ) {
     const pagination = document.getElementById('admin-pagination')
     const pageInfo = document.getElementById('admin-page-info')
     const prev = document.getElementById('admin-page-prev') as HTMLButtonElement | null
@@ -280,7 +403,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       reject.textContent = selectedCount ? '批量拒绝 (' + selectedCount + ')' : '批量拒绝'
     }
     if (selectPage) {
-      const allSelected = pageItems.length > 0 && pageItems.every(comment => selectedIds.has(comment.id))
+      const allSelected =
+        pageItems.length > 0 && pageItems.every((comment) => selectedIds.has(comment.id))
       selectPage.textContent = allSelected ? '取消选择' : '选择本页'
     }
   }
@@ -289,7 +413,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const ids = Array.from(selectedIds)
     if (ids.length === 0) return
     try {
-      await Promise.all(ids.map(id => adminSetStatus(id, status)))
+      await Promise.all(ids.map((id) => adminSetStatus(id, status)))
       selectedIds.clear()
       await loadComments()
     } catch (error) {
@@ -310,22 +434,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     updateAdminControls(pageItems, filtered.length, totalPages)
 
     if (filtered.length === 0) {
-      container.innerHTML = '<p class="text-center text-text-muted dark:text-dark-text-muted py-8">暂无评论</p>'
+      container.innerHTML =
+        '<p class="text-center text-text-muted dark:text-dark-text-muted py-8">暂无评论</p>'
       return
     }
 
-    container.innerHTML = pageItems.map(c => {
-      const displayName = String(c.displayName || '匿名')
-      const photoURL = safeImageUrl(c.photoURL)
-      const safeId = escapeHtml(c.id)
-      const checked = selectedIds.has(c.id) ? ' checked' : ''
-      const avatarHtml = photoURL
-        ? `<img src="${escapeHtml(photoURL)}" alt="" referrerpolicy="no-referrer" />`
-        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--color-accent);color:white;font-size:0.7rem;font-weight:600">${escapeHtml(displayName).charAt(0).toUpperCase()}</div>`
-      const [statusClass, statusText] = c.status === 'approved'
-        ? ['status-approved', '已通过']
-        : c.status === 'pending' ? ['status-pending', '待审核'] : ['status-rejected', '已拒绝']
-      return `
+    container.innerHTML = pageItems
+      .map((c) => {
+        const displayName = String(c.displayName || '匿名')
+        const photoURL = safeImageUrl(c.photoURL)
+        const safeId = escapeHtml(c.id)
+        const checked = selectedIds.has(c.id) ? ' checked' : ''
+        const avatarHtml = photoURL
+          ? `<img src="${escapeHtml(photoURL)}" alt="" referrerpolicy="no-referrer" />`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--color-accent);color:white;font-size:0.7rem;font-weight:600">${escapeHtml(displayName).charAt(0).toUpperCase()}</div>`
+        const [statusClass, statusText] =
+          c.status === 'approved'
+            ? ['status-approved', '已通过']
+            : c.status === 'pending'
+              ? ['status-pending', '待审核']
+              : ['status-rejected', '已拒绝']
+        return `
         <div class="admin-comment">
           <div class="admin-comment-header">
             <div class="admin-comment-meta">
@@ -345,10 +474,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </div>
         </div>
       `
-    }).join('')
+      })
+      .join('')
 
     // 按钮事件
-    container.querySelectorAll('button[data-action]').forEach(btn => {
+    container.querySelectorAll('button[data-action]').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id')!
         const action = btn.getAttribute('data-action')!
@@ -365,7 +495,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         }
       })
     })
-    container.querySelectorAll<HTMLInputElement>('.admin-comment-select').forEach(input => {
+    container.querySelectorAll<HTMLInputElement>('.admin-comment-select').forEach((input) => {
       input.addEventListener('change', () => {
         const id = input.getAttribute('data-id')
         if (!id) return
@@ -379,7 +509,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   async function loadComments() {
     const container = document.getElementById('admin-comments')
     if (container) {
-      container.innerHTML = '<p class="text-center text-text-muted dark:text-dark-text-muted py-8" role="status">正在加载评论…</p>'
+      container.innerHTML =
+        '<p class="text-center text-text-muted dark:text-dark-text-muted py-8" role="status">正在加载评论…</p>'
     }
     try {
       allComments = await adminListComments()
@@ -388,8 +519,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     } catch (error) {
       console.error('Failed to load admin comments:', error)
       if (container) {
-        container.innerHTML = '<div class="text-center text-text-muted dark:text-dark-text-muted py-8" role="alert"><p>评论加载失败，请重试。</p><button id="admin-comments-retry" type="button" class="mt-3 px-4 py-2 text-sm rounded-lg bg-accent text-white">重新加载</button></div>'
-        document.getElementById('admin-comments-retry')?.addEventListener('click', () => loadComments(), { once: true })
+        container.innerHTML =
+          '<div class="text-center text-text-muted dark:text-dark-text-muted py-8" role="alert"><p>评论加载失败，请重试。</p><button id="admin-comments-retry" type="button" class="mt-3 px-4 py-2 text-sm rounded-lg bg-accent text-white">重新加载</button></div>'
+        document
+          .getElementById('admin-comments-retry')
+          ?.addEventListener('click', () => loadComments(), { once: true })
       }
     }
   }
@@ -430,71 +564,114 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       return
     }
 
-    authForm?.addEventListener('submit', async (event) => {
-      event.preventDefault()
-      const email = authEmail?.value.trim() || ''
-      const password = authPassword?.value || ''
-      if (!email || !password) { setAuthStatus('请填写邮箱和密码'); return }
-      if (authSubmit) {
-        authSubmit.setAttribute('disabled', 'disabled')
-        authSubmit.textContent = '登录中...'
-      }
-      try {
-        setAuthStatus('')
-        await login(email, password)
-      } catch (error) {
-        setAuthStatus(error instanceof Error ? error.message : '登录失败，请重试')
-      } finally {
-        if (authSubmit) {
-          authSubmit.removeAttribute('disabled')
-          authSubmit.textContent = '登录'
+    authForm?.addEventListener(
+      'submit',
+      async (event) => {
+        event.preventDefault()
+        const email = authEmail?.value.trim() || ''
+        const password = authPassword?.value || ''
+        if (!email || !password) {
+          setAuthStatus('请填写邮箱和密码')
+          return
         }
-      }
-    }, { signal: controller.signal })
+        if (authSubmit) {
+          authSubmit.setAttribute('disabled', 'disabled')
+          authSubmit.textContent = '登录中...'
+        }
+        try {
+          setAuthStatus('')
+          await login(email, password)
+        } catch (error) {
+          setAuthStatus(error instanceof Error ? error.message : '登录失败，请重试')
+        } finally {
+          if (authSubmit) {
+            authSubmit.removeAttribute('disabled')
+            authSubmit.textContent = '登录'
+          }
+        }
+      },
+      { signal: controller.signal },
+    )
 
     // 筛选按钮
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentFilter = btn.getAttribute('data-filter') || 'all'
-        currentPage = 1
-        selectedIds.clear()
-        document.querySelectorAll('.filter-btn').forEach(b => {
-          b.classList.remove('bg-accent', 'text-white')
-          b.classList.add('bg-surface-alt', 'dark:bg-dark-surface-alt', 'text-text', 'dark:text-dark-text')
-        })
-        btn.classList.remove('bg-surface-alt', 'dark:bg-dark-surface-alt', 'text-text', 'dark:text-dark-text')
-        btn.classList.add('bg-accent', 'text-white')
-        renderComments()
-      }, { signal: controller.signal })
+    document.querySelectorAll('.filter-btn').forEach((btn) => {
+      btn.addEventListener(
+        'click',
+        () => {
+          currentFilter = btn.getAttribute('data-filter') || 'all'
+          currentPage = 1
+          selectedIds.clear()
+          document.querySelectorAll('.filter-btn').forEach((b) => {
+            b.classList.remove('bg-accent', 'text-white')
+            b.classList.add(
+              'bg-surface-alt',
+              'dark:bg-dark-surface-alt',
+              'text-text',
+              'dark:text-dark-text',
+            )
+          })
+          btn.classList.remove(
+            'bg-surface-alt',
+            'dark:bg-dark-surface-alt',
+            'text-text',
+            'dark:text-dark-text',
+          )
+          btn.classList.add('bg-accent', 'text-white')
+          renderComments()
+        },
+        { signal: controller.signal },
+      )
     })
 
-    searchInput?.addEventListener('input', () => {
-      searchQuery = searchInput.value
-      currentPage = 1
-      selectedIds.clear()
-      renderComments()
-    }, { signal: controller.signal })
-    prevPage?.addEventListener('click', () => {
-      currentPage = Math.max(1, currentPage - 1)
-      selectedIds.clear()
-      renderComments()
-    }, { signal: controller.signal })
-    nextPage?.addEventListener('click', () => {
-      currentPage += 1
-      selectedIds.clear()
-      renderComments()
-    }, { signal: controller.signal })
-    selectPage?.addEventListener('click', () => {
-      const filtered = getFilteredComments()
-      const start = (currentPage - 1) * PAGE_SIZE
-      const pageItems = filtered.slice(start, start + PAGE_SIZE)
-      const allSelected = pageItems.length > 0 && pageItems.every(comment => selectedIds.has(comment.id))
-      pageItems.forEach(comment => allSelected ? selectedIds.delete(comment.id) : selectedIds.add(comment.id))
-      renderComments()
-    }, { signal: controller.signal })
-    batchApprove?.addEventListener('click', () => batchReview('approved'), { signal: controller.signal })
-    batchReject?.addEventListener('click', () => batchReview('rejected'), { signal: controller.signal })
-
+    searchInput?.addEventListener(
+      'input',
+      () => {
+        searchQuery = searchInput.value
+        currentPage = 1
+        selectedIds.clear()
+        renderComments()
+      },
+      { signal: controller.signal },
+    )
+    prevPage?.addEventListener(
+      'click',
+      () => {
+        currentPage = Math.max(1, currentPage - 1)
+        selectedIds.clear()
+        renderComments()
+      },
+      { signal: controller.signal },
+    )
+    nextPage?.addEventListener(
+      'click',
+      () => {
+        currentPage += 1
+        selectedIds.clear()
+        renderComments()
+      },
+      { signal: controller.signal },
+    )
+    selectPage?.addEventListener(
+      'click',
+      () => {
+        const filtered = getFilteredComments()
+        const start = (currentPage - 1) * PAGE_SIZE
+        const pageItems = filtered.slice(start, start + PAGE_SIZE)
+        const allSelected =
+          pageItems.length > 0 && pageItems.every((comment) => selectedIds.has(comment.id))
+        pageItems.forEach((comment) =>
+          allSelected ? selectedIds.delete(comment.id) : selectedIds.add(comment.id),
+        )
+        renderComments()
+      },
+      { signal: controller.signal },
+    )
+    batchApprove?.addEventListener('click', () => batchReview('approved'), {
+      signal: controller.signal,
+    })
+    batchReject?.addEventListener('click', () => batchReview('rejected'), {
+      signal: controller.signal,
+    })
 
     authUnsubscribe = onAuth(async (user) => {
       if (!user) {

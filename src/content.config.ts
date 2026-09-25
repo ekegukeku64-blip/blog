@@ -1,6 +1,6 @@
-import { defineCollection } from 'astro:content';
-import { z } from 'astro/zod';
-import { glob } from 'astro/loaders';
+import { defineCollection } from 'astro:content'
+import { z } from 'astro/zod'
+import { glob } from 'astro/loaders'
 
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
@@ -16,7 +16,7 @@ const posts = defineCollection({
     featured: z.boolean().default(false),
     noindex: z.boolean().default(false),
   }),
-});
+})
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
@@ -37,6 +37,6 @@ const projects = defineCollection({
     snapshotDate: z.coerce.date(),
     pushedAt: z.coerce.date().optional(),
   }),
-});
+})
 
-export const collections = { posts, projects };
+export const collections = { posts, projects }

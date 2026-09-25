@@ -1,11 +1,11 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro'
 
 const howto = [
   { step: '01', title: '安装脚本管理器', desc: '在浏览器扩展商店安装 Tampermonkey（油猴）' },
   { step: '02', title: '点击安装脚本', desc: '打开脚本主页，按页面提示点击安装并确认' },
   { step: '03', title: '打开目标网站', desc: '脚本自动生效，无需其他操作' },
-];
+]
 
 const scripts = [
   {
@@ -74,17 +74,30 @@ const scripts = [
       },
     ],
   },
-];
+]
 ---
 
-<BaseLayout title="油猴脚本合集" description="精选开源、维护活跃的浏览器增强脚本（油猴脚本），让常用网站更好用">
+<BaseLayout
+  title="油猴脚本合集"
+  description="精选开源、维护活跃的浏览器增强脚本（油猴脚本），让常用网站更好用"
+>
   <div class="max-w-5xl mx-auto px-6 py-12 md:py-16">
     <div class="mb-10">
-      <a href={`${import.meta.env.BASE_URL}tools/`} class="text-sm text-accent dark:text-dark-accent hover:underline mb-4 inline-block">&larr; 所有工具</a>
-      <span class="inline-block px-3 py-1 text-xs font-sans tracking-widest text-accent dark:text-dark-accent border border-accent/30 dark:border-dark-accent/30 mb-4">USERCSS · 浏览器增强</span>
-      <h1 class="font-display text-3xl md:text-4xl font-bold text-text dark:text-dark-text mb-3">油猴脚本合集</h1>
+      <a
+        href={`${import.meta.env.BASE_URL}tools/`}
+        class="text-sm text-accent dark:text-dark-accent hover:underline mb-4 inline-block"
+      >
+        &larr; 所有工具
+      </a>
+      <span class="inline-block px-3 py-1 text-xs font-sans tracking-widest text-accent dark:text-dark-accent border border-accent/30 dark:border-dark-accent/30 mb-4">
+        USERCSS · 浏览器增强
+      </span>
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-text dark:text-dark-text mb-3">
+        油猴脚本合集
+      </h1>
       <p class="text-text-muted dark:text-dark-text-muted mt-2 font-serif leading-relaxed">
-        浏览器「外挂」：给常用网站加上下载、去广告、增强阅读等能力。这里收录的都是<b class="text-text dark:text-dark-text">开源、维护活跃、来源可信</b>的脚本。
+        浏览器「外挂」：给常用网站加上下载、去广告、增强阅读等能力。这里收录的都是
+        <b class="text-text dark:text-dark-text">开源、维护活跃、来源可信</b>的脚本。
       </p>
     </div>
 
@@ -124,8 +137,14 @@ const scripts = [
                 </div>
               </div>
               <div class="us-card-actions">
-                <a href={s.repoUrl} target="_blank" rel="noopener" class="us-btn">查看主页</a>
-                {s.gfUrl && <a href={s.gfUrl} target="_blank" rel="noopener" class="us-btn us-btn-accent">去安装</a>}
+                <a href={s.repoUrl} target="_blank" rel="noopener" class="us-btn">
+                  查看主页
+                </a>
+                {s.gfUrl && (
+                  <a href={s.gfUrl} target="_blank" rel="noopener" class="us-btn us-btn-accent">
+                    去安装
+                  </a>
+                )}
               </div>
             </article>
           ))}
@@ -136,7 +155,8 @@ const scripts = [
     <!-- 安全提示 -->
     <div class="mt-12 rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5 text-sm text-text-muted dark:text-dark-text-muted font-serif leading-relaxed ink-reveal">
       <b class="text-amber-600 dark:text-amber-400">安全提醒：</b>
-      脚本本质是运行在浏览器里的代码，只建议安装<b class="text-text dark:text-dark-text">来源可信、开源、有维护记录</b>的脚本（本页均满足）。
+      脚本本质是运行在浏览器里的代码，只建议安装
+      <b class="text-text dark:text-dark-text">来源可信、开源、有维护记录</b>的脚本（本页均满足）。
       安装前可在 Tampermonkey 的「编辑」里查看源码；不认识的脚本请勿安装。
     </div>
 
@@ -172,7 +192,7 @@ const scripts = [
       padding: 1.25rem;
       border: 1px solid var(--border-glass);
       border-radius: 1.1rem;
-      background: linear-gradient(145deg, rgba(32,45,68,0.45), rgba(6,10,18,0.25));
+      background: linear-gradient(145deg, rgba(32, 45, 68, 0.45), rgba(6, 10, 18, 0.25));
       backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     }
     .us-step-num {
@@ -203,9 +223,11 @@ const scripts = [
       padding: 1.25rem 1.5rem;
       border: 1px solid var(--border-glass);
       border-radius: 1.25rem;
-      background: linear-gradient(145deg, rgba(32,45,68,0.4), rgba(6,10,18,0.22));
+      background: linear-gradient(145deg, rgba(32, 45, 68, 0.4), rgba(6, 10, 18, 0.22));
       backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-      transition: border-color 0.25s, transform 0.25s;
+      transition:
+        border-color 0.25s,
+        transform 0.25s;
     }
     .us-card:hover {
       border-color: var(--border-glass-strong);

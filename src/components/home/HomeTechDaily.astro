@@ -1,7 +1,9 @@
 ---
 // 技术日报地址（与 Footer / 友链页保持同一回退）
-const techDailyUrl = import.meta.env.PUBLIC_TECH_DAILY_URL?.trim() || 'https://ekegukeku64-blip.github.io/tech-daily/'
+const techDailyUrl =
+  import.meta.env.PUBLIC_TECH_DAILY_URL?.trim() || 'https://ekegukeku64-blip.github.io/tech-daily/'
 ---
+
 <section class="home-daily reveal-target">
   <div class="home-daily-inner">
     <div class="flex items-center justify-between mb-8">
@@ -17,113 +19,121 @@ const techDailyUrl = import.meta.env.PUBLIC_TECH_DAILY_URL?.trim() || 'https://e
 </section>
 
 <script is:inline define:vars={{ techDailyUrl }}>
-document.addEventListener('astro:page-load', async () => {
-  const grid = document.getElementById('tech-daily-grid');
-  if (!grid) return;
-  try {
-    const resp = await fetch(techDailyUrl + 'sitemap-0.xml');
-    const xml = await resp.text();
-    const matches = [...xml.matchAll(/<loc>(https:\/\/[^<]*daily-tech-(\d{4}-\d{2}-\d{2})[^<]*)<\/loc>/g)];
-    matches.sort((a, b) => b[2].localeCompare(a[2]));
-    const links = matches.slice(0, 3).map(m => ({ url: m[1], date: m[2] }));
-    if (links.length === 0) {
-      grid.innerHTML = '<div class="col-span-3 text-center py-8 text-sm text-text-muted/50 font-serif">暂无内容</div>';
-      return;
+  document.addEventListener('astro:page-load', async () => {
+    const grid = document.getElementById('tech-daily-grid')
+    if (!grid) return
+    try {
+      const resp = await fetch(techDailyUrl + 'sitemap-0.xml')
+      const xml = await resp.text()
+      const matches = [
+        ...xml.matchAll(/<loc>(https:\/\/[^<]*daily-tech-(\d{4}-\d{2}-\d{2})[^<]*)<\/loc>/g),
+      ]
+      matches.sort((a, b) => b[2].localeCompare(a[2]))
+      const links = matches.slice(0, 3).map((m) => ({ url: m[1], date: m[2] }))
+      if (links.length === 0) {
+        grid.innerHTML =
+          '<div class="col-span-3 text-center py-8 text-sm text-text-muted/50 font-serif">暂无内容</div>'
+        return
+      }
+      grid.textContent = ''
+      const fragment = document.createDocumentFragment()
+      const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      links.forEach(({ url, date }) => {
+        const wrapper = document.createElement('div')
+        wrapper.className = 'card-tilt-wrapper'
+
+        const link = document.createElement('a')
+        link.href = url
+        link.target = '_blank'
+        link.rel = 'noopener'
+        link.className = 'card card-tilt group block p-5'
+
+        const spotlight = document.createElement('div')
+        spotlight.className = 'card-tilt-spotlight'
+        spotlight.setAttribute('aria-hidden', 'true')
+
+        const time = document.createElement('time')
+        time.className = 'text-[11px] text-text-secondary font-mono'
+        time.textContent = date
+
+        const title = document.createElement('h3')
+        title.className =
+          'mt-2 font-display text-base font-bold text-text leading-snug group-hover:text-accent transition-colors duration-200'
+        title.textContent = `技术日报 · ${date.slice(5)}`
+
+        const desc = document.createElement('p')
+        desc.className = 'mt-1.5 text-sm text-text-secondary line-clamp-2 leading-relaxed'
+        desc.textContent = 'GitHub 热门项目 + HN 技术圈每日动态'
+
+        link.append(spotlight, time, title, desc)
+        wrapper.append(link)
+        fragment.append(wrapper)
+      })
+      grid.append(fragment)
+      if (!shouldReduceMotion) {
+        document.querySelectorAll('#tech-daily-grid .card-tilt-wrapper').forEach(initTiltDaily)
+      }
+    } catch {
+      grid.innerHTML =
+        '<div class="col-span-3 text-center py-8 text-sm text-text-muted/50 font-serif">日报暂不可用</div>'
     }
-    grid.textContent = '';
-    const fragment = document.createDocumentFragment();
-    const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    links.forEach(({ url, date }) => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'card-tilt-wrapper';
+  })
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.className = 'card card-tilt group block p-5';
-
-      const spotlight = document.createElement('div');
-      spotlight.className = 'card-tilt-spotlight';
-      spotlight.setAttribute('aria-hidden', 'true');
-
-      const time = document.createElement('time');
-      time.className = 'text-[11px] text-text-secondary font-mono';
-      time.textContent = date;
-
-      const title = document.createElement('h3');
-      title.className = 'mt-2 font-display text-base font-bold text-text leading-snug group-hover:text-accent transition-colors duration-200';
-      title.textContent = `技术日报 · ${date.slice(5)}`;
-
-      const desc = document.createElement('p');
-      desc.className = 'mt-1.5 text-sm text-text-secondary line-clamp-2 leading-relaxed';
-      desc.textContent = 'GitHub 热门项目 + HN 技术圈每日动态';
-
-      link.append(spotlight, time, title, desc);
-      wrapper.append(link);
-      fragment.append(wrapper);
-    });
-    grid.append(fragment);
-    if (!shouldReduceMotion) {
-      document.querySelectorAll('#tech-daily-grid .card-tilt-wrapper').forEach(initTiltDaily);
-    }
-  } catch {
-    grid.innerHTML = '<div class="col-span-3 text-center py-8 text-sm text-text-muted/50 font-serif">日报暂不可用</div>';
+  const MAX_TILT_DAILY = 3.0
+  function initTiltDaily(wrapper) {
+    const card = wrapper.querySelector('.card-tilt')
+    if (!card) return
+    wrapper.style.perspective = '800px'
+    wrapper.addEventListener('mousemove', (e) => {
+      const rect = wrapper.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width
+      const y = (e.clientY - rect.top) / rect.height
+      const tiltX = (y - 0.5) * 2 * MAX_TILT_DAILY
+      const tiltY = (x - 0.5) * -2 * MAX_TILT_DAILY
+      card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(${-((1 - Math.min(Math.hypot(x - 0.5, y - 0.5) * 1.4, 1)) * 10)}px)`
+    })
+    wrapper.addEventListener('mouseleave', () => {
+      card.style.transform = ''
+    })
   }
-});
-
-const MAX_TILT_DAILY = 3.0;
-function initTiltDaily(wrapper) {
-  const card = wrapper.querySelector('.card-tilt');
-  if (!card) return;
-  wrapper.style.perspective = '800px';
-  wrapper.addEventListener('mousemove', (e) => {
-    const rect = wrapper.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    const tiltX = (y - 0.5) * 2 * MAX_TILT_DAILY;
-    const tiltY = (x - 0.5) * -2 * MAX_TILT_DAILY;
-    card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(${-((1 - Math.min(Math.hypot(x-0.5, y-0.5) * 1.4, 1)) * 10)}px)`;
-  });
-  wrapper.addEventListener('mouseleave', () => {
-    card.style.transform = '';
-  });
-}
 </script>
 
 <style>
-.home-daily {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem 4rem;
-}
+  .home-daily {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
 
-.home-daily-inner {
-  padding: 2.25rem 2.5rem;
-  border: 1px solid var(--border-glass);
-  border-radius: 1.65rem;
-  background:
-    linear-gradient(145deg, rgba(32, 45, 68, 0.52), rgba(6, 10, 18, 0.30)),
-    radial-gradient(ellipse at 92% 0%, rgba(226, 238, 248, 0.12), transparent 46%),
-    radial-gradient(circle at 8% 100%, rgba(200, 142, 82, 0.08), transparent 42%);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  box-shadow: var(--shadow-glass-floating);
-}
+  .home-daily-inner {
+    padding: 2.25rem 2.5rem;
+    border: 1px solid var(--border-glass);
+    border-radius: 1.65rem;
+    background:
+      linear-gradient(145deg, rgba(32, 45, 68, 0.52), rgba(6, 10, 18, 0.3)),
+      radial-gradient(ellipse at 92% 0%, rgba(226, 238, 248, 0.12), transparent 46%),
+      radial-gradient(circle at 8% 100%, rgba(200, 142, 82, 0.08), transparent 42%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    box-shadow: var(--shadow-glass-floating);
+  }
 
-.home-posts-all {
-  font-size: 0.8rem;
-  color: rgba(122, 149, 175, 0.7);
-  text-decoration: none;
-  font-family: var(--font-serif);
-  transition: color 0.3s;
-}
-.home-posts-all:hover,
-.home-posts-all:focus-visible {
-  color: var(--color-accent);
-}
+  .home-posts-all {
+    font-size: 0.8rem;
+    color: rgba(122, 149, 175, 0.7);
+    text-decoration: none;
+    font-family: var(--font-serif);
+    transition: color 0.3s;
+  }
+  .home-posts-all:hover,
+  .home-posts-all:focus-visible {
+    color: var(--color-accent);
+  }
 
-@media (max-width: 768px) {
-  .home-daily { padding-left: 1.25rem; padding-right: 1.25rem; }
-}
+  @media (max-width: 768px) {
+    .home-daily {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+  }
 </style>

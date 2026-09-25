@@ -112,13 +112,11 @@ let missingTimestamps = 0
 for (const rawEntry of rows) {
   // The REST shape carries the document id in `name`, on the envelope rather
   // than in the field map, so read it before unwrapping the fields.
-  const idFromEnvelope =
-    typeof rawEntry?.name === 'string' ? rawEntry.name.split('/').pop() : ''
+  const idFromEnvelope = typeof rawEntry?.name === 'string' ? rawEntry.name.split('/').pop() : ''
 
   const source = normaliseRole(rawEntry)
 
-  const originalId =
-    typeof source.id === 'string' && source.id !== '' ? source.id : idFromEnvelope
+  const originalId = typeof source.id === 'string' && source.id !== '' ? source.id : idFromEnvelope
 
   const problems = []
 
@@ -187,9 +185,17 @@ if (rejected.length > 0) {
 
 console.log(`read     ${rows.length} documents from ${inputPath}`)
 console.log(`accepted ${accepted.length} -> ${sqlPath}`)
-if (regeneratedIds > 0) console.log(`         ${regeneratedIds} id(s) regenerated (original did not match the id charset)`)
-if (missingTimestamps > 0) console.log(`         ${missingTimestamps} row(s) had no usable timestamp and got one assigned now`)
+if (regeneratedIds > 0)
+  console.log(
+    `         ${regeneratedIds} id(s) regenerated (original did not match the id charset)`,
+  )
+if (missingTimestamps > 0)
+  console.log(
+    `         ${missingTimestamps} row(s) had no usable timestamp and got one assigned now`,
+  )
 if (rejected.length > 0) {
-  console.log(`rejected ${rejected.length} -> ${resolve(outputDir, 'migrate-comments.rejects.json')}`)
+  console.log(
+    `rejected ${rejected.length} -> ${resolve(outputDir, 'migrate-comments.rejects.json')}`,
+  )
   console.log('         inspect the rejects file; those comments will not be migrated')
 }

@@ -5,32 +5,92 @@
 <div class="mt-10">
   <div class="flex items-end gap-4 mb-8 border-b border-border/40 dark:border-dark-border/40 pb-4">
     <h3 class="font-display text-xl font-bold text-text dark:text-dark-text">留言</h3>
-    <p id="comment-count" class="text-xs text-text-muted dark:text-dark-text-muted ml-auto font-sans"></p>
+    <p
+      id="comment-count"
+      class="text-xs text-text-muted dark:text-dark-text-muted ml-auto font-sans"
+    ></p>
   </div>
 
   <!-- 未登录提示 -->
-  <div id="comment-auth-prompt" class="mb-10 text-center py-8 border border-dashed border-border/40 dark:border-dark-border/40 rounded-xl">
-    <svg class="w-10 h-10 mx-auto mb-3 text-text-muted dark:text-dark-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  <div
+    id="comment-auth-prompt"
+    class="mb-10 text-center py-8 border border-dashed border-border/40 dark:border-dark-border/40 rounded-xl"
+  >
+    <svg
+      class="w-10 h-10 mx-auto mb-3 text-text-muted dark:text-dark-text-muted"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="1.5"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      />
     </svg>
-    <p id="comment-auth-title" class="text-sm text-text-muted dark:text-dark-text-muted mb-3">登录后即可留言</p>
+    <p id="comment-auth-title" class="text-sm text-text-muted dark:text-dark-text-muted mb-3">
+      登录后即可留言
+    </p>
     <form id="comment-auth-form" class="mx-auto max-w-sm space-y-3 text-left" novalidate>
-      <label for="comment-auth-email" class="sr-only">邮箱</label>
-      <input id="comment-auth-email" class="comment-input px-4 py-3 rounded-xl text-sm w-full" type="email" name="email" autocomplete="email" placeholder="邮箱" required />
-      <label for="comment-auth-password" class="sr-only">密码</label>
-      <input id="comment-auth-password" class="comment-input px-4 py-3 rounded-xl text-sm w-full" type="password" name="password" autocomplete="current-password" placeholder="密码（至少 12 位）" required />
-      <label for="comment-auth-name" class="sr-only">昵称</label>
-      <input id="comment-auth-name" class="comment-input px-4 py-3 rounded-xl text-sm w-full hidden" type="text" name="displayName" maxlength="200" placeholder="昵称（注册时填写）" />
+      <label for="comment-auth-email" class="sr-only">
+        邮箱
+      </label>
+      <input
+        id="comment-auth-email"
+        class="comment-input px-4 py-3 rounded-xl text-sm w-full"
+        type="email"
+        name="email"
+        autocomplete="email"
+        placeholder="邮箱"
+        required
+      />
+      <label for="comment-auth-password" class="sr-only">
+        密码
+      </label>
+      <input
+        id="comment-auth-password"
+        class="comment-input px-4 py-3 rounded-xl text-sm w-full"
+        type="password"
+        name="password"
+        autocomplete="current-password"
+        placeholder="密码（至少 12 位）"
+        required
+      />
+      <label for="comment-auth-name" class="sr-only">
+        昵称
+      </label>
+      <input
+        id="comment-auth-name"
+        class="comment-input px-4 py-3 rounded-xl text-sm w-full hidden"
+        type="text"
+        name="displayName"
+        maxlength="200"
+        placeholder="昵称（注册时填写）"
+      />
       <div class="flex justify-center gap-3">
-        <button type="submit" id="comment-auth-submit" class="comment-submit px-6 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all duration-300">
+        <button
+          type="submit"
+          id="comment-auth-submit"
+          class="comment-submit px-6 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all duration-300"
+        >
           登录
         </button>
-        <button type="button" id="comment-auth-toggle" class="px-4 py-2.5 text-sm rounded-xl bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text hover:bg-accent/10 dark:hover:bg-dark-accent/10 transition-colors cursor-pointer">
+        <button
+          type="button"
+          id="comment-auth-toggle"
+          class="px-4 py-2.5 text-sm rounded-xl bg-surface-alt dark:bg-dark-surface-alt text-text dark:text-dark-text hover:bg-accent/10 dark:hover:bg-dark-accent/10 transition-colors cursor-pointer"
+        >
           注册新账号
         </button>
       </div>
     </form>
-    <p id="comment-auth-status" class="mt-3 text-sm text-red-500 hidden" role="status" aria-live="polite"></p>
+    <p
+      id="comment-auth-status"
+      class="mt-3 text-sm text-red-500 hidden"
+      role="status"
+      aria-live="polite"
+    ></p>
   </div>
 
   <!-- 已登录：留言表单 -->
@@ -38,15 +98,39 @@
     <div class="flex items-center gap-3 mb-2">
       <img id="comment-user-avatar" class="w-8 h-8 rounded-full" src="" alt="当前登录用户头像" />
       <span id="comment-user-name" class="text-sm font-medium text-text dark:text-dark-text"></span>
-      <button type="button" id="comment-logout" class="ml-auto text-xs text-text-muted dark:text-dark-text-muted hover:text-accent dark:hover:text-dark-accent transition-colors cursor-pointer">退出</button>
+      <button
+        type="button"
+        id="comment-logout"
+        class="ml-auto text-xs text-text-muted dark:text-dark-text-muted hover:text-accent dark:hover:text-dark-accent transition-colors cursor-pointer"
+      >
+        退出
+      </button>
     </div>
-    <label for="comment-content" class="sr-only">留言内容</label>
-    <textarea id="comment-content" placeholder="说点什么..." required maxlength="2000" rows="4"
-      class="comment-input px-4 py-3 rounded-xl text-sm w-full resize-y"></textarea>
+    <label for="comment-content" class="sr-only">
+      留言内容
+    </label>
+    <textarea
+      id="comment-content"
+      placeholder="说点什么..."
+      required
+      maxlength="2000"
+      rows="4"
+      class="comment-input px-4 py-3 rounded-xl text-sm w-full resize-y"
+    ></textarea>
     <div class="flex items-center justify-between">
-      <p id="comment-submit-status" class="text-xs text-text-muted dark:text-dark-text-muted font-sans" role="status" aria-live="polite">评论提交后会先进入审核</p>
-      <button type="submit" id="comment-submit-btn"
-        class="comment-submit px-6 py-2.5 rounded-xl text-sm font-sans font-medium cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 dark:hover:shadow-dark-accent/20">
+      <p
+        id="comment-submit-status"
+        class="text-xs text-text-muted dark:text-dark-text-muted font-sans"
+        role="status"
+        aria-live="polite"
+      >
+        评论提交后会先进入审核
+      </p>
+      <button
+        type="submit"
+        id="comment-submit-btn"
+        class="comment-submit px-6 py-2.5 rounded-xl text-sm font-sans font-medium cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 dark:hover:shadow-dark-accent/20"
+      >
         发送
       </button>
     </div>
@@ -219,9 +303,16 @@
 
 <script>
   import {
-    isFirebaseConfigured, onAuth, login, register, logout,
-    subscribeComments, createComment, deleteComment,
-    type Comment, type User,
+    isFirebaseConfigured,
+    onAuth,
+    login,
+    register,
+    logout,
+    subscribeComments,
+    createComment,
+    deleteComment,
+    type Comment,
+    type User,
   } from '../lib/api'
 
   declare global {
@@ -266,15 +357,17 @@
       return
     }
 
-    list.innerHTML = comments.map(c => {
-      const photoURL = safeImageUrl(c.photoURL)
-      const avatarHtml = photoURL
-        ? `<img src="${escapeHtml(photoURL)}" alt="${escapeHtml(c.displayName)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
-        : `<div class="comment-avatar-fallback">${escapeHtml(c.displayName).charAt(0).toUpperCase()}</div>`
-      const deleteBtn = currentUser && currentUser.uid === c.uid
-        ? `<div class="comment-delete"><button data-id="${escapeHtml(c.id)}">删除</button></div>`
-        : ''
-      return `
+    list.innerHTML = comments
+      .map((c) => {
+        const photoURL = safeImageUrl(c.photoURL)
+        const avatarHtml = photoURL
+          ? `<img src="${escapeHtml(photoURL)}" alt="${escapeHtml(c.displayName)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
+          : `<div class="comment-avatar-fallback">${escapeHtml(c.displayName).charAt(0).toUpperCase()}</div>`
+        const deleteBtn =
+          currentUser && currentUser.uid === c.uid
+            ? `<div class="comment-delete"><button data-id="${escapeHtml(c.id)}">删除</button></div>`
+            : ''
+        return `
         <div class="comment-item">
           <div class="comment-meta">
             <div class="comment-avatar">${avatarHtml}</div>
@@ -285,10 +378,11 @@
           ${deleteBtn}
         </div>
       `
-    }).join('')
+      })
+      .join('')
 
     // 删除按钮事件
-    list.querySelectorAll('.comment-delete button').forEach(btn => {
+    list.querySelectorAll('.comment-delete button').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id')
         if (!id || !confirm('确定删除这条评论？')) return
@@ -311,11 +405,13 @@
         console.error('Comments load error:', error)
         list.innerHTML =
           '<div class="comment-empty">' +
-            '<p>留言暂时没有加载出来</p>' +
-            '<button id="comment-retry" class="comment-retry" type="button">重新加载</button>' +
+          '<p>留言暂时没有加载出来</p>' +
+          '<button id="comment-retry" class="comment-retry" type="button">重新加载</button>' +
           '</div>'
-        document.getElementById('comment-retry')?.addEventListener('click', () => loadComments(list), { once: true })
-      }
+        document
+          .getElementById('comment-retry')
+          ?.addEventListener('click', () => loadComments(list), { once: true })
+      },
     )
   }
 
@@ -345,8 +441,6 @@
       return
     }
 
-
-
     // 邮箱 + 密码：同一套表单在「登录」和「注册」之间切换
     let authMode: 'login' | 'register' = 'login'
     const authForm = document.getElementById('comment-auth-form') as HTMLFormElement | null
@@ -370,43 +464,68 @@
     }
     applyAuthMode('login')
 
-    authToggle?.addEventListener('click', () => {
-      applyAuthMode(authMode === 'login' ? 'register' : 'login')
-    }, { signal: controller.signal })
+    authToggle?.addEventListener(
+      'click',
+      () => {
+        applyAuthMode(authMode === 'login' ? 'register' : 'login')
+      },
+      { signal: controller.signal },
+    )
 
-    authForm?.addEventListener('submit', async (event) => {
-      event.preventDefault()
-      const email = authEmail?.value.trim() || ''
-      const password = authPassword?.value || ''
-      const displayName = authName?.value.trim() || ''
+    authForm?.addEventListener(
+      'submit',
+      async (event) => {
+        event.preventDefault()
+        const email = authEmail?.value.trim() || ''
+        const password = authPassword?.value || ''
+        const displayName = authName?.value.trim() || ''
 
-      if (!email || !password) { setAuthStatus('请填写邮箱和密码'); return }
-      if (password.length < 12) { setAuthStatus('密码至少 12 位'); return }
-      if (authMode === 'register' && !displayName) { setAuthStatus('请填写昵称'); return }
-
-      const label = authMode === 'register' ? '注册并登录' : '登录'
-      if (authSubmit) {
-        authSubmit.setAttribute('disabled', 'disabled')
-        authSubmit.textContent = authMode === 'register' ? '注册中...' : '登录中...'
-      }
-      try {
-        setAuthStatus('')
-        if (authMode === 'register') await register(email, password, displayName)
-        else await login(email, password)
-        authForm.reset()
-      } catch (error) {
-        setAuthStatus(error instanceof Error ? error.message : '操作失败，请重试')
-      } finally {
-        if (authSubmit) {
-          authSubmit.removeAttribute('disabled')
-          authSubmit.textContent = label
+        if (!email || !password) {
+          setAuthStatus('请填写邮箱和密码')
+          return
         }
-      }
-    }, { signal: controller.signal })
+        if (password.length < 12) {
+          setAuthStatus('密码至少 12 位')
+          return
+        }
+        if (authMode === 'register' && !displayName) {
+          setAuthStatus('请填写昵称')
+          return
+        }
 
-    document.getElementById('comment-logout')?.addEventListener('click', async () => {
-      try { await logout() } catch (error) { console.error('Logout failed:', error) }
-    }, { signal: controller.signal })
+        const label = authMode === 'register' ? '注册并登录' : '登录'
+        if (authSubmit) {
+          authSubmit.setAttribute('disabled', 'disabled')
+          authSubmit.textContent = authMode === 'register' ? '注册中...' : '登录中...'
+        }
+        try {
+          setAuthStatus('')
+          if (authMode === 'register') await register(email, password, displayName)
+          else await login(email, password)
+          authForm.reset()
+        } catch (error) {
+          setAuthStatus(error instanceof Error ? error.message : '操作失败，请重试')
+        } finally {
+          if (authSubmit) {
+            authSubmit.removeAttribute('disabled')
+            authSubmit.textContent = label
+          }
+        }
+      },
+      { signal: controller.signal },
+    )
+
+    document.getElementById('comment-logout')?.addEventListener(
+      'click',
+      async () => {
+        try {
+          await logout()
+        } catch (error) {
+          console.error('Logout failed:', error)
+        }
+      },
+      { signal: controller.signal },
+    )
 
     // 认证状态
     authUnsubscribe = onAuth((user) => {
@@ -429,35 +548,39 @@
     })
 
     // 提交评论
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      if (!currentUser) return
-      const textarea = document.getElementById('comment-content') as HTMLTextAreaElement | null
-      const content = textarea?.value.trim().slice(0, 2000)
-      if (!content) return
-      const submitBtn = document.getElementById('comment-submit-btn') as HTMLButtonElement | null
-      if (submitBtn) {
-        submitBtn.disabled = true
-        submitBtn.textContent = '正在提交...'
-      }
-
-      try {
-        if (submitStatus) submitStatus.textContent = '正在提交...'
-        await createComment({ pageId, content })
-        if (textarea) textarea.value = ''
-        if (submitStatus) submitStatus.textContent = '已提交，审核通过后会显示'
-      } catch (error) {
-        console.error('Failed to post comment:', error)
-        if (submitStatus) {
-          submitStatus.textContent = error instanceof Error ? error.message : '提交失败，请重试'
-        }
-      } finally {
+    form.addEventListener(
+      'submit',
+      async (e) => {
+        e.preventDefault()
+        if (!currentUser) return
+        const textarea = document.getElementById('comment-content') as HTMLTextAreaElement | null
+        const content = textarea?.value.trim().slice(0, 2000)
+        if (!content) return
+        const submitBtn = document.getElementById('comment-submit-btn') as HTMLButtonElement | null
         if (submitBtn) {
-          submitBtn.disabled = false
-          submitBtn.textContent = '发送'
+          submitBtn.disabled = true
+          submitBtn.textContent = '正在提交...'
         }
-      }
-    }, { signal: controller.signal })
+
+        try {
+          if (submitStatus) submitStatus.textContent = '正在提交...'
+          await createComment({ pageId, content })
+          if (textarea) textarea.value = ''
+          if (submitStatus) submitStatus.textContent = '已提交，审核通过后会显示'
+        } catch (error) {
+          console.error('Failed to post comment:', error)
+          if (submitStatus) {
+            submitStatus.textContent = error instanceof Error ? error.message : '提交失败，请重试'
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false
+            submitBtn.textContent = '发送'
+          }
+        }
+      },
+      { signal: controller.signal },
+    )
     window.__commentCleanup = () => {
       controller.abort()
       authUnsubscribe?.()

@@ -70,7 +70,9 @@ export async function onRequestPost(ctx: Ctx): Promise<Response> {
   // Display name and avatar default to the account's; the client may override
   // per comment, which is what the old form did.
   const displayName =
-    parsed.body.displayName === undefined ? user.displayName : cleanDisplayName(parsed.body.displayName)
+    parsed.body.displayName === undefined
+      ? user.displayName
+      : cleanDisplayName(parsed.body.displayName)
   if (displayName === null) return fail(400, '昵称不合法', cors)
 
   const photoURL =

@@ -1,45 +1,45 @@
 ---
-import { getCollection, render } from 'astro:content';
-import PostLayout from '../../layouts/PostLayout.astro';
-import { calcReadingTime, calcWordCount } from '../../utils/readingTime';
-import { statSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { getCollection, render } from 'astro:content'
+import PostLayout from '../../layouts/PostLayout.astro'
+import { calcReadingTime, calcWordCount } from '../../utils/readingTime'
+import { statSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
-  const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  const publicPosts = sorted.filter(post => !post.data.noindex);
+  const posts = await getCollection('posts', ({ data }) => !data.draft)
+  const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  const publicPosts = sorted.filter((post) => !post.data.noindex)
 
   function detectSeries(title: string): { name: string; part: number } | null {
-    const match = title.match(/^(.+?)\s*#(\d+)/);
-    if (!match) return null;
-    return { name: match[1].trim(), part: parseInt(match[2]) };
+    const match = title.match(/^(.+?)\s*#(\d+)/)
+    if (!match) return null
+    return { name: match[1].trim(), part: parseInt(match[2]) }
   }
 
   // 检测所有系列
-  const seriesMap = new Map<string, { title: string; slug: string; part: number }[]>();
+  const seriesMap = new Map<string, { title: string; slug: string; part: number }[]>()
   for (const post of sorted) {
-    const series = detectSeries(post.data.title);
+    const series = detectSeries(post.data.title)
     if (series) {
-      const existing = seriesMap.get(series.name) || [];
-      existing.push({ title: post.data.title, slug: post.id, part: series.part });
-      seriesMap.set(series.name, existing);
+      const existing = seriesMap.get(series.name) || []
+      existing.push({ title: post.data.title, slug: post.id, part: series.part })
+      seriesMap.set(series.name, existing)
     }
   }
 
   return sorted.map((post) => {
-    const publicIndex = publicPosts.findIndex(item => item.id === post.id);
-    const series = detectSeries(post.data.title);
-    let seriesData = null;
+    const publicIndex = publicPosts.findIndex((item) => item.id === post.id)
+    const series = detectSeries(post.data.title)
+    let seriesData = null
     if (series) {
-      const items = seriesMap.get(series.name) || [];
-      seriesData = { name: series.name, items, currentSlug: post.id };
+      const items = seriesMap.get(series.name) || []
+      seriesData = { name: series.name, items, currentSlug: post.id }
     }
-    let updatedDate = post.data.updatedDate;
+    let updatedDate = post.data.updatedDate
     if (!updatedDate) {
       try {
-        const fp = fileURLToPath(new URL(`../../content/posts/${post.id}.md`, import.meta.url));
-        updatedDate = statSync(fp).mtime;
+        const fp = fileURLToPath(new URL(`../../content/posts/${post.id}.md`, import.meta.url))
+        updatedDate = statSync(fp).mtime
       } catch {}
     }
     return {
@@ -49,20 +49,28 @@ export async function getStaticPaths() {
         readingTime: calcReadingTime(post.body || ''),
         wordCount: calcWordCount(post.body || ''),
         updatedDate,
-        prev: !post.data.noindex && publicIndex < publicPosts.length - 1
-          ? { title: publicPosts[publicIndex + 1].data.title, slug: publicPosts[publicIndex + 1].id }
-          : null,
-        next: !post.data.noindex && publicIndex > 0
-          ? { title: publicPosts[publicIndex - 1].data.title, slug: publicPosts[publicIndex - 1].id }
-          : null,
+        prev:
+          !post.data.noindex && publicIndex < publicPosts.length - 1
+            ? {
+                title: publicPosts[publicIndex + 1].data.title,
+                slug: publicPosts[publicIndex + 1].id,
+              }
+            : null,
+        next:
+          !post.data.noindex && publicIndex > 0
+            ? {
+                title: publicPosts[publicIndex - 1].data.title,
+                slug: publicPosts[publicIndex - 1].id,
+              }
+            : null,
         seriesData,
       },
-    };
-  });
+    }
+  })
 }
 
-const { post, readingTime, wordCount, updatedDate, prev, next, seriesData } = Astro.props;
-const { Content } = await render(post);
+const { post, readingTime, wordCount, updatedDate, prev, next, seriesData } = Astro.props
+const { Content } = await render(post)
 ---
 
 <PostLayout

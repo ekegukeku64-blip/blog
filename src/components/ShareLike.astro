@@ -1,15 +1,20 @@
 ---
-import QRCode from 'qrcode';
+import QRCode from 'qrcode'
 
 interface Props {
-  slug: string;
-  title: string;
+  slug: string
+  title: string
 }
 
-const { slug, title } = Astro.props;
-const base = import.meta.env.BASE_URL;
-const currentUrl = new URL(`${base}blog/${slug}/`, Astro.site).toString();
-const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margin: 2, errorCorrectionLevel: 'M' });
+const { slug, title } = Astro.props
+const base = import.meta.env.BASE_URL
+const currentUrl = new URL(`${base}blog/${slug}/`, Astro.site).toString()
+const qrSvg = await QRCode.toString(currentUrl, {
+  type: 'svg',
+  width: 200,
+  margin: 2,
+  errorCorrectionLevel: 'M',
+})
 ---
 
 <div class="flex flex-wrap items-center gap-3 pt-8 mt-8 border-t border-border/40 dark:border-dark-border/40">
@@ -21,10 +26,18 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
     class="share-action like-btn group flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border/60 dark:border-dark-border/60 hover:border-accent dark:hover:border-dark-accent hover:shadow-md hover:shadow-accent/10 dark:hover:shadow-dark-accent/10 transition-all duration-300"
     data-slug={slug}
   >
-    <svg class="like-icon w-5 h-5 text-text-muted dark:text-dark-text-muted group-hover:text-accent dark:group-hover:text-dark-accent transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    <svg
+      class="like-icon w-5 h-5 text-text-muted dark:text-dark-text-muted group-hover:text-accent dark:group-hover:text-dark-accent transition-colors"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
-    <span id="like-label" class="text-sm font-medium text-text-muted dark:text-dark-text-muted">喜欢</span>
+    <span id="like-label" class="text-sm font-medium text-text-muted dark:text-dark-text-muted">
+      喜欢
+    </span>
   </button>
 
   <!-- 复制链接 -->
@@ -32,8 +45,18 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
     id="share-copy-link-btn"
     class="share-action flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border/60 dark:border-dark-border/60 text-text-muted dark:text-dark-text-muted hover:border-accent hover:text-accent dark:hover:border-dark-accent dark:hover:text-dark-accent hover:shadow-md hover:shadow-accent/10 dark:hover:shadow-dark-accent/10 transition-all duration-300"
   >
-    <svg class="copy-link-icon w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+    <svg
+      class="copy-link-icon w-4 h-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+      />
     </svg>
     <span class="text-sm">复制链接</span>
   </button>
@@ -46,7 +69,9 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
     rel="noopener noreferrer"
     class="share-action flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border/60 dark:border-dark-border/60 text-text-muted dark:text-dark-text-muted hover:border-accent hover:text-accent dark:hover:border-dark-accent dark:hover:text-dark-accent hover:shadow-md hover:shadow-accent/10 dark:hover:shadow-dark-accent/10 transition-all duration-300"
   >
-    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
     <span class="text-sm">Twitter</span>
   </a>
 
@@ -58,7 +83,10 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
     aria-haspopup="dialog"
     aria-expanded="false"
   >
-    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05a6.127 6.127 0 01-.256-1.78c0-3.571 3.267-6.467 7.3-6.467.247 0 .485.016.724.035C16.558 4.577 12.932 2.188 8.691 2.188zm-2.71 4.908a1.097 1.097 0 110 2.194 1.097 1.097 0 010-2.194zm5.416 0a1.097 1.097 0 110 2.194 1.097 1.097 0 010-2.194z"/><path d="M23.997 14.637c0-3.2-3.264-5.796-7.3-5.796-4.035 0-7.3 2.596-7.3 5.796 0 3.2 3.265 5.796 7.3 5.796.79 0 1.552-.104 2.27-.305.194-.066.396-.03.556.063l1.516.89c.053.032.11.05.166.05.131 0 .24-.108.24-.242 0-.058-.024-.116-.04-.172l-.31-1.188a.589.589 0 01.213-.665c1.505-1.112 2.69-2.833 2.69-4.231zm-9.596-1.1a.91.91 0 110-1.819.91.91 0 010 1.82zm4.589 0a.91.91 0 110-1.819.91.91 0 010 1.819z"/></svg>
+    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05a6.127 6.127 0 01-.256-1.78c0-3.571 3.267-6.467 7.3-6.467.247 0 .485.016.724.035C16.558 4.577 12.932 2.188 8.691 2.188zm-2.71 4.908a1.097 1.097 0 110 2.194 1.097 1.097 0 010-2.194zm5.416 0a1.097 1.097 0 110 2.194 1.097 1.097 0 010-2.194z" />
+      <path d="M23.997 14.637c0-3.2-3.264-5.796-7.3-5.796-4.035 0-7.3 2.596-7.3 5.796 0 3.2 3.265 5.796 7.3 5.796.79 0 1.552-.104 2.27-.305.194-.066.396-.03.556.063l1.516.89c.053.032.11.05.166.05.131 0 .24-.108.24-.242 0-.058-.024-.116-.04-.172l-.31-1.188a.589.589 0 01.213-.665c1.505-1.112 2.69-2.833 2.69-4.231zm-9.596-1.1a.91.91 0 110-1.819.91.91 0 010 1.82zm4.589 0a.91.91 0 110-1.819.91.91 0 010 1.819z" />
+    </svg>
     <span class="text-sm">微信</span>
   </button>
 </div>
@@ -67,15 +95,32 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
 <div id="bloom-container" class="fixed inset-0 pointer-events-none z-[99]"></div>
 
 <!-- 二维码弹窗 -->
-<div id="share-qr-modal" class="share-qr-modal fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="share-qr-title">
+<div
+  id="share-qr-modal"
+  class="share-qr-modal fixed inset-0 z-[100] hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="true"
+  aria-labelledby="share-qr-title"
+>
   <div class="share-qr-backdrop absolute inset-0 bg-black/50" id="share-qr-backdrop"></div>
   <div class="share-qr-positioner relative max-w-xs mx-auto mt-[20vh] px-4">
     <div class="share-qr-panel bg-surface dark:bg-dark-surface rounded-xl shadow-2xl border border-border dark:border-dark-border p-6 text-center">
-      <button id="share-qr-close" type="button" class="absolute top-3 right-3 p-2 text-text-muted dark:text-dark-text-muted hover:text-text dark:hover:text-dark-text" aria-label="关闭二维码分享" title="关闭">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      <button
+        id="share-qr-close"
+        type="button"
+        class="absolute top-3 right-3 p-2 text-text-muted dark:text-dark-text-muted hover:text-text dark:hover:text-dark-text"
+        aria-label="关闭二维码分享"
+        title="关闭"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
-      <p id="share-qr-title" class="text-sm text-text-muted dark:text-dark-text-muted mb-4">扫码分享「{title}」</p>
-      <div id="qr-code" class="mx-auto mb-4 w-[200px] h-[200px]" set:html={qrSvg}></div>
+      <p id="share-qr-title" class="text-sm text-text-muted dark:text-dark-text-muted mb-4">
+        扫码分享「{title}」
+      </p>
+      <div id="qr-code" class="mx-auto mb-4 w-[200px] h-[200px]" set:html={qrSvg} />
       <p class="text-xs text-text-muted dark:text-dark-text-muted break-all">{currentUrl}</p>
     </div>
   </div>
@@ -83,166 +128,178 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
 
 <script is:inline define:vars={{ slug, currentUrl, title }}>
   document.addEventListener('astro:page-load', () => {
-    window.__shareCleanup?.();
-    const controller = new AbortController();
-    const likeBtn = document.getElementById('like-btn');
-    const likeLabel = document.getElementById('like-label');
-    const likeIcon = likeBtn?.querySelector('.like-icon');
-    const copyBtn = document.getElementById('share-copy-link-btn');
-    const qrBtn = document.getElementById('qr-btn');
-    const qrModal = document.getElementById('share-qr-modal');
-    const qrBackdrop = document.getElementById('share-qr-backdrop');
+    window.__shareCleanup?.()
+    const controller = new AbortController()
+    const likeBtn = document.getElementById('like-btn')
+    const likeLabel = document.getElementById('like-label')
+    const likeIcon = likeBtn?.querySelector('.like-icon')
+    const copyBtn = document.getElementById('share-copy-link-btn')
+    const qrBtn = document.getElementById('qr-btn')
+    const qrModal = document.getElementById('share-qr-modal')
+    const qrBackdrop = document.getElementById('share-qr-backdrop')
 
-    if (!likeBtn || !likeLabel) return;
+    if (!likeBtn || !likeLabel) return
 
     // ===== 点赞 =====
     function readStorage(key, fallback) {
       try {
-        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback))
       } catch {
-        return fallback;
+        return fallback
       }
     }
-    const storedLiked = readStorage('blog_liked', []);
-    const liked = Array.isArray(storedLiked) ? storedLiked : [];
-    const isLiked = liked.includes(slug);
+    const storedLiked = readStorage('blog_liked', [])
+    const liked = Array.isArray(storedLiked) ? storedLiked : []
+    const isLiked = liked.includes(slug)
 
-    likeLabel.textContent = isLiked ? '已喜欢' : '喜欢';
-    likeBtn.setAttribute('aria-pressed', String(isLiked));
+    likeLabel.textContent = isLiked ? '已喜欢' : '喜欢'
+    likeBtn.setAttribute('aria-pressed', String(isLiked))
     if (isLiked) {
-      likeIcon?.style.setProperty('fill', 'var(--color-accent)');
-      likeIcon?.style.setProperty('stroke', 'var(--color-accent)');
-      likeBtn.classList.add('border-accent', 'dark:border-dark-accent', 'is-liked');
+      likeIcon?.style.setProperty('fill', 'var(--color-accent)')
+      likeIcon?.style.setProperty('stroke', 'var(--color-accent)')
+      likeBtn.classList.add('border-accent', 'dark:border-dark-accent', 'is-liked')
     }
 
-    likeBtn.addEventListener('click', () => {
-      const likedStored = readStorage('blog_liked', []);
-      const likedNow = Array.isArray(likedStored) ? likedStored : [];
-      const idx = likedNow.indexOf(slug);
+    likeBtn.addEventListener(
+      'click',
+      () => {
+        const likedStored = readStorage('blog_liked', [])
+        const likedNow = Array.isArray(likedStored) ? likedStored : []
+        const idx = likedNow.indexOf(slug)
 
-      if (idx >= 0) {
-        // 取消点赞
-        likedNow.splice(idx, 1);
-        likeIcon?.style.setProperty('fill', 'none');
-        likeIcon?.style.setProperty('stroke', 'currentColor');
-        likeBtn.classList.remove('border-accent', 'dark:border-dark-accent', 'is-liked');
-      } else {
-        // 点赞
-        likedNow.push(slug);
-        likeIcon?.style.setProperty('fill', 'var(--color-accent)');
-        likeIcon?.style.setProperty('stroke', 'var(--color-accent)');
-        likeBtn.classList.add('border-accent', 'dark:border-dark-accent', 'is-liked');
-        // 墨花绽放动画
-        spawnBloom(likeBtn);
-      }
+        if (idx >= 0) {
+          // 取消点赞
+          likedNow.splice(idx, 1)
+          likeIcon?.style.setProperty('fill', 'none')
+          likeIcon?.style.setProperty('stroke', 'currentColor')
+          likeBtn.classList.remove('border-accent', 'dark:border-dark-accent', 'is-liked')
+        } else {
+          // 点赞
+          likedNow.push(slug)
+          likeIcon?.style.setProperty('fill', 'var(--color-accent)')
+          likeIcon?.style.setProperty('stroke', 'var(--color-accent)')
+          likeBtn.classList.add('border-accent', 'dark:border-dark-accent', 'is-liked')
+          // 墨花绽放动画
+          spawnBloom(likeBtn)
+        }
 
-      likeLabel.textContent = idx < 0 ? '已喜欢' : '喜欢';
-      likeBtn.setAttribute('aria-pressed', String(idx < 0));
-      localStorage.setItem('blog_liked', JSON.stringify(likedNow));
-    }, { signal: controller.signal });
+        likeLabel.textContent = idx < 0 ? '已喜欢' : '喜欢'
+        likeBtn.setAttribute('aria-pressed', String(idx < 0))
+        localStorage.setItem('blog_liked', JSON.stringify(likedNow))
+      },
+      { signal: controller.signal },
+    )
 
     // ===== 墨花绽放 =====
     function spawnBloom(anchor) {
-      const container = document.getElementById('bloom-container');
-      if (!container || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const rect = anchor.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
+      const container = document.getElementById('bloom-container')
+      if (!container || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      const rect = anchor.getBoundingClientRect()
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
 
       for (let i = 0; i < 8; i++) {
-        const petal = document.createElement('div');
-        petal.className = 'ink-bloom-petal';
-        const angle = (i / 8) * Math.PI * 2;
-        const dist = 30 + Math.random() * 30;
-        petal.style.left = cx + 'px';
-        petal.style.top = cy + 'px';
-        petal.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-        petal.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-        container.appendChild(petal);
-        setTimeout(() => petal.remove(), 700);
+        const petal = document.createElement('div')
+        petal.className = 'ink-bloom-petal'
+        const angle = (i / 8) * Math.PI * 2
+        const dist = 30 + Math.random() * 30
+        petal.style.left = cx + 'px'
+        petal.style.top = cy + 'px'
+        petal.style.setProperty('--dx', Math.cos(angle) * dist + 'px')
+        petal.style.setProperty('--dy', Math.sin(angle) * dist + 'px')
+        container.appendChild(petal)
+        setTimeout(() => petal.remove(), 700)
       }
     }
 
     // ===== 复制链接 =====
-    let copyResetTimer = 0;
+    let copyResetTimer = 0
     const showCopySuccess = () => {
-      if (!copyBtn) return;
-      const span = copyBtn.querySelector('span');
-      window.clearTimeout(copyResetTimer);
-      copyBtn.classList.remove('is-copy-success');
-      void copyBtn.offsetWidth;
-      copyBtn.classList.add('is-copy-success');
-      if (span) span.textContent = '已复制';
+      if (!copyBtn) return
+      const span = copyBtn.querySelector('span')
+      window.clearTimeout(copyResetTimer)
+      copyBtn.classList.remove('is-copy-success')
+      void copyBtn.offsetWidth
+      copyBtn.classList.add('is-copy-success')
+      if (span) span.textContent = '已复制'
       copyResetTimer = window.setTimeout(() => {
-        copyBtn.classList.remove('is-copy-success');
-        if (span) span.textContent = '复制链接';
-      }, 2000);
-    };
+        copyBtn.classList.remove('is-copy-success')
+        if (span) span.textContent = '复制链接'
+      }, 2000)
+    }
 
-    copyBtn?.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(currentUrl);
-      } catch {
-        // fallback
-        const ta = document.createElement('textarea');
-        ta.value = currentUrl;
-        document.body.appendChild(ta);
-        ta.select();
-        const legacyCopy = Reflect.get(document, 'execCommand');
-        Reflect.apply(legacyCopy, document, ['copy']);
-        document.body.removeChild(ta);
-      }
-      showCopySuccess();
-    }, { signal: controller.signal });
+    copyBtn?.addEventListener(
+      'click',
+      async () => {
+        try {
+          await navigator.clipboard.writeText(currentUrl)
+        } catch {
+          // fallback
+          const ta = document.createElement('textarea')
+          ta.value = currentUrl
+          document.body.appendChild(ta)
+          ta.select()
+          const legacyCopy = Reflect.get(document, 'execCommand')
+          Reflect.apply(legacyCopy, document, ['copy'])
+          document.body.removeChild(ta)
+        }
+        showCopySuccess()
+      },
+      { signal: controller.signal },
+    )
 
-    let previousFocus = null;
-    let previousOverflow = '';
-    let closeTimer = 0;
-    const closeBtn = document.getElementById('share-qr-close');
+    let previousFocus = null
+    let previousOverflow = ''
+    let closeTimer = 0
+    const closeBtn = document.getElementById('share-qr-close')
     const openModal = () => {
-      if (!qrModal) return;
-      window.clearTimeout(closeTimer);
-      previousFocus = document.activeElement;
-      previousOverflow = document.body.style.overflow;
-      qrModal.classList.remove('hidden');
-      qrModal.setAttribute('aria-hidden', 'false');
-      qrBtn?.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
+      if (!qrModal) return
+      window.clearTimeout(closeTimer)
+      previousFocus = document.activeElement
+      previousOverflow = document.body.style.overflow
+      qrModal.classList.remove('hidden')
+      qrModal.setAttribute('aria-hidden', 'false')
+      qrBtn?.setAttribute('aria-expanded', 'true')
+      document.body.style.overflow = 'hidden'
       requestAnimationFrame(() => {
-        qrModal.classList.add('is-share-open');
-        closeBtn?.focus();
-      });
-    };
+        qrModal.classList.add('is-share-open')
+        closeBtn?.focus()
+      })
+    }
     const closeModal = () => {
-      if (!qrModal || qrModal.classList.contains('hidden')) return;
-      qrModal.classList.remove('is-share-open');
-      qrModal.setAttribute('aria-hidden', 'true');
-      qrBtn?.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = previousOverflow;
-      previousFocus?.focus();
-      previousFocus = null;
-      window.clearTimeout(closeTimer);
-      closeTimer = window.setTimeout(() => qrModal.classList.add('hidden'), 540);
-    };
-    qrBtn?.addEventListener('click', openModal, { signal: controller.signal });
-    qrBackdrop?.addEventListener('click', closeModal, { signal: controller.signal });
-    closeBtn?.addEventListener('click', closeModal, { signal: controller.signal });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && qrModal?.classList.contains('is-share-open')) closeModal();
-      if (event.key === 'Tab' && qrModal?.classList.contains('is-share-open')) {
-        event.preventDefault();
-        closeBtn?.focus();
-      }
-    }, { signal: controller.signal });
+      if (!qrModal || qrModal.classList.contains('hidden')) return
+      qrModal.classList.remove('is-share-open')
+      qrModal.setAttribute('aria-hidden', 'true')
+      qrBtn?.setAttribute('aria-expanded', 'false')
+      document.body.style.overflow = previousOverflow
+      previousFocus?.focus()
+      previousFocus = null
+      window.clearTimeout(closeTimer)
+      closeTimer = window.setTimeout(() => qrModal.classList.add('hidden'), 540)
+    }
+    qrBtn?.addEventListener('click', openModal, { signal: controller.signal })
+    qrBackdrop?.addEventListener('click', closeModal, { signal: controller.signal })
+    closeBtn?.addEventListener('click', closeModal, { signal: controller.signal })
+    document.addEventListener(
+      'keydown',
+      (event) => {
+        if (event.key === 'Escape' && qrModal?.classList.contains('is-share-open')) closeModal()
+        if (event.key === 'Tab' && qrModal?.classList.contains('is-share-open')) {
+          event.preventDefault()
+          closeBtn?.focus()
+        }
+      },
+      { signal: controller.signal },
+    )
     window.__shareCleanup = () => {
-      window.clearTimeout(copyResetTimer);
-      window.clearTimeout(closeTimer);
-      qrModal?.classList.remove('is-share-open');
-      qrModal?.classList.add('hidden');
-      document.body.style.overflow = previousOverflow;
-      controller.abort();
-    };
-  });
+      window.clearTimeout(copyResetTimer)
+      window.clearTimeout(closeTimer)
+      qrModal?.classList.remove('is-share-open')
+      qrModal?.classList.add('hidden')
+      document.body.style.overflow = previousOverflow
+      controller.abort()
+    }
+  })
 </script>
 
 <style>
@@ -257,7 +314,7 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
   }
 
   #share-copy-link-btn::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     border: 1px solid rgba(226, 238, 248, 0.32);
@@ -282,8 +339,14 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
   }
 
   @keyframes copySuccessPulse {
-    0% { opacity: 0.8; transform: scale(0.78); }
-    100% { opacity: 0; transform: scale(1.12); }
+    0% {
+      opacity: 0.8;
+      transform: scale(0.78);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.12);
+    }
   }
 
   .like-btn.is-liked {
@@ -297,7 +360,9 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity var(--motion-base) var(--ease-standard), visibility 0s linear var(--motion-slow);
+    transition:
+      opacity var(--motion-base) var(--ease-standard),
+      visibility 0s linear var(--motion-slow);
   }
 
   .share-qr-modal.is-share-open {
@@ -340,7 +405,9 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
       linear-gradient(145deg, rgba(28, 40, 62, 0.96), rgba(6, 10, 18, 0.96)),
       radial-gradient(circle at 50% 0%, rgba(226, 238, 248, 0.1), transparent 58%);
     border-color: var(--border-glass-strong);
-    box-shadow: 0 34px 100px rgba(0, 0, 0, 0.6), var(--glass-rim-strong);
+    box-shadow:
+      0 34px 100px rgba(0, 0, 0, 0.6),
+      var(--glass-rim-strong);
   }
 
   .like-icon {
@@ -366,8 +433,13 @@ const qrSvg = await QRCode.toString(currentUrl, { type: 'svg', width: 200, margi
   }
 
   @keyframes shareBloomPetal {
-    0% { opacity: 0; transform: translate(-50%, -50%) rotate(0) scale(0.2); }
-    24% { opacity: 0.95; }
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) rotate(0) scale(0.2);
+    }
+    24% {
+      opacity: 0.95;
+    }
     100% {
       opacity: 0;
       transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(150deg) scale(0.8);

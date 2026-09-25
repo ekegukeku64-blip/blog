@@ -11,7 +11,12 @@ const THIN_SPACE = '\u2009'
 
 function isSkipped(el: Element | null) {
   if (!el) return false
-  return el.tagName === 'PRE' || el.tagName === 'CODE' || el.tagName === 'SCRIPT' || el.tagName === 'STYLE'
+  return (
+    el.tagName === 'PRE' ||
+    el.tagName === 'CODE' ||
+    el.tagName === 'SCRIPT' ||
+    el.tagName === 'STYLE'
+  )
 }
 
 function applyCjkSpacing() {
@@ -24,7 +29,11 @@ function applyCjkSpacing() {
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         const parent = (node as Text).parentElement
-        if (parent && (parent.tagName === 'PRE' || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) return NodeFilter.FILTER_REJECT
+        if (
+          parent &&
+          (parent.tagName === 'PRE' || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')
+        )
+          return NodeFilter.FILTER_REJECT
         return NodeFilter.FILTER_ACCEPT
       },
     })
@@ -52,7 +61,9 @@ function applyCjkSpacing() {
       const aLast = aText.replace(/\s+$/, '').slice(-1)
       const bFirst = bText.replace(/^\s+/, '').charAt(0)
       if (!aLast || !bFirst) continue
-      const need = (CJK_CHAR.test(aLast) && LATIN_CHAR.test(bFirst)) || (LATIN_CHAR.test(aLast) && CJK_CHAR.test(bFirst))
+      const need =
+        (CJK_CHAR.test(aLast) && LATIN_CHAR.test(bFirst)) ||
+        (LATIN_CHAR.test(aLast) && CJK_CHAR.test(bFirst))
       if (!need) continue
 
       const space = document.createTextNode(THIN_SPACE)

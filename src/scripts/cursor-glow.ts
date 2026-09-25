@@ -8,7 +8,8 @@ function setupCursorGlow() {
   if (document.getElementById('global-cursor-glow')) return
   glow = document.createElement('div')
   glow.id = 'global-cursor-glow'
-  glow.style.cssText = 'position:fixed;width:500px;height:500px;border-radius:50%;pointer-events:none;z-index:9991;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.5s cubic-bezier(0.16,1,0.3,1);background:radial-gradient(circle,rgba(180,155,115,0.045) 0%,rgba(160,140,100,0.015) 35%,transparent 70%);will-change:left,top;'
+  glow.style.cssText =
+    'position:fixed;width:500px;height:500px;border-radius:50%;pointer-events:none;z-index:9991;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.5s cubic-bezier(0.16,1,0.3,1);background:radial-gradient(circle,rgba(180,155,115,0.045) 0%,rgba(160,140,100,0.015) 35%,transparent 70%);will-change:left,top;'
   document.body.appendChild(glow)
 
   let pending = false

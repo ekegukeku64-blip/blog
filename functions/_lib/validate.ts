@@ -48,7 +48,11 @@ interface CleanOptions {
   trim?: boolean
 }
 
-export function cleanString(value: unknown, maxBytes: number, options: CleanOptions = {}): string | null {
+export function cleanString(
+  value: unknown,
+  maxBytes: number,
+  options: CleanOptions = {},
+): string | null {
   const { minBytes = 1, trim = true } = options
   if (!isPlainString(value)) return null
 

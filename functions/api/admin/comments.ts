@@ -40,4 +40,3 @@ export async function onRequestGet(ctx: Ctx): Promise<Response> {
 
   return json({ comments: (rows.results ?? []).map(toPublicComment) }, 200, cors)
 }
-

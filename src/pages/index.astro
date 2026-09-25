@@ -1,10 +1,10 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getCollection } from 'astro:content'
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
-const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-const latestPost = sortedPosts[0];
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex)
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+const latestPost = sortedPosts[0]
 ---
 
 <BaseLayout title="枫迹 - Entrance">
@@ -19,8 +19,8 @@ const latestPost = sortedPosts[0];
         muted
         playsinline
         data-src={`${import.meta.env.BASE_URL}maple.mp4`}
-        poster={`${import.meta.env.BASE_URL}maple.jpg`}>
-      </video>
+        poster={`${import.meta.env.BASE_URL}maple.jpg`}
+      ></video>
     </div>
 
     <canvas id="particle-canvas" class="particle-canvas" aria-hidden="true"></canvas>
@@ -36,10 +36,7 @@ const latestPost = sortedPosts[0];
 
     <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
 
-    
-
     <div class="content-layer">
-
       <div class="ink-blooms" aria-hidden="true">
         <span class="ink-bloom ink-bloom--a"></span>
         <span class="ink-bloom ink-bloom--b"></span>
@@ -48,14 +45,24 @@ const latestPost = sortedPosts[0];
       <div class="maple-boot-icon" aria-hidden="true">
         <svg class="maple-glyph" viewBox="0 0 128 128" focusable="false">
           <defs>
-            <linearGradient id="mapleGlass" x1="24" y1="10" x2="104" y2="118" gradientUnits="userSpaceOnUse">
+            <linearGradient
+              id="mapleGlass"
+              x1="24"
+              y1="10"
+              x2="104"
+              y2="118"
+              gradientUnits="userSpaceOnUse"
+            >
               <stop offset="0" stop-color="rgb(255,255,255)" stop-opacity="0.96" />
               <stop offset="0.38" stop-color="rgb(226,238,248)" stop-opacity="0.76" />
               <stop offset="1" stop-color="rgb(178,84,54)" stop-opacity="0.26" />
             </linearGradient>
           </defs>
           <path d="M64 13 C68 30 75 43 84 53 C91 46 99 41 108 38 C106 50 101 62 93 72 C102 73 111 76 119 82 C109 88 98 91 86 91 C89 101 89 111 86 119 C77 113 70 105 64 95 C58 105 51 113 42 119 C39 111 39 101 42 91 C30 91 19 88 9 82 C17 76 26 73 35 72 C27 62 22 50 20 38 C29 41 37 46 44 53 C53 43 60 30 64 13 Z" />
-          <path class="maple-vein" d="M64 28 C64 50 64 75 64 109 M64 68 C56 61 49 55 42 50 M64 68 C72 61 79 55 86 50" />
+          <path
+            class="maple-vein"
+            d="M64 28 C64 50 64 75 64 109 M64 68 C56 61 49 55 42 50 M64 68 C72 61 79 55 86 50"
+          />
         </svg>
       </div>
 
@@ -64,43 +71,80 @@ const latestPost = sortedPosts[0];
         <span class="handwriting-title" aria-hidden="true">
           <span class="handwriting-word">
             <span class="handwriting-char handwriting-char--ink">
-              <span class="handwriting-piece handwriting-piece--mo-1" style="--delay:3.48s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-2" style="--delay:3.60s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-3" style="--delay:3.72s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-4" style="--delay:3.84s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-5" style="--delay:3.96s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-6" style="--delay:4.08s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-7" style="--delay:4.20s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-8" style="--delay:4.32s">枫</span>
-              <span class="handwriting-piece handwriting-piece--mo-9" style="--delay:4.44s">枫</span>
+              <span class="handwriting-piece handwriting-piece--mo-1" style="--delay:3.48s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-2" style="--delay:3.60s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-3" style="--delay:3.72s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-4" style="--delay:3.84s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-5" style="--delay:3.96s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-6" style="--delay:4.08s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-7" style="--delay:4.20s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-8" style="--delay:4.32s">
+                枫
+              </span>
+              <span class="handwriting-piece handwriting-piece--mo-9" style="--delay:4.44s">
+                枫
+              </span>
             </span>
           </span>
         </span>
         <span class="editorial-chars">
-          <span class="editorial-char editorial-char--ink" style="--glyph-delay: 3.88s; --bloom-delay: 3.78s; --trace-delay: 4.14s; --drift-delay: 5.8s" data-depth="0.7">枫</span>
+          <span
+            class="editorial-char editorial-char--ink"
+            style="--glyph-delay: 3.88s; --bloom-delay: 3.78s; --trace-delay: 4.14s; --drift-delay: 5.8s"
+            data-depth="0.7"
+          >
+            枫
+          </span>
         </span>
       </h1>
-      <p class="blur-reveal subtitle" id="entrance-subtitle">一个安静记录生活和想法的角落</p>
+      <p class="blur-reveal subtitle" id="entrance-subtitle">
+        一个安静记录生活和想法的角落
+      </p>
 
-      <a href={`${import.meta.env.BASE_URL}home/`} class="blur-reveal enter-btn" id="enter-btn" aria-describedby="entrance-subtitle">
+      <a
+        href={`${import.meta.env.BASE_URL}home/`}
+        class="blur-reveal enter-btn"
+        id="enter-btn"
+        aria-describedby="entrance-subtitle"
+      >
         <span class="btn-glass-overlay" aria-hidden="true"></span>
         <span class="btn-text">进入枫迹</span>
       </a>
 
-      <a class="blur-reveal atmosphere-btn" id="entrance-playlist" href="https://music.163.com/#/playlist?id=2931801429" target="_blank" rel="noopener noreferrer">
+      <a
+        class="blur-reveal atmosphere-btn"
+        id="entrance-playlist"
+        href="https://music.163.com/#/playlist?id=2931801429"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         我的歌单
       </a>
 
       {latestPost && (
         <a class="recent-update" href={`${import.meta.env.BASE_URL}blog/${latestPost.id}/`}>
           <span>最近更新：</span>
-          <span>{latestPost.data.pubDate.toLocaleDateString('zh-CN', { month:'long', day:'numeric' })} · {latestPost.data.title}</span>
+          <span>
+            {latestPost.data.pubDate.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}{' '}
+            · {latestPost.data.title}
+          </span>
           <span aria-hidden="true">→</span>
         </a>
       )}
-    </div>
-
-    
     </div>
 
     <div class="bottom-quote" id="bottom-quote">
@@ -110,376 +154,444 @@ const latestPost = sortedPosts[0];
   </div>
 
   <script is:inline>
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const saveData = navigator.connection?.saveData === true;
-    const isMobileDevice = window.matchMedia('(max-width: 768px)').matches;
-    const staticMedia = reduceMotion || saveData || isMobileDevice;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const saveData = navigator.connection?.saveData === true
+    const isMobileDevice = window.matchMedia('(max-width: 768px)').matches
+    const staticMedia = reduceMotion || saveData || isMobileDevice
 
-    { // === time-based color temperature ===
-    const hour = new Date().getHours();
-    const phase = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : hour < 22 ? 'evening' : 'night';
-    document.documentElement.setAttribute('data-time', phase);
+    {
+      // === time-based color temperature ===
+      const hour = new Date().getHours()
+      const phase =
+        hour < 6
+          ? 'night'
+          : hour < 12
+            ? 'morning'
+            : hour < 18
+              ? 'afternoon'
+              : hour < 22
+                ? 'evening'
+                : 'night'
+      document.documentElement.setAttribute('data-time', phase)
     } // end time block
 
-    { // === video autoplay ===
-    const ev = document.getElementById('entrance-video');
-    if (ev && !staticMedia) {
-      const videoSrc = ev.dataset.src;
-      if (videoSrc && !ev.src) {
-        ev.src = videoSrc;
-        ev.load();
-      }
+    {
+      // === video autoplay ===
+      const ev = document.getElementById('entrance-video')
+      if (ev && !staticMedia) {
+        const videoSrc = ev.dataset.src
+        if (videoSrc && !ev.src) {
+          ev.src = videoSrc
+          ev.load()
+        }
 
-      const playVideo = () => {
-        if (!document.hidden) ev.play().catch(() => {});
-      };
-      playVideo();
-      const resumeVideo = () => { ev.play().catch(() => {}); };
-      const syncVideoVisibility = () => {
-        if (document.hidden) ev.pause();
-        else playVideo();
-      };
-      document.addEventListener('click', resumeVideo, { once: true });
-      document.addEventListener('visibilitychange', syncVideoVisibility);
-      document.addEventListener('astro:before-swap', () => {
-        document.removeEventListener('click', resumeVideo);
-        document.removeEventListener('visibilitychange', syncVideoVisibility);
-        ev.pause();
-      }, { once: true });
-    }
+        const playVideo = () => {
+          if (!document.hidden) ev.play().catch(() => {})
+        }
+        playVideo()
+        const resumeVideo = () => {
+          ev.play().catch(() => {})
+        }
+        const syncVideoVisibility = () => {
+          if (document.hidden) ev.pause()
+          else playVideo()
+        }
+        document.addEventListener('click', resumeVideo, { once: true })
+        document.addEventListener('visibilitychange', syncVideoVisibility)
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            document.removeEventListener('click', resumeVideo)
+            document.removeEventListener('visibilitychange', syncVideoVisibility)
+            ev.pause()
+          },
+          { once: true },
+        )
+      }
     } // end video block
 
-    { // === particle system — fireflies + maple leaves ===
-    const canvas = document.getElementById('particle-canvas');
-    if (canvas && !staticMedia) {
-      const ctx = canvas.getContext('2d');
-      let W = 0, H = 0, animId = 0;
-      let particlesRunning = false;
-      const fireflies = [];
-      const leaves = [];
+    {
+      // === particle system — fireflies + maple leaves ===
+      const canvas = document.getElementById('particle-canvas')
+      if (canvas && !staticMedia) {
+        const ctx = canvas.getContext('2d')
+        let W = 0,
+          H = 0,
+          animId = 0
+        let particlesRunning = false
+        const fireflies = []
+        const leaves = []
 
-      function resize() {
-        const rect = canvas.parentElement.getBoundingClientRect();
-        W = canvas.width = rect.width;
-        H = canvas.height = rect.height;
-      }
-
-      class Firefly {
-        constructor() { this.reset(true); }
-        reset(init) {
-          this.x = Math.random() * W;
-          this.y = init ? Math.random() * H : H + 30;
-          this.size = 0.8 + Math.random() * 1.5;
-          this.glow = 8 + Math.random() * 14;
-          this.speed = 0.15 + Math.random() * 0.35;
-          this.drift = (Math.random() - 0.5) * 0.35;
-          this.phase = Math.random() * Math.PI * 2;
-          this.pulse = 0.01 + Math.random() * 0.02;
-          this.alpha = 0;
-          this.vx = 0; this.vy = 0;
+        function resize() {
+          const rect = canvas.parentElement.getBoundingClientRect()
+          W = canvas.width = rect.width
+          H = canvas.height = rect.height
         }
-        update() {
-          if (this.vx || this.vy) {
-            this.x += this.vx;
-            this.y += this.vy;
-            this.vx *= 0.98;
-            this.vy *= 0.98;
-            this.alpha *= 0.97;
-            return;
+
+        class Firefly {
+          constructor() {
+            this.reset(true)
           }
-          const dx = this.x - mouseX;
-          const dy = this.y - mouseY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 80 && dist > 0) {
-            this.x += (dx / dist) * 0.6;
-            this.y += (dy / dist) * 0.6;
+          reset(init) {
+            this.x = Math.random() * W
+            this.y = init ? Math.random() * H : H + 30
+            this.size = 0.8 + Math.random() * 1.5
+            this.glow = 8 + Math.random() * 14
+            this.speed = 0.15 + Math.random() * 0.35
+            this.drift = (Math.random() - 0.5) * 0.35
+            this.phase = Math.random() * Math.PI * 2
+            this.pulse = 0.01 + Math.random() * 0.02
+            this.alpha = 0
+            this.vx = 0
+            this.vy = 0
           }
-          this.y -= this.speed;
-          this.x += Math.sin(this.phase) * this.drift;
-          this.phase += 0.01;
-          this.alpha = 0.04 + Math.sin(Date.now() * this.pulse + this.phase) * 0.08;
-          if (this.y < -40) this.reset(false);
-        }
-        draw() {
-          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.glow);
-          g.addColorStop(0, `rgba(220,200,150,${(this.alpha * 0.7).toFixed(2)})`);
-          g.addColorStop(0.3, `rgba(200,170,120,${(this.alpha * 0.35).toFixed(2)})`);
-          g.addColorStop(0.7, `rgba(160,130,80,${(this.alpha * 0.05).toFixed(2)})`);
-          g.addColorStop(1, 'rgba(160,130,80,0)');
-          ctx.fillStyle = g;
-          ctx.beginPath(); ctx.arc(this.x, this.y, this.glow, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = `rgba(230,215,180,${(this.alpha * 1.1).toFixed(2)})`;
-          ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-        }
-      }
-
-      class MapleLeaf {
-        constructor() { this.reset(true); }
-        reset(init) {
-          this.x = Math.random() * W * 1.2 - W * 0.1;
-          this.y = init ? Math.random() * H * -0.5 : -30;
-          this.size = 6 + Math.random() * 12;
-          this.speed = 0.3 + Math.random() * 0.9;
-          this.sway = (Math.random() - 0.5) * 1.4;
-          this.phase = Math.random() * Math.PI * 2;
-          this.rot = Math.random() * Math.PI * 2;
-          this.rotSpeed = (Math.random() - 0.5) * 0.02;
-          this.alpha = 0.15 + Math.random() * 0.35;
-          this.vx = 0; this.vy = 0;
-        }
-        update() {
-          if (this.vx || this.vy) {
-            this.x += this.vx;
-            this.y += this.vy;
-            this.vx *= 0.98;
-            this.vy *= 0.98;
-            this.alpha *= 0.97;
-            this.rot += this.rotSpeed * 3;
-            return;
-          }
-          this.y += this.speed;
-          this.x += Math.sin(this.phase) * this.sway;
-          this.phase += 0.015;
-          this.rot += this.rotSpeed;
-          if (this.y > H + 40) this.reset(false);
-        }
-        draw() {
-          ctx.save();
-          ctx.translate(this.x, this.y);
-          ctx.rotate(this.rot);
-          ctx.globalAlpha = this.alpha;
-          const s = this.size;
-          ctx.fillStyle = '#4a2020';
-          ctx.beginPath();
-          ctx.moveTo(0, -s);
-          ctx.bezierCurveTo(s*0.7, -s*0.6, s*0.8, s*0.3, 0, s);
-          ctx.bezierCurveTo(-s*0.8, s*0.3, -s*0.7, -s*0.6, 0, -s);
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(120,60,40,0.3)';
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(0, -s); ctx.lineTo(0, s);
-          ctx.stroke();
-          ctx.restore();
-        }
-      }
-
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
-      const ffCount = isMobile ? 3 : 8;
-      const leafCount = isMobile ? 2 : 7;
-      for (let i = 0; i < ffCount; i++) fireflies.push(new Firefly());
-      for (let i = 0; i < leafCount; i++) leaves.push(new MapleLeaf());
-      window.__particles = { fireflies, leaves, W: () => W, H: () => H };
-
-      let mouseX = -999, mouseY = -999;
-      let canvasRect = canvas.getBoundingClientRect();
-      let parallaxPending = false;
-
-      const updateCanvasRect = () => { canvasRect = canvas.getBoundingClientRect(); };
-
-      const titleChars = document.querySelectorAll('.editorial-char');
-      const onMouseMove = (e) => {
-        mouseX = e.clientX - canvasRect.left;
-        mouseY = e.clientY - canvasRect.top;
-        if (!parallaxPending) {
-          parallaxPending = true;
-          requestAnimationFrame(() => {
-            const bgMedia = document.querySelector('.bg-media');
-            if (bgMedia) {
-              const px = (e.clientX / window.innerWidth - 0.5) * -12;
-              const py = (e.clientY / window.innerHeight - 0.5) * -12;
-              bgMedia.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) scale(1.04)`;
+          update() {
+            if (this.vx || this.vy) {
+              this.x += this.vx
+              this.y += this.vy
+              this.vx *= 0.98
+              this.vy *= 0.98
+              this.alpha *= 0.97
+              return
             }
-            const gl = document.getElementById('cursor-glow');
-            if (gl) {
-              gl.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
-              gl.style.opacity = '1';
+            const dx = this.x - mouseX
+            const dy = this.y - mouseY
+            const dist = Math.sqrt(dx * dx + dy * dy)
+            if (dist < 80 && dist > 0) {
+              this.x += (dx / dist) * 0.6
+              this.y += (dy / dist) * 0.6
             }
-            titleChars.forEach(el => {
-              const depth = parseFloat(el.getAttribute('data-depth')) || 0;
-              const dx = (e.clientX / window.innerWidth - 0.5) * -28 * depth;
-              const dy = (e.clientY / window.innerHeight - 0.5) * -20 * depth;
-              el.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
-              el.style.transition = 'none';
-            });
-            parallaxPending = false;
-          });
+            this.y -= this.speed
+            this.x += Math.sin(this.phase) * this.drift
+            this.phase += 0.01
+            this.alpha = 0.04 + Math.sin(Date.now() * this.pulse + this.phase) * 0.08
+            if (this.y < -40) this.reset(false)
+          }
+          draw() {
+            const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.glow)
+            g.addColorStop(0, `rgba(220,200,150,${(this.alpha * 0.7).toFixed(2)})`)
+            g.addColorStop(0.3, `rgba(200,170,120,${(this.alpha * 0.35).toFixed(2)})`)
+            g.addColorStop(0.7, `rgba(160,130,80,${(this.alpha * 0.05).toFixed(2)})`)
+            g.addColorStop(1, 'rgba(160,130,80,0)')
+            ctx.fillStyle = g
+            ctx.beginPath()
+            ctx.arc(this.x, this.y, this.glow, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.fillStyle = `rgba(230,215,180,${(this.alpha * 1.1).toFixed(2)})`
+            ctx.beginPath()
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+            ctx.fill()
+          }
         }
-      };
-      const onMouseLeave = () => {
-        mouseX = -999; mouseY = -999;
-        const gl = document.getElementById('cursor-glow');
-        if (gl) gl.style.opacity = '0';
-        titleChars.forEach(el => {
-          el.style.transform = 'translate3d(0, 0, 0)';
-          el.style.transition = 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
-        });
-      };
 
-      document.addEventListener('mousemove', onMouseMove, { passive: true });
-      document.addEventListener('mouseleave', onMouseLeave);
+        class MapleLeaf {
+          constructor() {
+            this.reset(true)
+          }
+          reset(init) {
+            this.x = Math.random() * W * 1.2 - W * 0.1
+            this.y = init ? Math.random() * H * -0.5 : -30
+            this.size = 6 + Math.random() * 12
+            this.speed = 0.3 + Math.random() * 0.9
+            this.sway = (Math.random() - 0.5) * 1.4
+            this.phase = Math.random() * Math.PI * 2
+            this.rot = Math.random() * Math.PI * 2
+            this.rotSpeed = (Math.random() - 0.5) * 0.02
+            this.alpha = 0.15 + Math.random() * 0.35
+            this.vx = 0
+            this.vy = 0
+          }
+          update() {
+            if (this.vx || this.vy) {
+              this.x += this.vx
+              this.y += this.vy
+              this.vx *= 0.98
+              this.vy *= 0.98
+              this.alpha *= 0.97
+              this.rot += this.rotSpeed * 3
+              return
+            }
+            this.y += this.speed
+            this.x += Math.sin(this.phase) * this.sway
+            this.phase += 0.015
+            this.rot += this.rotSpeed
+            if (this.y > H + 40) this.reset(false)
+          }
+          draw() {
+            ctx.save()
+            ctx.translate(this.x, this.y)
+            ctx.rotate(this.rot)
+            ctx.globalAlpha = this.alpha
+            const s = this.size
+            ctx.fillStyle = '#4a2020'
+            ctx.beginPath()
+            ctx.moveTo(0, -s)
+            ctx.bezierCurveTo(s * 0.7, -s * 0.6, s * 0.8, s * 0.3, 0, s)
+            ctx.bezierCurveTo(-s * 0.8, s * 0.3, -s * 0.7, -s * 0.6, 0, -s)
+            ctx.fill()
+            ctx.strokeStyle = 'rgba(120,60,40,0.3)'
+            ctx.lineWidth = 0.5
+            ctx.beginPath()
+            ctx.moveTo(0, -s)
+            ctx.lineTo(0, s)
+            ctx.stroke()
+            ctx.restore()
+          }
+        }
 
-      function animate() {
-        if (!particlesRunning) return;
-        ctx.clearRect(0, 0, W, H);
-        fireflies.forEach(f => { f.update(); f.draw(); });
-        leaves.forEach(l => { l.update(); l.draw(); });
-        animId = requestAnimationFrame(animate);
+        const isMobile = window.matchMedia('(max-width: 768px)').matches
+        const ffCount = isMobile ? 3 : 8
+        const leafCount = isMobile ? 2 : 7
+        for (let i = 0; i < ffCount; i++) fireflies.push(new Firefly())
+        for (let i = 0; i < leafCount; i++) leaves.push(new MapleLeaf())
+        window.__particles = { fireflies, leaves, W: () => W, H: () => H }
+
+        let mouseX = -999,
+          mouseY = -999
+        let canvasRect = canvas.getBoundingClientRect()
+        let parallaxPending = false
+
+        const updateCanvasRect = () => {
+          canvasRect = canvas.getBoundingClientRect()
+        }
+
+        const titleChars = document.querySelectorAll('.editorial-char')
+        const onMouseMove = (e) => {
+          mouseX = e.clientX - canvasRect.left
+          mouseY = e.clientY - canvasRect.top
+          if (!parallaxPending) {
+            parallaxPending = true
+            requestAnimationFrame(() => {
+              const bgMedia = document.querySelector('.bg-media')
+              if (bgMedia) {
+                const px = (e.clientX / window.innerWidth - 0.5) * -12
+                const py = (e.clientY / window.innerHeight - 0.5) * -12
+                bgMedia.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) scale(1.04)`
+              }
+              const gl = document.getElementById('cursor-glow')
+              if (gl) {
+                gl.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`
+                gl.style.opacity = '1'
+              }
+              titleChars.forEach((el) => {
+                const depth = parseFloat(el.getAttribute('data-depth')) || 0
+                const dx = (e.clientX / window.innerWidth - 0.5) * -28 * depth
+                const dy = (e.clientY / window.innerHeight - 0.5) * -20 * depth
+                el.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`
+                el.style.transition = 'none'
+              })
+              parallaxPending = false
+            })
+          }
+        }
+        const onMouseLeave = () => {
+          mouseX = -999
+          mouseY = -999
+          const gl = document.getElementById('cursor-glow')
+          if (gl) gl.style.opacity = '0'
+          titleChars.forEach((el) => {
+            el.style.transform = 'translate3d(0, 0, 0)'
+            el.style.transition = 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)'
+          })
+        }
+
+        document.addEventListener('mousemove', onMouseMove, { passive: true })
+        document.addEventListener('mouseleave', onMouseLeave)
+
+        function animate() {
+          if (!particlesRunning) return
+          ctx.clearRect(0, 0, W, H)
+          fireflies.forEach((f) => {
+            f.update()
+            f.draw()
+          })
+          leaves.forEach((l) => {
+            l.update()
+            l.draw()
+          })
+          animId = requestAnimationFrame(animate)
+        }
+
+        const startParticles = () => {
+          if (particlesRunning || document.hidden) return
+          particlesRunning = true
+          animate()
+        }
+
+        const stopParticles = () => {
+          particlesRunning = false
+          cancelAnimationFrame(animId)
+          animId = 0
+        }
+
+        const syncParticleVisibility = () => {
+          if (document.hidden) stopParticles()
+          else startParticles()
+        }
+
+        const onResize = () => {
+          resize()
+          updateCanvasRect()
+        }
+        window.addEventListener('resize', onResize, { passive: true })
+        document.addEventListener('visibilitychange', syncParticleVisibility)
+        resize()
+        startParticles()
+
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            stopParticles()
+            window.removeEventListener('resize', onResize)
+            document.removeEventListener('visibilitychange', syncParticleVisibility)
+            document.removeEventListener('mousemove', onMouseMove)
+            document.removeEventListener('mouseleave', onMouseLeave)
+          },
+          { once: true },
+        )
       }
-
-      const startParticles = () => {
-        if (particlesRunning || document.hidden) return;
-        particlesRunning = true;
-        animate();
-      };
-
-      const stopParticles = () => {
-        particlesRunning = false;
-        cancelAnimationFrame(animId);
-        animId = 0;
-      };
-
-      const syncParticleVisibility = () => {
-        if (document.hidden) stopParticles();
-        else startParticles();
-      };
-
-      const onResize = () => { resize(); updateCanvasRect(); };
-      window.addEventListener('resize', onResize, { passive: true });
-      document.addEventListener('visibilitychange', syncParticleVisibility);
-      resize();
-      startParticles();
-
-      document.addEventListener('astro:before-swap', () => {
-        stopParticles();
-        window.removeEventListener('resize', onResize);
-        document.removeEventListener('visibilitychange', syncParticleVisibility);
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseleave', onMouseLeave);
-      }, { once: true });
-    }
     } // end particle block
 
-    { // === random quote ===
-    const quotes = [
-      { text: '山不让尘，川不辞盈。', author: '张华' },
-      { text: '身在无间，心在桃源。', author: '墨香铜臭' },
-      { text: '明月松间照，清泉石上流。', author: '王维' },
-      { text: '行到水穷处，坐看云起时。', author: '王维' },
-      { text: '空山不见人，但闻人语响。', author: '王维' },
-      { text: '晚来天欲雪，能饮一杯无？', author: '白居易' },
-      { text: '浮生若梦，为欢几何。', author: '李白' },
-      { text: '此心安处是吾乡。', author: '苏轼' },
-      { text: '人生如逆旅，我亦是行人。', author: '苏轼' },
-      { text: '醉后不知天在水，满船清梦压星河。', author: '唐温如' },
-      { text: '山中何事？松花酿酒，春水煎茶。', author: '张可久' },
-      { text: '且将新火试新茶，诗酒趁年华。', author: '苏轼' },
-      { text: '我见青山多妩媚，料青山见我应如是。', author: '辛弃疾' },
-      { text: '欲买桂花同载酒，终不似，少年游。', author: '刘过' },
-    ];
-    const q = quotes[Math.floor(Math.random() * quotes.length)];
-    const tel = document.getElementById('quote-text');
-    const ael = document.getElementById('quote-author');
-    if (tel) tel.textContent = '「' + q.text + '」';
-    if (ael) ael.textContent = '— ' + q.author;
+    {
+      // === random quote ===
+      const quotes = [
+        { text: '山不让尘，川不辞盈。', author: '张华' },
+        { text: '身在无间，心在桃源。', author: '墨香铜臭' },
+        { text: '明月松间照，清泉石上流。', author: '王维' },
+        { text: '行到水穷处，坐看云起时。', author: '王维' },
+        { text: '空山不见人，但闻人语响。', author: '王维' },
+        { text: '晚来天欲雪，能饮一杯无？', author: '白居易' },
+        { text: '浮生若梦，为欢几何。', author: '李白' },
+        { text: '此心安处是吾乡。', author: '苏轼' },
+        { text: '人生如逆旅，我亦是行人。', author: '苏轼' },
+        { text: '醉后不知天在水，满船清梦压星河。', author: '唐温如' },
+        { text: '山中何事？松花酿酒，春水煎茶。', author: '张可久' },
+        { text: '且将新火试新茶，诗酒趁年华。', author: '苏轼' },
+        { text: '我见青山多妩媚，料青山见我应如是。', author: '辛弃疾' },
+        { text: '欲买桂花同载酒，终不似，少年游。', author: '刘过' },
+      ]
+      const q = quotes[Math.floor(Math.random() * quotes.length)]
+      const tel = document.getElementById('quote-text')
+      const ael = document.getElementById('quote-author')
+      if (tel) tel.textContent = '「' + q.text + '」'
+      if (ael) ael.textContent = '— ' + q.author
     } // end quote block
 
-    { // === enter transition with particle scatter ===
-    const btn = document.getElementById('enter-btn');
-    const root = document.getElementById('entrance-root');
-    const particles = window.__particles;
-    if (btn && root) {
-      const doEnter = (e) => {
-        if (e) e.preventDefault();
-        const href = btn.getAttribute('href');
-        if (!href) return;
+    {
+      // === enter transition with particle scatter ===
+      const btn = document.getElementById('enter-btn')
+      const root = document.getElementById('entrance-root')
+      const particles = window.__particles
+      if (btn && root) {
+        const doEnter = (e) => {
+          if (e) e.preventDefault()
+          const href = btn.getAttribute('href')
+          if (!href) return
 
-        if (reduceMotion) {
-          location.href = href;
-          return;
+          if (reduceMotion) {
+            location.href = href
+            return
+          }
+
+          root.classList.add('is-leaving')
+
+          // Scatter all particles outward
+          if (particles) {
+            particles.scattering = true
+            const { fireflies, leaves } = particles
+            fireflies.forEach((f) => {
+              const angle = Math.random() * Math.PI * 2
+              const speed = 4 + Math.random() * 8
+              f.vx = Math.cos(angle) * speed
+              f.vy = Math.sin(angle) * speed - 3
+            })
+            leaves.forEach((l) => {
+              const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2
+              const speed = 5 + Math.random() * 10
+              l.vx = Math.cos(angle) * speed
+              l.vy = Math.sin(angle) * speed
+            })
+          }
+
+          document.removeEventListener('keydown', onKeyDown)
+          setTimeout(() => {
+            location.href = href
+          }, 560)
         }
-
-        root.classList.add('is-leaving');
-
-        // Scatter all particles outward
-        if (particles) {
-          particles.scattering = true;
-          const { fireflies, leaves } = particles;
-          fireflies.forEach(f => {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 4 + Math.random() * 8;
-            f.vx = Math.cos(angle) * speed;
-            f.vy = Math.sin(angle) * speed - 3;
-          });
-          leaves.forEach(l => {
-            const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
-            const speed = 5 + Math.random() * 10;
-            l.vx = Math.cos(angle) * speed;
-            l.vy = Math.sin(angle) * speed;
-          });
+        const onKeyDown = (e) => {
+          if (e.key !== 'Enter' || document.activeElement !== btn) return
+          e.preventDefault()
+          doEnter(e)
         }
-
-        document.removeEventListener('keydown', onKeyDown);
-        setTimeout(() => { location.href = href; }, 560);
-      };
-      const onKeyDown = (e) => {
-        if (e.key !== 'Enter' || document.activeElement !== btn) return;
-        e.preventDefault();
-        doEnter(e);
-      };
-      btn.addEventListener('click', doEnter);
-      document.addEventListener('keydown', onKeyDown);
-      document.addEventListener('astro:before-swap', () => {
-        btn.removeEventListener('click', doEnter);
-        document.removeEventListener('keydown', onKeyDown);
-      }, { once: true });
-    }
+        btn.addEventListener('click', doEnter)
+        document.addEventListener('keydown', onKeyDown)
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            btn.removeEventListener('click', doEnter)
+            document.removeEventListener('keydown', onKeyDown)
+          },
+          { once: true },
+        )
+      }
     } // end transition block
 
-    { // === scroll parallax on entry bg ===
-    const bgMedia = document.querySelector('.bg-media');
-    if (bgMedia && !reduceMotion) {
-      let ticking = false;
-      const onScroll = () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            const y = window.scrollY;
-            bgMedia.style.transform = `translateY(${(y * 0.15).toFixed(1)}px) scale(1.04)`;
-            ticking = false;
-          });
-          ticking = true;
+    {
+      // === scroll parallax on entry bg ===
+      const bgMedia = document.querySelector('.bg-media')
+      if (bgMedia && !reduceMotion) {
+        let ticking = false
+        const onScroll = () => {
+          if (!ticking) {
+            requestAnimationFrame(() => {
+              const y = window.scrollY
+              bgMedia.style.transform = `translateY(${(y * 0.15).toFixed(1)}px) scale(1.04)`
+              ticking = false
+            })
+            ticking = true
+          }
         }
-      };
-      window.addEventListener('scroll', onScroll, { passive: true });
-      document.addEventListener('astro:before-swap', () => {
-        window.removeEventListener('scroll', onScroll);
-      }, { once: true });
-    }
+        window.addEventListener('scroll', onScroll, { passive: true })
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            window.removeEventListener('scroll', onScroll)
+          },
+          { once: true },
+        )
+      }
     } // end scroll parallax
 
-    { // === click ripple on entrance ===
-    const root = document.getElementById('entrance-root');
-    if (root && !reduceMotion) {
-      const onRootClick = (e) => {
-        if (e.target.closest('a, button, .enter-btn')) return;
-        const ripple = document.createElement('div');
-        const size = 120 + Math.random() * 80;
-        ripple.style.cssText = `position:absolute;left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px;border-radius:50%;pointer-events:none;z-index:6;background:radial-gradient(circle,rgba(200,182,142,0.10) 0%,transparent 70%);transform:translate(-50%,-50%) scale(0);opacity:1;`;
-        root.appendChild(ripple);
-        const anim = ripple.animate([
-          { transform: 'translate(-50%,-50%) scale(0)', opacity: 0.6 },
-          { transform: 'translate(-50%,-50%) scale(1.5)', opacity: 0 },
-        ], { duration: 800, easing: 'cubic-bezier(0.16,1,0.3,1)' });
-        anim.onfinish = () => ripple.remove();
-      };
+    {
+      // === click ripple on entrance ===
+      const root = document.getElementById('entrance-root')
+      if (root && !reduceMotion) {
+        const onRootClick = (e) => {
+          if (e.target.closest('a, button, .enter-btn')) return
+          const ripple = document.createElement('div')
+          const size = 120 + Math.random() * 80
+          ripple.style.cssText = `position:absolute;left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px;border-radius:50%;pointer-events:none;z-index:6;background:radial-gradient(circle,rgba(200,182,142,0.10) 0%,transparent 70%);transform:translate(-50%,-50%) scale(0);opacity:1;`
+          root.appendChild(ripple)
+          const anim = ripple.animate(
+            [
+              { transform: 'translate(-50%,-50%) scale(0)', opacity: 0.6 },
+              { transform: 'translate(-50%,-50%) scale(1.5)', opacity: 0 },
+            ],
+            { duration: 800, easing: 'cubic-bezier(0.16,1,0.3,1)' },
+          )
+          anim.onfinish = () => ripple.remove()
+        }
 
-      root.addEventListener('click', onRootClick);
-      document.addEventListener('astro:before-swap', () => {
-        root.removeEventListener('click', onRootClick);
-      }, { once: true });
-    }
+        root.addEventListener('click', onRootClick)
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            root.removeEventListener('click', onRootClick)
+          },
+          { once: true },
+        )
+      }
     } // end click ripple
-
   </script>
 </BaseLayout>
 
@@ -493,10 +605,11 @@ const latestPost = sortedPosts[0];
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background-color: #070A13;
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                filter 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #070a13;
+    transition:
+      opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+      filter 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .entrance-container.is-leaving {
@@ -508,7 +621,7 @@ const latestPost = sortedPosts[0];
 
   .entrance-container::before,
   .entrance-container::after {
-    content: "";
+    content: '';
     position: absolute;
     pointer-events: none;
   }
@@ -517,10 +630,26 @@ const latestPost = sortedPosts[0];
     inset: 0;
     z-index: 4;
     background:
-      linear-gradient(90deg, rgba(5,7,13,0.58) 0%, rgba(5,7,13,0.18) 42%, rgba(5,7,13,0.22) 100%),
-      linear-gradient(155deg, rgba(236, 244, 255, 0.08) 0%, transparent 34%, rgba(166, 82, 48, 0.04) 72%, transparent 100%),
-      radial-gradient(ellipse 48% 42% at 50% 48%, transparent 0 42%, rgba(3,5,10,0.20) 78%, rgba(3,5,10,0.42) 100%),
-      radial-gradient(ellipse 50% 44% at 24% 58%, rgba(122,149,175,0.07), transparent 70%);
+      linear-gradient(
+        90deg,
+        rgba(5, 7, 13, 0.58) 0%,
+        rgba(5, 7, 13, 0.18) 42%,
+        rgba(5, 7, 13, 0.22) 100%
+      ),
+      linear-gradient(
+        155deg,
+        rgba(236, 244, 255, 0.08) 0%,
+        transparent 34%,
+        rgba(166, 82, 48, 0.04) 72%,
+        transparent 100%
+      ),
+      radial-gradient(
+        ellipse 48% 42% at 50% 48%,
+        transparent 0 42%,
+        rgba(3, 5, 10, 0.2) 78%,
+        rgba(3, 5, 10, 0.42) 100%
+      ),
+      radial-gradient(ellipse 50% 44% at 24% 58%, rgba(122, 149, 175, 0.07), transparent 70%);
   }
 
   .entrance-container::after {
@@ -529,19 +658,28 @@ const latestPost = sortedPosts[0];
     width: 100%;
     height: 82%;
     background:
-      radial-gradient(ellipse 72% 24% at 50% 100%, rgba(185, 116, 66, 0.10), transparent 62%),
-      linear-gradient(to top,
-        rgba(5,7,13,0.72) 0%,
-        rgba(5,7,13,0.38) 32%,
-        rgba(5,7,13,0.12) 62%,
-        transparent 100%);
+      radial-gradient(ellipse 72% 24% at 50% 100%, rgba(185, 116, 66, 0.1), transparent 62%),
+      linear-gradient(
+        to top,
+        rgba(5, 7, 13, 0.72) 0%,
+        rgba(5, 7, 13, 0.38) 32%,
+        rgba(5, 7, 13, 0.12) 62%,
+        transparent 100%
+      );
     z-index: 5;
   }
 
-  .bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+  .bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
 
   .bg-layer::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -551,7 +689,9 @@ const latestPost = sortedPosts[0];
   }
 
   .bg-media {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     opacity: 0.56;
     filter: saturate(0.92) brightness(1.04) contrast(1.02);
     transform: scale(1.025);
@@ -560,28 +700,44 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes bootVeil {
-    0% { opacity: 0.88; }
-    45% { opacity: 0.72; }
-    100% { opacity: 0; }
+    0% {
+      opacity: 0.88;
+    }
+    45% {
+      opacity: 0.72;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 
   @keyframes bootMediaWake {
-    0% { filter: saturate(0.55) brightness(0.62) contrast(1.08); }
-    100% { filter: saturate(0.92) brightness(1.04) contrast(1.02); }
+    0% {
+      filter: saturate(0.55) brightness(0.62) contrast(1.08);
+    }
+    100% {
+      filter: saturate(0.92) brightness(1.04) contrast(1.02);
+    }
   }
 
   .particle-canvas {
-    position: absolute; inset: 0; z-index: 2;
-    width: 100%; height: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
   }
 
   .fog-veil {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
     background:
       radial-gradient(ellipse 42% 34% at 50% 48%, rgba(220, 236, 255, 0.045), transparent 58%),
-      radial-gradient(ellipse 54% 44% at 30% 58%, transparent 36%, rgba(7,10,19,0.20) 74%),
-      radial-gradient(ellipse 80% 74% at 50% 45%, transparent 36%, rgba(7,10,19,0.54) 100%);
+      radial-gradient(ellipse 54% 44% at 30% 58%, transparent 36%, rgba(7, 10, 19, 0.2) 74%),
+      radial-gradient(ellipse 80% 74% at 50% 45%, transparent 36%, rgba(7, 10, 19, 0.54) 100%);
   }
 
   .entrance-scene {
@@ -635,7 +791,13 @@ const latestPost = sortedPosts[0];
     left: 7vw;
     width: 1px;
     height: 62vh;
-    background: linear-gradient(to bottom, transparent, rgba(214, 232, 248, 0.12) 18%, rgba(218, 158, 92, 0.08) 54%, transparent);
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(214, 232, 248, 0.12) 18%,
+      rgba(218, 158, 92, 0.08) 54%,
+      transparent
+    );
     opacity: 0.72;
     transform: rotate(7deg);
     transform-origin: 50% 50%;
@@ -661,7 +823,12 @@ const latestPost = sortedPosts[0];
     width: 520px;
     height: 520px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(122, 149, 175, 0.045) 0%, rgba(160, 140, 100, 0.018) 38%, transparent 70%);
+    background: radial-gradient(
+      circle,
+      rgba(122, 149, 175, 0.045) 0%,
+      rgba(160, 140, 100, 0.018) 38%,
+      transparent 70%
+    );
     pointer-events: none;
     z-index: 3;
     transform: translate3d(-999px, -999px, 0) translate(-50%, -50%);
@@ -680,30 +847,55 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes sceneOrbitDrift {
-    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 0.58; }
-    50% { transform: translate3d(-18px, 10px, 0) rotate(8deg) scale(1.035); opacity: 0.86; }
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+      opacity: 0.58;
+    }
+    50% {
+      transform: translate3d(-18px, 10px, 0) rotate(8deg) scale(1.035);
+      opacity: 0.86;
+    }
   }
 
   @keyframes sceneSpineBreathe {
-    0%, 100% { opacity: 0.42; transform: rotate(7deg) scaleY(0.96); }
-    50% { opacity: 0.78; transform: rotate(7deg) scaleY(1.04); }
+    0%,
+    100% {
+      opacity: 0.42;
+      transform: rotate(7deg) scaleY(0.96);
+    }
+    50% {
+      opacity: 0.78;
+      transform: rotate(7deg) scaleY(1.04);
+    }
   }
 
   @keyframes sceneLightBreathe {
-    0%, 100% { opacity: 0.48; transform: translate3d(0, 0, 0) scale(1); }
-    50% { opacity: 0.78; transform: translate3d(-16px, 18px, 0) scale(1.06); }
+    0%,
+    100% {
+      opacity: 0.48;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      opacity: 0.78;
+      transform: translate3d(-16px, 18px, 0) scale(1.06);
+    }
   }
 
   .content-layer {
-    position: relative; z-index: 10;
-    display: flex; flex-direction: column; align-items: center; text-align: center;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     width: min(86vw, 680px);
     margin-top: 2vh;
     isolation: isolate;
   }
 
   .content-layer::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: -90px -120px -72px;
     z-index: -2;
@@ -711,7 +903,7 @@ const latestPost = sortedPosts[0];
     border-radius: 50%;
     background:
       radial-gradient(ellipse at 50% 38%, rgba(245, 250, 255, 0.115), transparent 34%),
-      radial-gradient(ellipse at 50% 60%, rgba(122, 149, 175, 0.070), transparent 58%),
+      radial-gradient(ellipse at 50% 60%, rgba(122, 149, 175, 0.07), transparent 58%),
       radial-gradient(ellipse at 54% 84%, rgba(190, 120, 72, 0.055), transparent 72%);
     filter: blur(18px);
     opacity: 0.86;
@@ -719,7 +911,7 @@ const latestPost = sortedPosts[0];
   }
 
   .content-layer::after {
-    content: "";
+    content: '';
     position: absolute;
     left: 50%;
     top: 51%;
@@ -727,14 +919,27 @@ const latestPost = sortedPosts[0];
     height: 1px;
     z-index: -1;
     pointer-events: none;
-    background: linear-gradient(90deg, transparent, rgba(210, 230, 245, 0.12), rgba(220, 170, 104, 0.08), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(210, 230, 245, 0.12),
+      rgba(220, 170, 104, 0.08),
+      transparent
+    );
     transform: translateX(-50%);
     opacity: 0.62;
   }
 
   @keyframes contentAuraBreathe {
-    0%, 100% { opacity: 0.64; transform: scale(0.98); }
-    50% { opacity: 0.94; transform: scale(1.04); }
+    0%,
+    100% {
+      opacity: 0.64;
+      transform: scale(0.98);
+    }
+    50% {
+      opacity: 0.94;
+      transform: scale(1.04);
+    }
   }
 
   /* ── Ink bloom ambient light spots ── */
@@ -755,26 +960,53 @@ const latestPost = sortedPosts[0];
   }
 
   .ink-bloom--a {
-    width: 240px; height: 170px;
-    top: 12%; left: 10%;
-    background: radial-gradient(ellipse, rgba(122, 149, 175, 0.08) 0%, rgba(200, 182, 142, 0.026) 48%, transparent 72%);
+    width: 240px;
+    height: 170px;
+    top: 12%;
+    left: 10%;
+    background: radial-gradient(
+      ellipse,
+      rgba(122, 149, 175, 0.08) 0%,
+      rgba(200, 182, 142, 0.026) 48%,
+      transparent 72%
+    );
     --drift-dur: 18s;
     animation-delay: 1.8s;
   }
 
   .ink-bloom--b {
-    width: 280px; height: 210px;
-    top: 34%; right: 6%;
-    background: radial-gradient(ellipse, rgba(140, 150, 180, 0.07) 0%, rgba(160, 140, 100, 0.018) 42%, transparent 72%);
+    width: 280px;
+    height: 210px;
+    top: 34%;
+    right: 6%;
+    background: radial-gradient(
+      ellipse,
+      rgba(140, 150, 180, 0.07) 0%,
+      rgba(160, 140, 100, 0.018) 42%,
+      transparent 72%
+    );
     --drift-dur: 21s;
     animation-delay: 0s;
   }
 
   @keyframes bloomDrift {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
-    25% { transform: translate(40px, -18px) scale(1.08); opacity: 0.55; }
-    50% { transform: translate(-15px, -30px) scale(0.92); opacity: 0.30; }
-    75% { transform: translate(-35px, 10px) scale(1.05); opacity: 0.50; }
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.35;
+    }
+    25% {
+      transform: translate(40px, -18px) scale(1.08);
+      opacity: 0.55;
+    }
+    50% {
+      transform: translate(-15px, -30px) scale(0.92);
+      opacity: 0.3;
+    }
+    75% {
+      transform: translate(-35px, 10px) scale(1.05);
+      opacity: 0.5;
+    }
   }
 
   /* ── Maple glass boot mark ── */
@@ -793,7 +1025,7 @@ const latestPost = sortedPosts[0];
 
   .maple-boot-icon::before,
   .maple-boot-icon::after {
-    content: "";
+    content: '';
     position: absolute;
     pointer-events: none;
   }
@@ -803,7 +1035,7 @@ const latestPost = sortedPosts[0];
     z-index: -1;
     border-radius: 50%;
     background:
-      radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.30), transparent 34%),
+      radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.3), transparent 34%),
       radial-gradient(ellipse at 50% 56%, rgba(190, 220, 244, 0.11), transparent 58%),
       radial-gradient(ellipse at 54% 70%, rgba(174, 71, 42, 0.08), transparent 72%);
     filter: blur(24px);
@@ -813,8 +1045,31 @@ const latestPost = sortedPosts[0];
 
   .maple-boot-icon::after {
     inset: 0 20px 14px;
-    background: linear-gradient(118deg, transparent 16%, rgba(255, 255, 255, 0.64) 38%, rgba(255, 255, 255, 0.18) 46%, transparent 60%);
-    clip-path: polygon(48% 0, 60% 26%, 92% 18%, 72% 44%, 100% 52%, 68% 60%, 82% 88%, 54% 72%, 48% 100%, 42% 72%, 14% 88%, 28% 60%, 0 52%, 28% 44%, 8% 18%, 40% 26%);
+    background: linear-gradient(
+      118deg,
+      transparent 16%,
+      rgba(255, 255, 255, 0.64) 38%,
+      rgba(255, 255, 255, 0.18) 46%,
+      transparent 60%
+    );
+    clip-path: polygon(
+      48% 0,
+      60% 26%,
+      92% 18%,
+      72% 44%,
+      100% 52%,
+      68% 60%,
+      82% 88%,
+      54% 72%,
+      48% 100%,
+      42% 72%,
+      14% 88%,
+      28% 60%,
+      0 52%,
+      28% 44%,
+      8% 18%,
+      40% 26%
+    );
     opacity: 0;
     transform: translateX(-38%);
     animation: mapleGlassSheen 2.55s 0.46s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -829,10 +1084,8 @@ const latestPost = sortedPosts[0];
     stroke: rgba(255, 255, 255, 0.42);
     stroke-width: 1.15;
     stroke-linejoin: round;
-    filter:
-      drop-shadow(0 0 16px rgba(255, 255, 255, 0.16))
-      drop-shadow(0 0 28px rgba(183, 214, 238, 0.12))
-      drop-shadow(0 12px 24px rgba(0, 0, 0, 0.32));
+    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.16))
+      drop-shadow(0 0 28px rgba(183, 214, 238, 0.12)) drop-shadow(0 12px 24px rgba(0, 0, 0, 0.32));
   }
 
   .maple-vein {
@@ -845,22 +1098,56 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes mapleBootReveal {
-    0% { opacity: 0; filter: blur(26px) brightness(1.65); transform: translateY(12px) scale(0.76); }
-    18% { opacity: 1; filter: blur(5px) brightness(1.2); transform: translateY(0) scale(1.06); }
-    62% { opacity: 1; filter: blur(0) brightness(1.02); transform: translateY(0) scale(1); }
-    100% { opacity: 0; filter: blur(20px) brightness(1.16); transform: translateY(-10px) scale(0.9); }
+    0% {
+      opacity: 0;
+      filter: blur(26px) brightness(1.65);
+      transform: translateY(12px) scale(0.76);
+    }
+    18% {
+      opacity: 1;
+      filter: blur(5px) brightness(1.2);
+      transform: translateY(0) scale(1.06);
+    }
+    62% {
+      opacity: 1;
+      filter: blur(0) brightness(1.02);
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      filter: blur(20px) brightness(1.16);
+      transform: translateY(-10px) scale(0.9);
+    }
   }
 
   @keyframes mapleHaloWake {
-    0% { opacity: 0; transform: scale(0.72); }
-    44% { opacity: 0.74; transform: scale(1.08); }
-    100% { opacity: 0; transform: scale(1.26); }
+    0% {
+      opacity: 0;
+      transform: scale(0.72);
+    }
+    44% {
+      opacity: 0.74;
+      transform: scale(1.08);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.26);
+    }
   }
 
   @keyframes mapleGlassSheen {
-    0%, 22% { opacity: 0; transform: translateX(-42%); }
-    48% { opacity: 0.62; }
-    100% { opacity: 0; transform: translateX(34%); }
+    0%,
+    22% {
+      opacity: 0;
+      transform: translateX(-42%);
+    }
+    48% {
+      opacity: 0.62;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(34%);
+    }
   }
 
   /* ── Editorial stagger reveal title ── */
@@ -873,43 +1160,66 @@ const latestPost = sortedPosts[0];
   }
 
   .editorial-title::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 52%;
     left: 50%;
     width: 420px;
     height: 250px;
     background:
-      radial-gradient(ellipse at 50% 46%, rgba(245, 248, 255, 0.115) 0%, rgba(122, 149, 175, 0.052) 38%, transparent 72%),
-      radial-gradient(ellipse at 60% 70%, rgba(200, 182, 142, 0.050), transparent 66%);
+      radial-gradient(
+        ellipse at 50% 46%,
+        rgba(245, 248, 255, 0.115) 0%,
+        rgba(122, 149, 175, 0.052) 38%,
+        transparent 72%
+      ),
+      radial-gradient(ellipse at 60% 70%, rgba(200, 182, 142, 0.05), transparent 66%);
     transform: translate(-50%, -50%);
     z-index: -1;
     pointer-events: none;
-    animation: bootTitleAura 2.45s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both, titleGlow 9s 2.7s ease-in-out infinite;
+    animation:
+      bootTitleAura 2.45s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both,
+      titleGlow 9s 2.7s ease-in-out infinite;
   }
 
   @keyframes bootTitleAura {
-    0% { opacity: 0; filter: blur(18px); transform: translate(-50%, -50%) scale(0.92); }
-    100% { opacity: 0.48; filter: blur(0); transform: translate(-50%, -50%) scale(0.98); }
+    0% {
+      opacity: 0;
+      filter: blur(18px);
+      transform: translate(-50%, -50%) scale(0.92);
+    }
+    100% {
+      opacity: 0.48;
+      filter: blur(0);
+      transform: translate(-50%, -50%) scale(0.98);
+    }
   }
 
   @keyframes titleGlow {
-    0%, 100% { opacity: 0.42; transform: translate(-50%, -50%) scale(0.98); }
-    50% { opacity: 0.72; transform: translate(-50%, -50%) scale(1.06); }
+    0%,
+    100% {
+      opacity: 0.42;
+      transform: translate(-50%, -50%) scale(0.98);
+    }
+    50% {
+      opacity: 0.72;
+      transform: translate(-50%, -50%) scale(1.06);
+    }
   }
 
   .editorial-chars {
     display: flex;
     align-items: baseline;
     gap: 0.035em;
-    font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", var(--font-serif), serif;
+    font-family:
+      'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', var(--font-serif), serif;
     font-size: clamp(4.25rem, 9.35vw, 7rem);
     font-weight: 600;
     letter-spacing: 0.035em;
     color: rgba(250, 250, 249, 0.92);
     line-height: 1.02;
     font-optical-sizing: auto;
-    font-variation-settings: "wght" 600;
+    font-variation-settings: 'wght' 600;
   }
 
   .handwriting-title {
@@ -931,13 +1241,14 @@ const latestPost = sortedPosts[0];
     display: flex;
     justify-content: center;
     gap: 0.035em;
-    font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", var(--font-serif), serif;
+    font-family:
+      'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', var(--font-serif), serif;
     font-size: clamp(4.25rem, 9.35vw, 7rem);
     font-weight: 600;
     letter-spacing: 0.055em;
     line-height: 1.02;
     font-optical-sizing: auto;
-    font-variation-settings: "wght" 600;
+    font-variation-settings: 'wght' 600;
   }
 
   .handwriting-char {
@@ -956,31 +1267,65 @@ const latestPost = sortedPosts[0];
     text-shadow:
       0 0 12px rgba(255, 255, 255, 0.18),
       0 0 26px rgba(150, 178, 208, 0.14),
-      0 12px 30px rgba(0, 0, 0, 0.30);
+      0 12px 30px rgba(0, 0, 0, 0.3);
     animation: handwritingPieceWake 0.42s var(--delay) cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .handwriting-char--trace .handwriting-piece {
-    color: rgba(236, 245, 252, 0.70);
+    color: rgba(236, 245, 252, 0.7);
   }
 
-  .handwriting-piece--mo-1 { clip-path: inset(0 0 76% 0); }
-  .handwriting-piece--mo-2 { clip-path: inset(16% 36% 52% 34%); }
-  .handwriting-piece--mo-3 { clip-path: inset(24% 8% 48% 8%); }
-  .handwriting-piece--mo-4 { clip-path: inset(36% 12% 38% 12%); }
-  .handwriting-piece--mo-5 { clip-path: inset(48% 18% 30% 18%); }
-  .handwriting-piece--mo-6 { clip-path: inset(56% 0 18% 0); }
-  .handwriting-piece--mo-7 { clip-path: inset(64% 40% 0 40%); }
-  .handwriting-piece--mo-8 { clip-path: inset(76% 0 8% 0); }
-  .handwriting-piece--mo-9 { clip-path: inset(84% 6% 0 6%); }
-  .handwriting-piece--ji-1 { clip-path: inset(0 66% 62% 0); }
-  .handwriting-piece--ji-2 { clip-path: inset(28% 70% 24% 0); }
-  .handwriting-piece--ji-3 { clip-path: inset(70% 54% 0 0); }
-  .handwriting-piece--ji-4 { clip-path: inset(0 0 64% 36%); }
-  .handwriting-piece--ji-5 { clip-path: inset(28% 0 50% 34%); }
-  .handwriting-piece--ji-6 { clip-path: inset(30% 18% 16% 52%); }
-  .handwriting-piece--ji-7 { clip-path: inset(52% 2% 26% 34%); }
-  .handwriting-piece--ji-8 { clip-path: inset(74% 0 0 0); }
+  .handwriting-piece--mo-1 {
+    clip-path: inset(0 0 76% 0);
+  }
+  .handwriting-piece--mo-2 {
+    clip-path: inset(16% 36% 52% 34%);
+  }
+  .handwriting-piece--mo-3 {
+    clip-path: inset(24% 8% 48% 8%);
+  }
+  .handwriting-piece--mo-4 {
+    clip-path: inset(36% 12% 38% 12%);
+  }
+  .handwriting-piece--mo-5 {
+    clip-path: inset(48% 18% 30% 18%);
+  }
+  .handwriting-piece--mo-6 {
+    clip-path: inset(56% 0 18% 0);
+  }
+  .handwriting-piece--mo-7 {
+    clip-path: inset(64% 40% 0 40%);
+  }
+  .handwriting-piece--mo-8 {
+    clip-path: inset(76% 0 8% 0);
+  }
+  .handwriting-piece--mo-9 {
+    clip-path: inset(84% 6% 0 6%);
+  }
+  .handwriting-piece--ji-1 {
+    clip-path: inset(0 66% 62% 0);
+  }
+  .handwriting-piece--ji-2 {
+    clip-path: inset(28% 70% 24% 0);
+  }
+  .handwriting-piece--ji-3 {
+    clip-path: inset(70% 54% 0 0);
+  }
+  .handwriting-piece--ji-4 {
+    clip-path: inset(0 0 64% 36%);
+  }
+  .handwriting-piece--ji-5 {
+    clip-path: inset(28% 0 50% 34%);
+  }
+  .handwriting-piece--ji-6 {
+    clip-path: inset(30% 18% 16% 52%);
+  }
+  .handwriting-piece--ji-7 {
+    clip-path: inset(52% 2% 26% 34%);
+  }
+  .handwriting-piece--ji-8 {
+    clip-path: inset(74% 0 0 0);
+  }
 
   .editorial-char {
     --glyph-core: rgba(255, 255, 252, 0.98);
@@ -994,9 +1339,20 @@ const latestPost = sortedPosts[0];
     background:
       radial-gradient(ellipse at 48% 38%, rgba(255, 255, 255, 0.96) 0 16%, transparent 48%),
       radial-gradient(ellipse at 42% 62%, var(--glyph-ink) 0 14%, transparent 46%),
-      linear-gradient(172deg, rgba(255, 255, 255, 0.98) 0%, var(--glyph-cool) 48%, rgba(233, 224, 198, 0.82) 100%);
-    background-size: 128% 128%, 150% 150%, 100% 100%;
-    background-position: 48% 38%, 42% 62%, center;
+      linear-gradient(
+        172deg,
+        rgba(255, 255, 255, 0.98) 0%,
+        var(--glyph-cool) 48%,
+        rgba(233, 224, 198, 0.82) 100%
+      );
+    background-size:
+      128% 128%,
+      150% 150%,
+      100% 100%;
+    background-position:
+      48% 38%,
+      42% 62%,
+      center;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1014,7 +1370,7 @@ const latestPost = sortedPosts[0];
   .editorial-char--ink {
     --glyph-core: rgba(255, 255, 252, 1);
     --glyph-cool: rgba(196, 219, 236, 0.84);
-    --glyph-ink: rgba(42, 60, 78, 0.60);
+    --glyph-ink: rgba(42, 60, 78, 0.6);
     --glyph-warm: rgba(186, 164, 124, 0.12);
     font-size: 1.04em;
     transform-origin: 56% 64%;
@@ -1022,7 +1378,7 @@ const latestPost = sortedPosts[0];
 
   .editorial-char--trace {
     --glyph-core: rgba(252, 248, 236, 0.96);
-    --glyph-cool: rgba(214, 224, 235, 0.70);
+    --glyph-cool: rgba(214, 224, 235, 0.7);
     --glyph-ink: rgba(95, 104, 118, 0.34);
     --glyph-warm: rgba(232, 199, 138, 0.24);
     margin-left: -0.015em;
@@ -1041,7 +1397,7 @@ const latestPost = sortedPosts[0];
 
   .editorial-char::before,
   .editorial-char::after {
-    content: "";
+    content: '';
     position: absolute;
     pointer-events: none;
   }
@@ -1063,7 +1419,7 @@ const latestPost = sortedPosts[0];
     inset: 8% -5% 10%;
     z-index: 1;
     background:
-      radial-gradient(ellipse at 72% 22%, rgba(232, 199, 138, 0.20), transparent 18%),
+      radial-gradient(ellipse at 72% 22%, rgba(232, 199, 138, 0.2), transparent 18%),
       linear-gradient(110deg, transparent 16%, rgba(255, 255, 255, 0.24) 44%, transparent 58%),
       repeating-linear-gradient(90deg, transparent 0 16px, rgba(218, 234, 246, 0.04) 16px 17px);
     mix-blend-mode: screen;
@@ -1075,14 +1431,14 @@ const latestPost = sortedPosts[0];
   .editorial-char--ink::after {
     background:
       radial-gradient(ellipse at 32% 74%, rgba(110, 144, 178, 0.18), transparent 20%),
-      linear-gradient(112deg, transparent 18%, rgba(255, 255, 255, 0.20) 42%, transparent 56%),
+      linear-gradient(112deg, transparent 18%, rgba(255, 255, 255, 0.2) 42%, transparent 56%),
       repeating-linear-gradient(90deg, transparent 0 17px, rgba(218, 234, 246, 0.035) 17px 18px);
   }
 
   .editorial-char--trace::after {
     inset: 4% -18% 6% -2%;
     background:
-      radial-gradient(ellipse at 76% 18%, rgba(232, 199, 138, 0.30), transparent 16%),
+      radial-gradient(ellipse at 76% 18%, rgba(232, 199, 138, 0.3), transparent 16%),
       linear-gradient(122deg, transparent 10%, rgba(255, 246, 218, 0.28) 42%, transparent 58%);
   }
 
@@ -1099,7 +1455,14 @@ const latestPost = sortedPosts[0];
     width: 0;
     height: 1px;
     background:
-      linear-gradient(90deg, transparent, rgba(122, 149, 175, 0.50) 28%, rgba(229, 199, 134, 0.34) 52%, rgba(122, 149, 175, 0.20) 72%, transparent),
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(122, 149, 175, 0.5) 28%,
+        rgba(229, 199, 134, 0.34) 52%,
+        rgba(122, 149, 175, 0.2) 72%,
+        transparent
+      ),
       radial-gradient(circle, rgba(255, 255, 255, 0.36), transparent 62%);
     margin-bottom: 1.05rem;
     box-shadow: 0 0 18px rgba(200, 182, 142, 0.08);
@@ -1107,15 +1470,35 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes handwritingLayerWake {
-    0% { opacity: 0; filter: blur(12px) brightness(1.35); }
-    18% { opacity: 1; filter: blur(4px) brightness(1.18); }
-    70% { opacity: 0.88; filter: blur(0) brightness(1.06); }
-    100% { opacity: 0; filter: blur(10px) brightness(1.16); }
+    0% {
+      opacity: 0;
+      filter: blur(12px) brightness(1.35);
+    }
+    18% {
+      opacity: 1;
+      filter: blur(4px) brightness(1.18);
+    }
+    70% {
+      opacity: 0.88;
+      filter: blur(0) brightness(1.06);
+    }
+    100% {
+      opacity: 0;
+      filter: blur(10px) brightness(1.16);
+    }
   }
 
   @keyframes handwritingPieceWake {
-    0% { opacity: 0; filter: blur(10px) brightness(1.28); transform: translateY(6px) scale(0.98); }
-    100% { opacity: 1; filter: blur(0) brightness(1); transform: none; }
+    0% {
+      opacity: 0;
+      filter: blur(10px) brightness(1.28);
+      transform: translateY(6px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0) brightness(1);
+      transform: none;
+    }
   }
 
   @keyframes bootGlyphWake {
@@ -1149,26 +1532,56 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes inkBloomWake {
-    0% { opacity: 0; filter: blur(40px); transform: scale(0.48); }
-    48% { opacity: 0.70; filter: blur(28px); transform: scale(1.14); }
-    100% { opacity: 0.32; filter: blur(24px); transform: scale(1); }
+    0% {
+      opacity: 0;
+      filter: blur(40px);
+      transform: scale(0.48);
+    }
+    48% {
+      opacity: 0.7;
+      filter: blur(28px);
+      transform: scale(1.14);
+    }
+    100% {
+      opacity: 0.32;
+      filter: blur(24px);
+      transform: scale(1);
+    }
   }
 
   @keyframes inkTraceWake {
-    0% { opacity: 0; transform: translateX(-46%) skewX(-8deg); }
-    34% { opacity: 0.34; }
-    100% { opacity: 0.08; transform: translateX(22%) skewX(-8deg); }
+    0% {
+      opacity: 0;
+      transform: translateX(-46%) skewX(-8deg);
+    }
+    34% {
+      opacity: 0.34;
+    }
+    100% {
+      opacity: 0.08;
+      transform: translateX(22%) skewX(-8deg);
+    }
   }
 
   @keyframes inkWashDrift {
-    0%, 100% {
-      background-position: 48% 38%, 42% 62%, center;
+    0%,
+    100% {
+      background-position:
+        48% 38%,
+        42% 62%,
+        center;
     }
     45% {
-      background-position: 52% 34%, 49% 67%, center;
+      background-position:
+        52% 34%,
+        49% 67%,
+        center;
     }
     72% {
-      background-position: 45% 44%, 38% 56%, center;
+      background-position:
+        45% 44%,
+        38% 56%,
+        center;
     }
   }
 
@@ -1181,7 +1594,9 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes lineExpand {
-    to { width: 96px; }
+    to {
+      width: 96px;
+    }
   }
 
   .subtitle {
@@ -1234,36 +1649,60 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* ── Enter button ── */
   .enter-btn {
     position: relative;
-    display: inline-flex; align-items: center; justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-width: 198px;
     padding: 0.96rem 3.2rem;
     overflow: hidden;
-    font-size: 0.76rem; letter-spacing: 0.24em;
-    text-decoration: none; text-transform: uppercase; font-weight: 700;
-    color: rgba(250, 250, 249, 0.90);
-    border: 1px solid rgba(200,182,142,0.24); border-radius: 100px; cursor: pointer; outline: none;
-    transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.36s cubic-bezier(0.16, 1, 0.3, 1), background 0.36s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.36s cubic-bezier(0.16, 1, 0.3, 1), color 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+    font-size: 0.76rem;
+    letter-spacing: 0.24em;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: rgba(250, 250, 249, 0.9);
+    border: 1px solid rgba(200, 182, 142, 0.24);
+    border-radius: 100px;
+    cursor: pointer;
+    outline: none;
+    transition:
+      transform 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+      background 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+      color 0.36s cubic-bezier(0.16, 1, 0.3, 1);
     background:
-      radial-gradient(circle at 50% -20%, rgba(200,182,142,0.20), transparent 42%),
-      linear-gradient(135deg, rgba(10,16,24,0.82), rgba(16,27,40,0.42) 52%, rgba(7,12,18,0.70));
+      radial-gradient(circle at 50% -20%, rgba(200, 182, 142, 0.2), transparent 42%),
+      linear-gradient(
+        135deg,
+        rgba(10, 16, 24, 0.82),
+        rgba(16, 27, 40, 0.42) 52%,
+        rgba(7, 12, 18, 0.7)
+      );
     box-shadow:
-      0 18px 44px rgba(0,0,0,0.34),
-      0 0 30px rgba(122,149,175,0.10),
-      inset 0 1px 0 rgba(255,255,255,0.12),
-      inset 0 -18px 36px rgba(0,0,0,0.20),
-      inset 0 0 18px rgba(200,182,142,0.045);
+      0 18px 44px rgba(0, 0, 0, 0.34),
+      0 0 30px rgba(122, 149, 175, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -18px 36px rgba(0, 0, 0, 0.2),
+      inset 0 0 18px rgba(200, 182, 142, 0.045);
   }
 
   .enter-btn::before,
   .enter-btn::after {
-    content: "";
+    content: '';
     position: absolute;
     pointer-events: none;
   }
@@ -1271,7 +1710,13 @@ const latestPost = sortedPosts[0];
   .enter-btn::before {
     inset: -1px;
     border-radius: inherit;
-    background: linear-gradient(115deg, transparent 18%, rgba(255,255,255,0.18) 42%, rgba(200,182,142,0.16) 50%, transparent 68%);
+    background: linear-gradient(
+      115deg,
+      transparent 18%,
+      rgba(255, 255, 255, 0.18) 42%,
+      rgba(200, 182, 142, 0.16) 50%,
+      transparent 68%
+    );
     opacity: 0;
     transform: translateX(-54%) scaleX(0.22);
     animation: enterSheen 5.8s 3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
@@ -1282,60 +1727,72 @@ const latestPost = sortedPosts[0];
     bottom: 0.48rem;
     width: 56px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(200,182,142,0.48), transparent);
+    background: linear-gradient(90deg, transparent, rgba(200, 182, 142, 0.48), transparent);
     transform: translateX(-50%) scaleX(0.62);
     opacity: 0.58;
-    transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+    transition:
+      transform 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .btn-glass-overlay {
-    position: absolute; inset: 0; z-index: 0;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
     border-radius: 100px;
     background:
-      radial-gradient(circle at var(--btn-x, 50%) 0%, rgba(122,149,175,0.20), transparent 46%),
-      linear-gradient(90deg, transparent, rgba(200,182,142,0.11), transparent);
+      radial-gradient(circle at var(--btn-x, 50%) 0%, rgba(122, 149, 175, 0.2), transparent 46%),
+      linear-gradient(90deg, transparent, rgba(200, 182, 142, 0.11), transparent);
     opacity: 0.28;
-    transition: opacity 0.35s ease; pointer-events: none;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
   }
 
   .btn-text {
     position: relative;
     z-index: 10;
-    text-shadow: 0 0 18px rgba(200,182,142,0.20);
+    text-shadow: 0 0 18px rgba(200, 182, 142, 0.2);
   }
 
   .btn-text::before,
   .btn-text::after {
-    content: "";
+    content: '';
     display: inline-block;
     width: 18px;
     height: 1px;
     margin: 0 0.9rem 0.22em;
     vertical-align: middle;
-    background: linear-gradient(90deg, transparent, rgba(200,182,142,0.46));
+    background: linear-gradient(90deg, transparent, rgba(200, 182, 142, 0.46));
     opacity: 0.72;
-    transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+    transition:
+      transform 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .btn-text::after {
-    background: linear-gradient(90deg, rgba(200,182,142,0.46), transparent);
+    background: linear-gradient(90deg, rgba(200, 182, 142, 0.46), transparent);
   }
 
   .enter-btn:hover,
   .enter-btn:focus-visible {
-    color: rgba(255,255,255,0.96);
+    color: rgba(255, 255, 255, 0.96);
     transform: translateY(-3px);
-    border-color: rgba(200,182,142,0.42);
+    border-color: rgba(200, 182, 142, 0.42);
     background:
-      radial-gradient(circle at 50% -18%, rgba(200,182,142,0.30), transparent 45%),
-      linear-gradient(135deg, rgba(12,19,28,0.90), rgba(21,34,50,0.52) 52%, rgba(8,13,20,0.78));
+      radial-gradient(circle at 50% -18%, rgba(200, 182, 142, 0.3), transparent 45%),
+      linear-gradient(
+        135deg,
+        rgba(12, 19, 28, 0.9),
+        rgba(21, 34, 50, 0.52) 52%,
+        rgba(8, 13, 20, 0.78)
+      );
     box-shadow:
-      0 24px 54px rgba(0,0,0,0.42),
-      0 0 34px rgba(122,149,175,0.16),
-      0 0 18px rgba(200,182,142,0.08),
-      inset 0 1px 0 rgba(255,255,255,0.15),
-      inset 0 -18px 36px rgba(0,0,0,0.18),
-      inset 0 0 24px rgba(200,182,142,0.07);
+      0 24px 54px rgba(0, 0, 0, 0.42),
+      0 0 34px rgba(122, 149, 175, 0.16),
+      0 0 18px rgba(200, 182, 142, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -18px 36px rgba(0, 0, 0, 0.18),
+      inset 0 0 24px rgba(200, 182, 142, 0.07);
   }
 
   .enter-btn:hover::after,
@@ -1362,12 +1819,13 @@ const latestPost = sortedPosts[0];
   }
 
   .enter-btn:focus-visible {
-    outline: 2px solid rgba(200,182,142,0.36);
+    outline: 2px solid rgba(200, 182, 142, 0.36);
     outline-offset: 5px;
   }
 
   .enter-btn:active {
-    transform: translateY(0) scale(0.98); transition: transform 0.1s ease-out;
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.1s ease-out;
   }
 
   .atmosphere-btn {
@@ -1376,29 +1834,39 @@ const latestPost = sortedPosts[0];
     justify-content: center;
     margin-top: 0.9rem;
     padding: 0.58rem 1.1rem;
-    border: 1px solid rgba(226,238,248,0.10);
+    border: 1px solid rgba(226, 238, 248, 0.1);
     border-radius: 999px;
-    background: linear-gradient(135deg, rgba(122,149,175,0.08), rgba(6,10,18,0.22));
-    color: rgba(214,218,225,0.68);
+    background: linear-gradient(135deg, rgba(122, 149, 175, 0.08), rgba(6, 10, 18, 0.22));
+    color: rgba(214, 218, 225, 0.68);
     font-family: var(--font-serif);
     font-size: 0.78rem;
     letter-spacing: 0.08em;
     cursor: pointer;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 12px 30px rgba(0,0,0,0.22);
-    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.32s, color 0.32s, background 0.32s, box-shadow 0.32s;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 12px 30px rgba(0, 0, 0, 0.22);
+    transition:
+      transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.32s,
+      color 0.32s,
+      background 0.32s,
+      box-shadow 0.32s;
   }
 
   .atmosphere-btn:hover,
   .atmosphere-btn:focus-visible {
     transform: translateY(-2px);
-    border-color: rgba(200,182,142,0.30);
-    background: linear-gradient(135deg, rgba(200,182,142,0.11), rgba(122,149,175,0.08));
-    color: rgba(250,250,249,0.90);
-    box-shadow: 0 18px 44px rgba(0,0,0,0.32), 0 0 26px rgba(200,182,142,0.10), inset 0 1px 0 rgba(255,255,255,0.08);
+    border-color: rgba(200, 182, 142, 0.3);
+    background: linear-gradient(135deg, rgba(200, 182, 142, 0.11), rgba(122, 149, 175, 0.08));
+    color: rgba(250, 250, 249, 0.9);
+    box-shadow:
+      0 18px 44px rgba(0, 0, 0, 0.32),
+      0 0 26px rgba(200, 182, 142, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .atmosphere-btn:focus-visible {
-    outline: 2px solid rgba(200,182,142,0.36);
+    outline: 2px solid rgba(200, 182, 142, 0.36);
     outline-offset: 4px;
   }
 
@@ -1407,9 +1875,19 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes enterSheen {
-    0%, 54% { transform: translateX(-58%); opacity: 0; }
-    66% { opacity: 0.38; }
-    82%, 100% { transform: translateX(58%); opacity: 0; }
+    0%,
+    54% {
+      transform: translateX(-58%);
+      opacity: 0;
+    }
+    66% {
+      opacity: 0.38;
+    }
+    82%,
+    100% {
+      transform: translateX(58%);
+      opacity: 0;
+    }
   }
 
   /* ── Right decorative accent ── */
@@ -1423,19 +1901,27 @@ const latestPost = sortedPosts[0];
     gap: 12px;
     pointer-events: none;
     opacity: 0;
-    animation: rightAccentWake 0.8s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both, accentBreathe 7s 2.4s ease-in-out infinite;
+    animation:
+      rightAccentWake 0.8s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both,
+      accentBreathe 7s 2.4s ease-in-out infinite;
   }
 
   .right-accent-line {
     width: 1px;
     height: 118px;
-    background: linear-gradient(to bottom, transparent, rgba(210, 230, 245, 0.16) 24%, rgba(202, 150, 90, 0.09) 56%, transparent);
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(210, 230, 245, 0.16) 24%,
+      rgba(202, 150, 90, 0.09) 56%,
+      transparent
+    );
     box-shadow: 0 0 18px rgba(122, 149, 175, 0.08);
   }
 
   .right-accent-line--mid {
     height: 74px;
-    background: linear-gradient(to bottom, transparent, rgba(122, 149, 175, 0.10), transparent);
+    background: linear-gradient(to bottom, transparent, rgba(122, 149, 175, 0.1), transparent);
   }
 
   .right-accent-line--short {
@@ -1444,13 +1930,26 @@ const latestPost = sortedPosts[0];
   }
 
   @keyframes rightAccentWake {
-    from { opacity: 0; transform: translateY(calc(-50% + 12px)); }
-    to { opacity: 1; transform: translateY(-50%); }
+    from {
+      opacity: 0;
+      transform: translateY(calc(-50% + 12px));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-50%);
+    }
   }
 
   @keyframes accentBreathe {
-    0%, 100% { opacity: 0.48; filter: blur(0); }
-    50% { opacity: 0.86; filter: blur(0.2px); }
+    0%,
+    100% {
+      opacity: 0.48;
+      filter: blur(0);
+    }
+    50% {
+      opacity: 0.86;
+      filter: blur(0.2px);
+    }
   }
 
   /* ── Bottom quote ── */
@@ -1468,13 +1967,19 @@ const latestPost = sortedPosts[0];
   }
 
   .bottom-quote::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 50%;
     width: min(340px, 72vw);
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(122, 149, 175, 0.22), rgba(200, 182, 142, 0.14), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(122, 149, 175, 0.22),
+      rgba(200, 182, 142, 0.14),
+      transparent
+    );
     transform: translateX(-50%);
     opacity: 0.82;
     box-shadow: 0 0 18px rgba(122, 149, 175, 0.07);
@@ -1483,7 +1988,7 @@ const latestPost = sortedPosts[0];
   .quote-text {
     font-family: var(--font-serif);
     font-size: 0.88rem;
-    color: rgba(190, 199, 210, 0.50);
+    color: rgba(190, 199, 210, 0.5);
     letter-spacing: 0.11em;
     line-height: 1.7;
     margin: 0;
@@ -1492,24 +1997,32 @@ const latestPost = sortedPosts[0];
 
   .quote-author {
     font-size: 0.7rem;
-    color: rgba(190, 199, 210, 0.30);
+    color: rgba(190, 199, 210, 0.3);
     margin: 0.35rem 0 0;
     letter-spacing: 0.08em;
   }
 
   /* ── Shared animations ── */
   .blur-reveal {
-    opacity: 0; filter: blur(12px); transform: translateY(20px);
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(20px);
     animation: blurFadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  .subtitle { animation-delay: 0.6s; }
+  .subtitle {
+    animation-delay: 0.6s;
+  }
   .enter-btn {
     animation: bootDoorWake 1.55s 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   @keyframes blurFadeIn {
-    to { opacity: 1; filter: blur(0); transform: translateY(0); }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
   }
 
   @keyframes bootDoorWake {
@@ -1517,51 +2030,71 @@ const latestPost = sortedPosts[0];
       opacity: 0;
       filter: blur(10px);
       transform: translateY(10px);
-      border-color: rgba(200,182,142,0.05);
-      color: rgba(250,250,249,0);
+      border-color: rgba(200, 182, 142, 0.05);
+      color: rgba(250, 250, 249, 0);
     }
     58% {
       opacity: 1;
       filter: blur(2px);
       transform: translateY(0);
-      border-color: rgba(200,182,142,0.38);
-      color: rgba(250,250,249,0.26);
+      border-color: rgba(200, 182, 142, 0.38);
+      color: rgba(250, 250, 249, 0.26);
       box-shadow:
-        0 0 30px rgba(200,182,142,0.12),
-        0 0 42px rgba(122,149,175,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.12);
+        0 0 30px rgba(200, 182, 142, 0.12),
+        0 0 42px rgba(122, 149, 175, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
     }
     100% {
       opacity: 1;
       filter: blur(0);
       transform: translateY(0);
-      color: rgba(250,250,249,0.90);
+      color: rgba(250, 250, 249, 0.9);
     }
   }
 
   /* ── Time-aware color temperature ── */
-  [data-time="morning"] .cursor-glow {
-    background: radial-gradient(circle, rgba(190, 170, 125, 0.06) 0%, rgba(170, 155, 110, 0.022) 35%, transparent 70%);
+  [data-time='morning'] .cursor-glow {
+    background: radial-gradient(
+      circle,
+      rgba(190, 170, 125, 0.06) 0%,
+      rgba(170, 155, 110, 0.022) 35%,
+      transparent 70%
+    );
   }
-  [data-time="morning"] .editorial-title::before {
+  [data-time='morning'] .editorial-title::before {
     background: radial-gradient(ellipse, rgba(200, 185, 150, 0.09) 0%, transparent 70%);
   }
 
-  [data-time="afternoon"] .cursor-glow {
-    background: radial-gradient(circle, rgba(200, 180, 130, 0.055) 0%, rgba(180, 160, 120, 0.02) 35%, transparent 70%);
+  [data-time='afternoon'] .cursor-glow {
+    background: radial-gradient(
+      circle,
+      rgba(200, 180, 130, 0.055) 0%,
+      rgba(180, 160, 120, 0.02) 35%,
+      transparent 70%
+    );
   }
 
-  [data-time="evening"] .cursor-glow {
-    background: radial-gradient(circle, rgba(170, 140, 105, 0.07) 0%, rgba(150, 125, 90, 0.028) 35%, transparent 70%);
+  [data-time='evening'] .cursor-glow {
+    background: radial-gradient(
+      circle,
+      rgba(170, 140, 105, 0.07) 0%,
+      rgba(150, 125, 90, 0.028) 35%,
+      transparent 70%
+    );
   }
-  [data-time="evening"] .editorial-title::before {
+  [data-time='evening'] .editorial-title::before {
     background: radial-gradient(ellipse, rgba(210, 170, 120, 0.12) 0%, transparent 70%);
   }
 
-  [data-time="night"] .cursor-glow {
-    background: radial-gradient(circle, rgba(140, 145, 170, 0.055) 0%, rgba(120, 135, 160, 0.02) 35%, transparent 70%);
+  [data-time='night'] .cursor-glow {
+    background: radial-gradient(
+      circle,
+      rgba(140, 145, 170, 0.055) 0%,
+      rgba(120, 135, 160, 0.02) 35%,
+      transparent 70%
+    );
   }
-  [data-time="night"] .editorial-title::before {
+  [data-time='night'] .editorial-title::before {
     background: radial-gradient(ellipse, rgba(150, 155, 180, 0.08) 0%, transparent 70%);
   }
 
@@ -1683,48 +2216,122 @@ const latestPost = sortedPosts[0];
   }
 
   @media (max-width: 768px) {
-    .editorial-chars { font-size: clamp(3.2rem, 12.5vw, 4.4rem); letter-spacing: 0.035em; gap: 0.015em; }
-    .maple-boot-icon { width: 90px; height: 90px; margin-bottom: 1.45rem; }
-    .maple-boot-icon::before { inset: -16px; filter: blur(17px); }
-    .maple-boot-icon::after { inset: 0 15px 10px; }
-    .maple-glyph { width: 70px; height: 70px; }
-    .handwriting-title { width: min(300px, 82vw); transform: translate(-50%, -40%); }
-    .handwriting-piece { font-size: 0.92em; }
-    .editorial-char::before { inset: -4% -12% 0; filter: blur(16px); opacity: 0.24; }
-    .editorial-char::after { inset: 14% 2% 14%; opacity: 0.07; }
-    .content-layer { width: min(88vw, 440px); margin-top: 2vh; }
-    .content-layer::before { inset: -62px -52px -56px; filter: blur(14px); opacity: 0.58; }
-    .content-layer::after { width: 80vw; opacity: 0.34; }
-    .entrance-orbit--cold { width: 86vw; right: -52vw; top: 8vh; opacity: 0.32; }
-    .entrance-orbit--warm { width: 72vw; left: -48vw; bottom: 9vh; opacity: 0.26; }
-    .entrance-spine { display: none; }
-    .entrance-corner-light { right: -36vw; top: -18vh; width: 88vw; height: 88vw; opacity: 0.34; filter: blur(28px); }
-    .bottom-quote { bottom: 0.95rem; width: min(86vw, 420px); padding-top: 0.65rem; }
-    .bottom-quote::before { width: min(250px, 64vw); opacity: 0.52; }
-    .right-accent { display: none; }
+    .editorial-chars {
+      font-size: clamp(3.2rem, 12.5vw, 4.4rem);
+      letter-spacing: 0.035em;
+      gap: 0.015em;
+    }
+    .maple-boot-icon {
+      width: 90px;
+      height: 90px;
+      margin-bottom: 1.45rem;
+    }
+    .maple-boot-icon::before {
+      inset: -16px;
+      filter: blur(17px);
+    }
+    .maple-boot-icon::after {
+      inset: 0 15px 10px;
+    }
+    .maple-glyph {
+      width: 70px;
+      height: 70px;
+    }
+    .handwriting-title {
+      width: min(300px, 82vw);
+      transform: translate(-50%, -40%);
+    }
+    .handwriting-piece {
+      font-size: 0.92em;
+    }
+    .editorial-char::before {
+      inset: -4% -12% 0;
+      filter: blur(16px);
+      opacity: 0.24;
+    }
+    .editorial-char::after {
+      inset: 14% 2% 14%;
+      opacity: 0.07;
+    }
+    .content-layer {
+      width: min(88vw, 440px);
+      margin-top: 2vh;
+    }
+    .content-layer::before {
+      inset: -62px -52px -56px;
+      filter: blur(14px);
+      opacity: 0.58;
+    }
+    .content-layer::after {
+      width: 80vw;
+      opacity: 0.34;
+    }
+    .entrance-orbit--cold {
+      width: 86vw;
+      right: -52vw;
+      top: 8vh;
+      opacity: 0.32;
+    }
+    .entrance-orbit--warm {
+      width: 72vw;
+      left: -48vw;
+      bottom: 9vh;
+      opacity: 0.26;
+    }
+    .entrance-spine {
+      display: none;
+    }
+    .entrance-corner-light {
+      right: -36vw;
+      top: -18vh;
+      width: 88vw;
+      height: 88vw;
+      opacity: 0.34;
+      filter: blur(28px);
+    }
+    .bottom-quote {
+      bottom: 0.95rem;
+      width: min(86vw, 420px);
+      padding-top: 0.65rem;
+    }
+    .bottom-quote::before {
+      width: min(250px, 64vw);
+      opacity: 0.52;
+    }
+    .right-accent {
+      display: none;
+    }
     .recent-update {
       width: min(88vw, 360px);
       font-size: 0.7rem;
     }
-    .quote-text { font-size: 0.75rem; }
+    .quote-text {
+      font-size: 0.75rem;
+    }
     .enter-btn {
       padding: 0.78rem 2.1rem;
       backdrop-filter: none;
       box-shadow:
-        0 12px 24px rgba(0,0,0,0.24),
-        inset 0 1px 0 rgba(255,255,255,0.055),
-        0 0 14px rgba(122,149,175,0.05);
+        0 12px 24px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.055),
+        0 0 14px rgba(122, 149, 175, 0.05);
     }
     .enter-btn:hover,
     .enter-btn:focus-visible {
-      box-shadow: 0 14px 28px rgba(0,0,0,0.28), 0 0 16px rgba(122,149,175,0.08);
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.28),
+        0 0 16px rgba(122, 149, 175, 0.08);
     }
-    .btn-glass-overlay { display: none; }
-    .bg-media { opacity: 0.48; }
+    .btn-glass-overlay {
+      display: none;
+    }
+    .bg-media {
+      opacity: 0.48;
+    }
     .fog-veil {
       background:
-        radial-gradient(ellipse 70% 45% at 38% 44%, transparent 34%, rgba(7,10,19,0.24) 72%),
-        radial-gradient(ellipse 82% 72% at 50% 45%, transparent 34%, rgba(7,10,19,0.56) 100%);
+        radial-gradient(ellipse 70% 45% at 38% 44%, transparent 34%, rgba(7, 10, 19, 0.24) 72%),
+        radial-gradient(ellipse 82% 72% at 50% 45%, transparent 34%, rgba(7, 10, 19, 0.56) 100%);
     }
   }
 </style>

@@ -1,13 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
-const year = new Date().getFullYear();
-const base = import.meta.env.BASE_URL;
-const techDailyUrl = import.meta.env.PUBLIC_TECH_DAILY_URL?.trim() || 'https://ekegukeku64-blip.github.io/tech-daily/';
+import { getCollection } from 'astro:content'
+const year = new Date().getFullYear()
+const base = import.meta.env.BASE_URL
+const techDailyUrl =
+  import.meta.env.PUBLIC_TECH_DAILY_URL?.trim() || 'https://ekegukeku64-blip.github.io/tech-daily/'
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex)
 const recentPosts = allPosts
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+  .slice(0, 3)
 ---
 
 <footer class="mt-auto relative">
@@ -32,15 +33,60 @@ const recentPosts = allPosts
           导航
         </h3>
         <div class="flex flex-col gap-2">
-          <a href={`${base}home/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">首页</a>
-          <a href={`${base}blog/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">文章</a>
-          <a href={`${base}archive/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">归档</a>
-          <a href={`${base}tools/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">工具</a>
-          <a href={`${base}friends/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">友链</a>
-          <a href={`${base}about/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">关于</a>
-          <a href={`${base}privacy/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">隐私说明</a>
-          <a href={`${base}disclaimer/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">内容声明</a>
-          <a href={`${base}bookmarks/`} class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">我的收藏</a>
+          <a
+            href={`${base}home/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            首页
+          </a>
+          <a
+            href={`${base}blog/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            文章
+          </a>
+          <a
+            href={`${base}archive/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            归档
+          </a>
+          <a
+            href={`${base}tools/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            工具
+          </a>
+          <a
+            href={`${base}friends/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            友链
+          </a>
+          <a
+            href={`${base}about/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            关于
+          </a>
+          <a
+            href={`${base}privacy/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            隐私说明
+          </a>
+          <a
+            href={`${base}disclaimer/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            内容声明
+          </a>
+          <a
+            href={`${base}bookmarks/`}
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            我的收藏
+          </a>
         </div>
       </div>
 
@@ -51,9 +97,11 @@ const recentPosts = allPosts
           最近更新
         </h3>
         <div class="flex flex-col gap-3">
-          {recentPosts.map(post => (
+          {recentPosts.map((post) => (
             <a href={`${base}blog/${post.id}/`} class="group/post">
-              <p class="text-sm text-text-muted group-hover/post:text-accent transition-colors font-serif line-clamp-1">{post.data.title}</p>
+              <p class="text-sm text-text-muted group-hover/post:text-accent transition-colors font-serif line-clamp-1">
+                {post.data.title}
+              </p>
               <p class="text-[11px] text-text-muted/40 font-serif mt-0.5">
                 {post.data.pubDate.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
               </p>
@@ -69,9 +117,29 @@ const recentPosts = allPosts
           联系
         </h3>
         <div class="flex flex-col gap-2">
-          <a href="https://github.com/ekegukeku64-blip" target="_blank" rel="noopener" class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">GitHub</a>
-          <a href={`${base}rss.xml`} target="_blank" class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">RSS 订阅</a>
-          <a href={techDailyUrl} target="_blank" rel="noopener" class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block">技术日报</a>
+          <a
+            href="https://github.com/ekegukeku64-blip"
+            target="_blank"
+            rel="noopener"
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            GitHub
+          </a>
+          <a
+            href={`${base}rss.xml`}
+            target="_blank"
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            RSS 订阅
+          </a>
+          <a
+            href={techDailyUrl}
+            target="_blank"
+            rel="noopener"
+            class="text-sm text-text-muted hover:text-accent transition-all duration-300 font-serif hover:translate-x-1 inline-block"
+          >
+            技术日报
+          </a>
         </div>
       </div>
     </div>

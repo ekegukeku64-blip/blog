@@ -1,10 +1,10 @@
-import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
-import type { APIContext } from 'astro';
+import rss from '@astrojs/rss'
+import { getCollection } from 'astro:content'
+import type { APIContext } from 'astro'
 
 export async function GET(context: APIContext) {
-const posts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex);
-  const site = new URL(import.meta.env.BASE_URL, context.site!);
+  const posts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex)
+  const site = new URL(import.meta.env.BASE_URL, context.site!)
   return rss({
     title: '枫迹博客',
     description: '一个关于技术、设计与生活的博客',
@@ -19,5 +19,5 @@ const posts = await getCollection('posts', ({ data }) => !data.draft && !data.no
       })),
     stylesheet: `${import.meta.env.BASE_URL}rss-style.xsl`,
     customData: '<language>zh-CN</language>',
-  });
+  })
 }

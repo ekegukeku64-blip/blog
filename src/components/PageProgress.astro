@@ -18,79 +18,79 @@
 </div>
 
 <script is:inline>
-  (() => {
-    if (window.__pageProgressReady) return;
-    window.__pageProgressReady = true;
+  ;(() => {
+    if (window.__pageProgressReady) return
+    window.__pageProgressReady = true
 
-    const timers = new Set();
-    let active = false;
+    const timers = new Set()
+    let active = false
 
     const clearTimers = () => {
-      timers.forEach(clearTimeout);
-      timers.clear();
-    };
+      timers.forEach(clearTimeout)
+      timers.clear()
+    }
 
     const schedule = (callback, delay) => {
       const timer = setTimeout(() => {
-        timers.delete(timer);
-        callback();
-      }, delay);
-      timers.add(timer);
-    };
+        timers.delete(timer)
+        callback()
+      }, delay)
+      timers.add(timer)
+    }
 
     const getParts = () => ({
       track: document.getElementById('page-progress'),
       bar: document.getElementById('page-progress-bar'),
-    });
+    })
 
     const setProgress = (value) => {
-      const { track, bar } = getParts();
-      if (!track || !bar) return;
-      const progress = Math.max(0, Math.min(100, value));
-      bar.style.setProperty('--page-progress', String(progress / 100));
-      track.setAttribute('aria-valuenow', String(Math.round(progress)));
-    };
+      const { track, bar } = getParts()
+      if (!track || !bar) return
+      const progress = Math.max(0, Math.min(100, value))
+      bar.style.setProperty('--page-progress', String(progress / 100))
+      track.setAttribute('aria-valuenow', String(Math.round(progress)))
+    }
 
     const start = () => {
-      clearTimers();
-      active = true;
-      const { track, bar } = getParts();
-      if (!track || !bar) return;
+      clearTimers()
+      active = true
+      const { track, bar } = getParts()
+      if (!track || !bar) return
 
-      bar.classList.add('is-resetting');
-      setProgress(0);
-      track.classList.add('is-active');
-      track.setAttribute('aria-hidden', 'false');
+      bar.classList.add('is-resetting')
+      setProgress(0)
+      track.classList.add('is-active')
+      track.setAttribute('aria-hidden', 'false')
 
       requestAnimationFrame(() => {
-        bar.classList.remove('is-resetting');
-        setProgress(16);
-        schedule(() => setProgress(42), 120);
-        schedule(() => setProgress(64), 360);
-        schedule(() => setProgress(78), 760);
-      });
-    };
+        bar.classList.remove('is-resetting')
+        setProgress(16)
+        schedule(() => setProgress(42), 120)
+        schedule(() => setProgress(64), 360)
+        schedule(() => setProgress(78), 760)
+      })
+    }
 
     const complete = () => {
-      if (!active) return;
-      active = false;
-      clearTimers();
-      const { track, bar } = getParts();
-      if (!track || !bar) return;
+      if (!active) return
+      active = false
+      clearTimers()
+      const { track, bar } = getParts()
+      if (!track || !bar) return
 
-      setProgress(100);
-      schedule(() => track.classList.remove('is-active'), 180);
+      setProgress(100)
+      schedule(() => track.classList.remove('is-active'), 180)
       schedule(() => {
-        bar.classList.add('is-resetting');
-        setProgress(0);
-        track.setAttribute('aria-hidden', 'true');
-        requestAnimationFrame(() => bar.classList.remove('is-resetting'));
-      }, 500);
-    };
+        bar.classList.add('is-resetting')
+        setProgress(0)
+        track.setAttribute('aria-hidden', 'true')
+        requestAnimationFrame(() => bar.classList.remove('is-resetting'))
+      }, 500)
+    }
 
-    document.addEventListener('astro:before-preparation', start);
-    document.addEventListener('astro:page-load', complete);
-  })();
+    document.addEventListener('astro:before-preparation', start)
+    document.addEventListener('astro:page-load', complete)
+  })()
 </script>
 
 <style>
@@ -111,8 +111,15 @@
     overflow: hidden;
     transform: scaleX(var(--page-progress));
     transform-origin: left center;
-    background: linear-gradient(90deg, var(--color-accent), var(--color-warm), rgba(242, 246, 250, 0.92));
-    box-shadow: 0 0 14px rgba(122, 149, 175, 0.48), 0 0 26px rgba(200, 142, 82, 0.18);
+    background: linear-gradient(
+      90deg,
+      var(--color-accent),
+      var(--color-warm),
+      rgba(242, 246, 250, 0.92)
+    );
+    box-shadow:
+      0 0 14px rgba(122, 149, 175, 0.48),
+      0 0 26px rgba(200, 142, 82, 0.18);
     transition: transform 420ms var(--ease-emphasized);
     will-change: transform;
   }
@@ -131,8 +138,14 @@
   }
 
   @keyframes page-progress-breathe {
-    from { opacity: 0.42; transform: scaleX(0.72); }
-    to { opacity: 0.9; transform: scaleX(1); }
+    from {
+      opacity: 0.42;
+      transform: scaleX(0.72);
+    }
+    to {
+      opacity: 0.9;
+      transform: scaleX(1);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

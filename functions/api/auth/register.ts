@@ -1,7 +1,19 @@
 import { corsHeaders } from '../../_lib/cors'
 import { fail, json, readJsonBody, rejectUnknownKeys } from '../../_lib/http'
-import { cleanDisplayName, cleanEmail, cleanPassword, PASSWORD_MAX, PASSWORD_MIN } from '../../_lib/validate'
-import { hashPassword, iterationsFromEnv, newSalt, pepperFromEnv, toBase64 } from '../../_lib/password'
+import {
+  cleanDisplayName,
+  cleanEmail,
+  cleanPassword,
+  PASSWORD_MAX,
+  PASSWORD_MIN,
+} from '../../_lib/validate'
+import {
+  hashPassword,
+  iterationsFromEnv,
+  newSalt,
+  pepperFromEnv,
+  toBase64,
+} from '../../_lib/password'
 import { createSession, toPublicUser } from '../../_lib/auth'
 import { checkLimits, clientIp, purgeOldCounters, registerRules } from '../../_lib/ratelimit'
 import type { Ctx } from '../../_lib/types'

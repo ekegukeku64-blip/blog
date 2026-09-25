@@ -2,11 +2,7 @@
 
 export const MAX_BODY_BYTES = 8192
 
-export function json(
-  data: unknown,
-  status = 200,
-  headers: Record<string, string> = {},
-): Response {
+export function json(data: unknown, status = 200, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -19,7 +15,11 @@ export function json(
   })
 }
 
-export function fail(status: number, message: string, headers: Record<string, string> = {}): Response {
+export function fail(
+  status: number,
+  message: string,
+  headers: Record<string, string> = {},
+): Response {
   return json({ error: message }, status, headers)
 }
 
@@ -28,10 +28,12 @@ export function empty(status = 204, headers: Record<string, string> = {}): Respo
 }
 
 export type BodyResult =
-  | { ok: true; body: Record<string, unknown> }
-  | { ok: false; response: Response }
+  { ok: true; body: Record<string, unknown> } | { ok: false; response: Response }
 
-export async function readJsonBody(request: Request, headers: Record<string, string> = {}): Promise<BodyResult> {
+export async function readJsonBody(
+  request: Request,
+  headers: Record<string, string> = {},
+): Promise<BodyResult> {
   const declared = Number(request.headers.get('Content-Length') || '0')
   if (declared > MAX_BODY_BYTES) {
     return { ok: false, response: fail(413, '请求体过大', headers) }

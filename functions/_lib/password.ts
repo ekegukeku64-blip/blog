@@ -52,10 +52,7 @@ export function fromBase64(value: string): Uint8Array<ArrayBuffer> {
 }
 
 export function toBase64Url(bytes: Uint8Array): string {
-  return toBase64(bytes)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
+  return toBase64(bytes).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
 // Length-independent comparison, so a wrong token cannot be discovered byte by

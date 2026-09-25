@@ -30,6 +30,8 @@ document.documentElement.classList.add('js')
 document.documentElement.classList.add('dark')
 if (document.body) syncPageEntrance()
 // 清除旧版 ThemePicker 残留在 localStorage 的暖色
-try { localStorage.removeItem('accent_color') } catch (_) {}
+try {
+  localStorage.removeItem('accent_color')
+} catch (_) {}
 
 export {}

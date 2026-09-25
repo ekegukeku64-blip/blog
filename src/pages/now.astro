@@ -1,15 +1,26 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro'
 ---
 
 <BaseLayout title="此刻" description="我现在在做什么">
   <div class="max-w-2xl mx-auto px-6 py-16 md:py-24">
     <!-- Header -->
     <div class="mb-14 ink-reveal">
-      <span class="inline-block px-3 py-1 text-[11px] font-sans tracking-[0.28em] text-accent dark:text-dark-accent border border-accent/25 dark:border-dark-accent/25 mb-5 uppercase">Now</span>
-      <h1 class="font-display text-4xl md:text-5xl font-bold text-text dark:text-dark-text mb-3">此刻</h1>
+      <span class="inline-block px-3 py-1 text-[11px] font-sans tracking-[0.28em] text-accent dark:text-dark-accent border border-accent/25 dark:border-dark-accent/25 mb-5 uppercase">
+        Now
+      </span>
+      <h1 class="font-display text-4xl md:text-5xl font-bold text-text dark:text-dark-text mb-3">
+        此刻
+      </h1>
       <p class="text-text-muted dark:text-dark-text-muted font-serif text-sm leading-relaxed">
-        这是 <a href="https://nownownow.com/about" class="text-accent dark:text-dark-accent hover:underline">/now page</a>，一个告诉你我最近在做什么的页面。
+        这是{' '}
+        <a
+          href="https://nownownow.com/about"
+          class="text-accent dark:text-dark-accent hover:underline"
+        >
+          /now page
+        </a>
+        ，一个告诉你我最近在做什么的页面。
       </p>
     </div>
 
@@ -57,18 +68,37 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           常用工具
         </h2>
         <div class="flex flex-wrap gap-2">
-          {['Claude Code', 'Astro', 'VS Code', 'GitHub', 'Playwright', 'Python', 'Three.js', 'Figma'].map((t) => (
-            <span class="px-2.5 py-1 text-xs font-sans text-text-muted dark:text-dark-text-muted border border-border/30 dark:border-dark-border/30 rounded-full">{t}</span>
+          {[
+            'Claude Code',
+            'Astro',
+            'VS Code',
+            'GitHub',
+            'Playwright',
+            'Python',
+            'Three.js',
+            'Figma',
+          ].map((t) => (
+            <span class="px-2.5 py-1 text-xs font-sans text-text-muted dark:text-dark-text-muted border border-border/30 dark:border-dark-border/30 rounded-full">
+              {t}
+            </span>
           ))}
         </div>
       </section>
     </div>
 
     <!-- Footer note -->
-    <div class="mt-20 pt-8 border-t border-border/15 dark:border-dark-border/15 ink-reveal" style="animation-delay:0.4s">
+    <div
+      class="mt-20 pt-8 border-t border-border/15 dark:border-dark-border/15 ink-reveal"
+      style="animation-delay:0.4s"
+    >
       <p class="text-xs text-text-muted dark:text-dark-text-muted font-serif leading-relaxed">
-        最后更新：2026年6月。<br />
-        这个页面不定期更新，灵感来自 <a href="https://sive.rs/now" class="text-accent dark:text-dark-accent hover:underline">Derek Sivers</a>。
+        最后更新：2026年6月。
+        <br />
+        这个页面不定期更新，灵感来自{' '}
+        <a href="https://sive.rs/now" class="text-accent dark:text-dark-accent hover:underline">
+          Derek Sivers
+        </a>
+        。
       </p>
     </div>
   </div>

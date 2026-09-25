@@ -130,7 +130,8 @@ async function getAccessToken() {
     const detail = await response.text().catch(() => '')
     fail(
       `token exchange failed (HTTP ${response.status})`,
-      detail.slice(0, 300) || 'check that the service account still exists and the system clock is correct',
+      detail.slice(0, 300) ||
+        'check that the service account still exists and the system clock is correct',
     )
   }
 
@@ -187,6 +188,10 @@ for (const doc of documents) {
 }
 
 console.log(`\nwrote ${documents.length} document(s) to ${OUT_PATH}`)
-console.log(`statuses: ${Object.entries(statuses).map(([k, v]) => `${k}=${v}`).join(', ')}`)
+console.log(
+  `statuses: ${Object.entries(statuses)
+    .map(([k, v]) => `${k}=${v}`)
+    .join(', ')}`,
+)
 console.log('\nnext: npm run migrate:comments')
 console.log('then delete scripts/data/firebase-service-account.json - it is a live credential.')

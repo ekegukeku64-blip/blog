@@ -64,10 +64,10 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 
 当用户描述开发任务时，skill 会自动触发。触发词包括：
 
-| 语言 | 触发词 |
-|------|--------|
+| 语言 | 触发词                                                                                                                                     |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | 中文 | 帮我开发、实现这个功能、全自动开发、帮我写、帮我实现、帮我做一个、开发一个、做个项目、新建项目、帮我修复、帮我重构、帮我优化、帮我添加功能 |
-| 英文 | auto dev, auto develop, full auto, help me build, help me develop, help me implement, help me create, help me fix, help me refactor |
+| 英文 | auto dev, auto develop, full auto, help me build, help me develop, help me implement, help me create, help me fix, help me refactor        |
 
 ### 不触发的情况
 
@@ -84,6 +84,7 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 **目标**：了解项目是什么、用了什么技术。
 
 **检测内容**：
+
 - 项目类型（前端/后端/全栈/CLI/库）
 - 技术栈（TypeScript、Python、Go、Rust、Java 等）
 - 框架（Astro、Next.js、React、Vue、Django、Flask、Gin 等）
@@ -94,13 +95,13 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 
 **支持的技术栈**：
 
-| 生态 | 检测文件 | 支持的框架 |
-|------|----------|------------|
-| Node.js | package.json | React, Next.js, Astro, Vue, Svelte, Nuxt |
-| Python | pyproject.toml, requirements.txt | Django, Flask, FastAPI |
-| Go | go.mod | Gin, Echo, Fiber, Chi |
-| Rust | Cargo.toml | Actix, Axum |
-| Java | pom.xml, build.gradle | Spring Boot |
+| 生态    | 检测文件                         | 支持的框架                               |
+| ------- | -------------------------------- | ---------------------------------------- |
+| Node.js | package.json                     | React, Next.js, Astro, Vue, Svelte, Nuxt |
+| Python  | pyproject.toml, requirements.txt | Django, Flask, FastAPI                   |
+| Go      | go.mod                           | Gin, Echo, Fiber, Chi                    |
+| Rust    | Cargo.toml                       | Actix, Axum                              |
+| Java    | pom.xml, build.gradle            | Spring Boot                              |
 
 **输出**：项目概览表格
 
@@ -109,6 +110,7 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 **目标**：检查项目当前健康状态。
 
 **检查项**：
+
 - Git 状态（未提交更改、最近提交、合并冲突）
 - 依赖状态（node_modules、.venv、lock 文件）
 - 构建状态（运行构建命令）
@@ -124,6 +126,7 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 **目标**：为用户的任务制定实现计划。
 
 **步骤**：
+
 1. 分析用户需求，提取关键信息
 2. 读取 `.wolf/cerebrum.md` 了解项目约定（如果有）
 3. 生成实现计划
@@ -136,6 +139,7 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 **目标**：按照计划实现代码。
 
 **开发方式**：
+
 - 如果有测试框架：TDD 方式（RED → GREEN → IMPROVE）
 - 如果没有测试框架：直接实现，每步验证
 
@@ -148,6 +152,7 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 **目标**：验证实现是否正确。
 
 **验证项**：
+
 - 构建验证（编译无错误）
 - 测试验证（测试通过）
 - Lint 验证（无错误）
@@ -162,10 +167,12 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 **目标**：审查代码质量和安全性。
 
 **并行执行**：
+
 1. 代码质量审查 → 委托 `code-reviewer` agent
 2. 安全审查 → 委托 `security-reviewer` agent（安全敏感代码时）
 
 **安全敏感代码触发条件**：
+
 - 认证/授权逻辑
 - 用户输入处理
 - 数据库查询
@@ -174,6 +181,7 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 - 加密操作
 
 **严重级别**：
+
 - CRITICAL：必须修复才能继续
 - HIGH：应该修复
 - MEDIUM：建议修复
@@ -186,6 +194,7 @@ cp -r claude-code-skills/auto-dev ~/.claude/skills/
 **目标**：生成开发报告。
 
 **报告内容**：
+
 - 项目概览（技术栈、框架、项目类型）
 - 任务摘要（做了什么、为什么做）
 - 变更详情（修改/新增/删除的文件）
@@ -217,7 +226,7 @@ description: >-
 origin: community
 metadata:
   author: YannJY02
-  version: "1.0.0"
+  version: '1.0.0'
 ---
 ```
 
@@ -230,6 +239,7 @@ metadata:
 映射文件模式到技术栈，用于阶段 1 的自动检测。
 
 **核心映射**：
+
 - `package.json` → Node.js/TypeScript 生态
 - `pyproject.toml` → Python 生态
 - `go.mod` → Go 生态
@@ -237,6 +247,7 @@ metadata:
 - `pom.xml` / `build.gradle` → Java/Kotlin 生态
 
 **包管理器检测**：
+
 - `pnpm-lock.yaml` → pnpm
 - `yarn.lock` → yarn
 - `package-lock.json` → npm
@@ -246,6 +257,7 @@ metadata:
 按技术栈组织的检查命令，用于阶段 2 的自动诊断。
 
 **检查维度**：
+
 - Git 状态
 - 依赖状态
 - 构建状态
@@ -257,6 +269,7 @@ metadata:
 用于阶段 7 的自动报告生成。
 
 **报告结构**：
+
 1. 项目概览
 2. 任务摘要
 3. 变更详情
@@ -271,11 +284,13 @@ metadata:
 ### 示例 1：新功能开发
 
 **用户输入**：
+
 ```
 帮我给博客添加一个搜索功能
 ```
 
 **执行流程**：
+
 1. 检测：Astro v6 + Tailwind CSS + MDX
 2. 诊断：Git 干净、构建正常、无测试框架
 3. 规划：实现搜索组件 → 添加搜索索引 → 集成到布局
@@ -287,11 +302,13 @@ metadata:
 ### 示例 2：Bug 修复
 
 **用户输入**：
+
 ```
 帮我修复首页加载慢的问题
 ```
 
 **执行流程**：
+
 1. 检测：Next.js 15 + React
 2. 诊断：构建正常、测试 80% 通过
 3. 规划：分析性能瓶颈 → 优化图片 → 添加懒加载
@@ -303,11 +320,13 @@ metadata:
 ### 示例 3：重构
 
 **用户输入**：
+
 ```
 帮我重构 API 层，用仓储模式
 ```
 
 **执行流程**：
+
 1. 检测：Go + Chi router
 2. 诊断：Git 有未提交更改、测试全部通过
 3. 规划：定义接口 → 实现仓储 → 迁移调用方
@@ -320,13 +339,13 @@ metadata:
 
 ## 与其他 Skill 的关系
 
-| 组件 | 关系 |
-|------|------|
-| `code-check` | 互补。code-check 只检查问题，auto-dev 实现功能 |
-| `code-reviewer` agent | auto-dev 阶段 6 委托代码审查 |
-| `security-reviewer` agent | auto-dev 阶段 6 委托安全审查 |
-| `tdd-guide` agent | auto-dev 阶段 4 委托 TDD 指导 |
-| `prompt-optimizer` skill | 用户想要优化 prompt 时使用 |
+| 组件                      | 关系                                           |
+| ------------------------- | ---------------------------------------------- |
+| `code-check`              | 互补。code-check 只检查问题，auto-dev 实现功能 |
+| `code-reviewer` agent     | auto-dev 阶段 6 委托代码审查                   |
+| `security-reviewer` agent | auto-dev 阶段 6 委托安全审查                   |
+| `tdd-guide` agent         | auto-dev 阶段 4 委托 TDD 指导                  |
+| `prompt-optimizer` skill  | 用户想要优化 prompt 时使用                     |
 
 ---
 
@@ -342,6 +361,7 @@ metadata:
 ## OpenWolf 兼容性
 
 如果项目有 `.wolf/` 目录：
+
 1. 检测阶段读取 `.wolf/anatomy.md`
 2. 实现阶段读取 `.wolf/cerebrum.md`
 3. 完成后更新 `.wolf/memory.md`

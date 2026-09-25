@@ -1,9 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(npm run *)",
-      "Bash(git *)",
-      "Bash(node scripts/*)"
-    ]
+    "allow": ["Bash(npm run *)", "Bash(git *)", "Bash(node scripts/*)"]
   }
 }

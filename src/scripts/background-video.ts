@@ -32,13 +32,17 @@ if (!isEntrancePage && gv && poster) {
         gv.src = bgVideoSrc
         gv.load()
       }
-      gv.play().then(() => {
-        poster.style.display = 'none'
-        gv.style.display = ''
-      }).catch(() => {})
+      gv.play()
+        .then(() => {
+          poster.style.display = 'none'
+          gv.style.display = ''
+        })
+        .catch(() => {})
     }
     window.addEventListener('load', () => {
-      const trigger = () => { setTimeout(loadVideo, 2000) }
+      const trigger = () => {
+        setTimeout(loadVideo, 2000)
+      }
       window.addEventListener('scroll', trigger, { once: true, passive: true })
       document.addEventListener('click', trigger, { once: true })
       setTimeout(() => loadVideo(), 20000)

@@ -15,7 +15,7 @@ description: >-
 origin: community
 metadata:
   author: YannJY02
-  version: "1.0.0"
+  version: '1.0.0'
 ---
 
 # 全自动开发助手 (Auto-Dev)
@@ -54,7 +54,7 @@ metadata:
    - 识别语言：TypeScript、Python、Go、Rust、Java 等
 3. 检测项目结构：
    - 源码目录（src/、app/、lib/）
-   - 测试目录（test/、__tests__/、tests/）
+   - 测试目录（test/、**tests**/、tests/）
    - 配置文件（tsconfig、eslint、prettier 等）
 4. 检测开发工具链：
    - 包管理器（npm、pnpm、yarn、pip、cargo）
@@ -138,6 +138,7 @@ metadata:
 4. **类型检查**：如果有 TypeScript / mypy，运行类型检查
 
 如果有验证失败：
+
 - 分析错误原因
 - 自动修复简单错误（如格式问题、缺少导入）
 - 对于复杂错误，报告给用户并询问如何处理
@@ -160,6 +161,7 @@ metadata:
    - 检查硬编码密钥、SQL 注入、XSS 等
 
 **安全敏感代码触发条件**：
+
 - 认证/授权逻辑
 - 用户输入处理
 - 数据库查询
@@ -168,6 +170,7 @@ metadata:
 - 加密操作
 
 **审查严重级别**：
+
 - CRITICAL（关键）：必须修复才能继续
 - HIGH（高）：应该修复
 - MEDIUM（中）：建议修复
@@ -202,6 +205,7 @@ metadata:
 ## OpenWolf 兼容性
 
 如果项目有 `.wolf/` 目录：
+
 1. 检测阶段读取 `.wolf/anatomy.md`
 2. 实现阶段读取 `.wolf/cerebrum.md`
 3. 完成后更新 `.wolf/memory.md`
@@ -212,11 +216,13 @@ metadata:
 ### 示例 1：新功能开发
 
 **用户输入**：
+
 ```
 帮我给博客添加一个搜索功能
 ```
 
 **执行流程**：
+
 1. 检测：Astro v6 + Tailwind CSS + MDX
 2. 诊断：Git 干净、构建正常、无测试框架
 3. 规划：实现搜索组件 → 添加搜索索引 → 集成到布局
@@ -228,11 +234,13 @@ metadata:
 ### 示例 2：Bug 修复
 
 **用户输入**：
+
 ```
 帮我修复首页加载慢的问题
 ```
 
 **执行流程**：
+
 1. 检测：Next.js 15 + React
 2. 诊断：构建正常、测试 80% 通过
 3. 规划：分析性能瓶颈 → 优化图片 → 添加懒加载
@@ -244,11 +252,13 @@ metadata:
 ### 示例 3：重构
 
 **用户输入**：
+
 ```
 帮我重构 API 层，用仓储模式
 ```
 
 **执行流程**：
+
 1. 检测：Go + Chi router
 2. 诊断：Git 有未提交更改、测试全部通过
 3. 规划：定义接口 → 实现仓储 → 迁移调用方
@@ -259,10 +269,10 @@ metadata:
 
 ## 相关组件
 
-| 组件 | 何时引用 |
-|------|----------|
-| `code-reviewer` agent | 阶段 6 代码审查 |
-| `security-reviewer` agent | 阶段 6 安全审查 |
-| `tdd-guide` agent | 阶段 4 TDD 指导 |
-| `prompt-optimizer` skill | 用户想要优化 prompt 而非执行任务 |
-| OpenWolf `.wolf/` | 项目使用 OpenWolf 管理时 |
+| 组件                      | 何时引用                         |
+| ------------------------- | -------------------------------- |
+| `code-reviewer` agent     | 阶段 6 代码审查                  |
+| `security-reviewer` agent | 阶段 6 安全审查                  |
+| `tdd-guide` agent         | 阶段 4 TDD 指导                  |
+| `prompt-optimizer` skill  | 用户想要优化 prompt 而非执行任务 |
+| OpenWolf `.wolf/`         | 项目使用 OpenWolf 管理时         |

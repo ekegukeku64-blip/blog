@@ -1,11 +1,14 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getCollection } from 'astro:content'
 
-const base = import.meta.env.BASE_URL;
-const reports = (await getCollection('posts', ({ id, data }) =>
-  !data.draft && data.noindex && id.startsWith('risk-daily-')
-)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const base = import.meta.env.BASE_URL
+const reports = (
+  await getCollection(
+    'posts',
+    ({ id, data }) => !data.draft && data.noindex && id.startsWith('risk-daily-'),
+  )
+).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 ---
 
 <BaseLayout
@@ -16,7 +19,9 @@ const reports = (await getCollection('posts', ({ id, data }) =>
 >
   <article class="risk-watch">
     <header class="risk-header">
-      <div class="risk-marker" aria-hidden="true"><span></span></div>
+      <div class="risk-marker" aria-hidden="true">
+        <span></span>
+      </div>
       <p class="risk-kicker">Security Observation</p>
       <h1>风险仓库观察</h1>
       <p class="risk-intro">
@@ -53,7 +58,9 @@ const reports = (await getCollection('posts', ({ id, data }) =>
                   <strong>{report.data.title}</strong>
                   <small>{report.data.description}</small>
                 </span>
-                <span class="report-arrow" aria-hidden="true">→</span>
+                <span class="report-arrow" aria-hidden="true">
+                  →
+                </span>
               </a>
             </li>
           ))}

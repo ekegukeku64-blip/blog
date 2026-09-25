@@ -21,15 +21,22 @@
   animation: postTitleIn 360ms var(--ease-emphasized) both;
 }
 
-
 @keyframes postTitleOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes postTitleIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 html.is-navigating .global-bg-layer::before,
 html.is-navigating .global-bg-layer::after,
@@ -39,10 +46,19 @@ html.is-navigating body.page-entrance::after {
 }
 
 /* ========== Scrollbar ========== */
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.10); }
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 
 /* ========== Scroll Reveal ========== */
 .reveal-target {
@@ -53,8 +69,9 @@ html.is-navigating body.page-entrance::after {
 .js .reveal-target {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 0.45s var(--ease-standard),
-              transform 0.45s var(--ease-emphasized);
+  transition:
+    opacity 0.45s var(--ease-standard),
+    transform 0.45s var(--ease-emphasized);
   will-change: opacity, transform;
 }
 
@@ -69,8 +86,17 @@ html.is-navigating body.page-entrance::after {
   transition: opacity var(--motion-slow) var(--ease-standard);
 }
 
-.page-enter { animation: pageEnter var(--motion-base) var(--ease-emphasized) both; }
-@keyframes pageEnter { from { opacity: 0; } to { opacity: 1; } }
+.page-enter {
+  animation: pageEnter var(--motion-base) var(--ease-emphasized) both;
+}
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 /* ========== Page Click Wave ========== */
 .page-click-wave {
@@ -82,7 +108,7 @@ html.is-navigating body.page-entrance::after {
 }
 
 .page-click-wave::before {
-  content: "";
+  content: '';
   position: absolute;
   left: var(--page-wave-x, 50vw);
   top: var(--page-wave-y, 50vh);
@@ -100,7 +126,7 @@ html.is-navigating body.page-entrance::after {
 }
 
 .page-click-wave::after {
-  content: "";
+  content: '';
   position: absolute;
   left: var(--page-wave-x, 50vw);
   top: var(--page-wave-y, 50vh);
@@ -142,7 +168,7 @@ html.is-navigating body.page-entrance::after {
     transform: translate(-50%, -50%) scale(0.03);
     border-width: 1.2px;
     box-shadow:
-      0 0 0 0 rgba(170, 178, 200, 0.20),
+      0 0 0 0 rgba(170, 178, 200, 0.2),
       0 0 0 0 rgba(170, 178, 200, 0.07);
   }
   30% {
@@ -179,8 +205,8 @@ html.is-navigating body.page-entrance::after {
   background: radial-gradient(
     circle,
     rgba(247, 249, 252, 0.34) 0%,
-    rgba(151, 174, 197, 0.20) 34%,
-    rgba(200, 142, 82, 0.10) 56%,
+    rgba(151, 174, 197, 0.2) 34%,
+    rgba(200, 142, 82, 0.1) 56%,
     transparent 72%
   );
   border: 1px solid rgba(226, 238, 248, 0.16);
@@ -203,7 +229,9 @@ html.is-navigating body.page-entrance::after {
     opacity: 0.72;
     transform: translate(-50%, -50%) scale(0.04);
   }
-  46% { opacity: 0.32; }
+  46% {
+    opacity: 0.32;
+  }
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(1);
@@ -218,14 +246,21 @@ html.is-navigating body.page-entrance::after {
     transform: none;
     transition: none;
   }
-  .scroll-indicator { animation: none; }
-  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  .scroll-indicator {
+    animation: none;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
   ::view-transition-group(post-title),
   ::view-transition-old(post-title),
   ::view-transition-new(post-title) {
     animation: none;
   }
-  .page-enter { animation: none; }
+  .page-enter {
+    animation: none;
+  }
   .page-click-wave,
   .navigation-ink,
   .interaction-ripple {
@@ -238,8 +273,12 @@ html.is-navigating body.page-entrance::after {
     filter: none;
     transition: none;
   }
-  header { transition: none; }
-  html { scroll-behavior: auto; }
+  header {
+    transition: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
   body.page-entrance::before,
   body.page-entrance::after,
   .global-bg-layer::before,
