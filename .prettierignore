@@ -1,0 +1,30 @@
+# 构建产物与缓存：绝不参与格式化
+dist/
+dist2/
+dist-new/
+dist_old/
+.pages-dist/
+.astro/
+.wrangler/
+test_write/
+node_modules/
+
+# 本地工具/虚拟环境
+.venv-jcm/
+.wolf/
+
+# 生成内容与快照：体量大且由脚本产出，格式化它们只会制造噪声 diff
+src/content/
+public/hero/
+
+# 依赖锁文件由 npm 维护
+package-lock.json
+
+# 截图与二进制
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.ico
+*.woff
+*.woff2
