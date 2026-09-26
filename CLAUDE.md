@@ -56,13 +56,13 @@ npm run indexnow     # 手动提交 sitemap URL 到 IndexNow（需 Git Bash）
 
 博客日常更新不依赖打开 Claude Code。GitHub Actions 会在云端自动执行：
 
-- `Daily Auto Update`：每天北京时间 08:00 生成 GitHub 每日精选、成长记录草稿和项目快照，有变化就提交到 `main`。
+- `Daily Auto Update`：每天北京时间 08:00 生成 GitHub 每日精选、成长记录草稿和项目快照，有变化就提交到 `main`，**并在同一次运行里构建并部署站点**。
 - `Update Daily Links`：每天定时重建站点，用于刷新静态内容和检查构建状态。
 - `Deploy to GitHub Pages`：推送到 `main` 后自动构建并部署站点。
 - `Deploy API`：`functions/**`、`migrations/**` 或 `wrangler.toml` 变更时应用 D1 迁移并部署评论 API。
 - `CI`：PR 阶段跑 lint / 格式 / 测试 / 类型检查门禁。
 
-**注意**：`Daily Auto Update` 用 `GITHUB_TOKEN` 推送提交，而 GitHub 不会让这类推送触发 `on: push` 工作流。所以日更提交不会立刻部署，站点会在当天 02:00 UTC 的 `Update Daily Links` 运行时刷新（最多滞后约 18 小时）。
+**注意**：`Daily Auto Update` 用 `GITHUB_TOKEN` 推送提交，而 GitHub 不允许这类推送触发 `on: push` 工作流 —— 它提交后**不会**唤醒 `Deploy to GitHub Pages`。这正是该工作流自己带一个 `deploy` job、当场构建并部署的原因：否则日更内容只能等 `Update Daily Links` 的下一次定时运行才上线，而两者的实际完成时间会漂移（`Daily Auto Update` 常落在 04:20–04:35 UTC，`Update Daily Links` 在 02:5x–07:17 UTC 之间），最坏情况要等将近一天，用户就看不到「每日」更新了。
 
 需要临时补跑时，在 GitHub Actions 页面手动触发 `workflow_dispatch`；本地的 `npm run daily` 只是备用入口。
 

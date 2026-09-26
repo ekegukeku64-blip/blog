@@ -1,8 +1,14 @@
 name: Update Daily Links
 
+# 定时重建站点，用于刷新静态内容并顺带体检构建状态。
+#
+# 时间点放在 Daily Auto Update **之后**（UTC 06:00 / 北京 14:00）。原来定在
+# 02:00 UTC，而日更提交实际落在 04:20–04:35 UTC：一旦这个工作流在 04:28 前后
+# 启动，它签出的是还没有当天日更的内容，却可能比日更工作流部署得更晚 ——
+# 那就等于用旧构建把刚上线的日更覆盖掉，用户反而看不到当天的更新。
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -46,6 +52,11 @@ jobs:
     permissions:
       pages: write
       id-token: write
+    # 与另外两个会部署站点的工作流共用同一个 concurrency group，
+    # 避免同时往 github-pages 环境推、互相覆盖。
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -1,5 +1,14 @@
 name: Daily Auto Update
 
+# 每天生成 GitHub 每日精选 + 成长记录草稿 + 项目快照，然后**自己部署**。
+#
+# 为什么必须自己部署：这个 workflow 用 GITHUB_TOKEN 推送提交，而 GitHub 明确
+# 不会让这类推送触发 `on: push` 工作流。所以它提交完，Deploy to GitHub Pages
+# 并不会被唤醒 —— 内容要等 Update Daily Links 的下一次定时运行（cron 02:00 UTC）
+# 才可能上线。而两个 workflow 的实际完成时间会漂移（Daily Auto Update 常落在
+# 04:20–04:35 UTC，Update Daily Links 在 02:5x–07:17 UTC 之间），一旦后者先跑完，
+# 当天内容就要等到第二天，用户最多要等将近一天才看到「每日」更新。
+# 这里让它在自己这一轮里构建并部署，时效就与调度无关了。
 on:
   schedule:
     - cron: '0 0 * * *' # UTC 00:00 = 北京时间 08:00
@@ -7,13 +16,17 @@ on:
 
 concurrency:
   group: daily-update
-  cancel-in-progress: true
+  # 不要中途取消：这个 job 既提交又部署，被砍在 commit 与 deploy 之间会留下
+  # 「内容已提交但没上线」的状态。排队比半途而废好。
+  cancel-in-progress: false
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      changed: ${{ steps.changes.outputs.changed }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -61,6 +74,14 @@ jobs:
         run: echo "PUBLIC_API_BASE=${{ vars.PUBLIC_API_BASE }}" >> .env
       - run: npm run build
 
+      # 构建产物已经包含本轮生成的内容，直接交给 Pages 部署。
+      # 只在真有变化时上传与部署，避免每天空跑一次部署。
+      - name: Upload Pages artifact
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
         run: |
@@ -69,8 +90,27 @@ jobs:
           git commit -m "chore: 每日自动更新 $(date +%Y-%m-%d)"
           git push
 
-  notify:
+  deploy:
     needs: generate
+    if: needs.generate.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    # 与 Deploy to GitHub Pages 共用同一个 concurrency group，
+    # 避免两个工作流同时往 github-pages 环境推。
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  notify:
+    needs: [generate, deploy]
     if: failure()
     runs-on: ubuntu-latest
     permissions:

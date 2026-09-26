@@ -35,6 +35,10 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # 显式声明最小权限：这个工作流只需要读仓库内容，其余一律不给
+    # （此前未声明，等于继承仓库默认权限）。
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v7
 
