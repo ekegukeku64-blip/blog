@@ -4,6 +4,7 @@ import test from 'node:test'
 import {
   cleanCommentId,
   cleanContent,
+  cleanCredential,
   cleanDisplayName,
   cleanEmail,
   cleanPageId,
@@ -45,6 +46,21 @@ test('cleanPassword enforces the byte floor and keeps surrounding spaces', () =>
 test('cleanPassword rejects control characters', () => {
   const withNul = `abc${String.fromCharCode(0)}defghijkl`
   assert.equal(cleanPassword(withNul), null)
+})
+
+// Used to verify an *existing* credential during a password change. It must not
+// enforce the current minimum, or a too-short old password would be reported as
+// "长度不符" instead of the uniform "当前密码不正确".
+test('cleanCredential accepts below-minimum values but rejects malformed ones', () => {
+  assert.equal(cleanCredential('short'), 'short')
+  assert.equal(cleanCredential('a'.repeat(200)), 'a'.repeat(200))
+  assert.equal(cleanCredential(''), null)
+  assert.equal(cleanCredential('   '), '   ', 'spaces are a legitimate credential')
+  assert.equal(cleanCredential('a'.repeat(201)), null)
+  assert.equal(cleanCredential(undefined), null)
+  assert.equal(cleanCredential(null), null)
+  assert.equal(cleanCredential(42), null)
+  assert.equal(cleanCredential(`abc${String.fromCharCode(7)}def`), null)
 })
 
 test('cleanDisplayName trims, enforces the cap, and rejects control characters', () => {

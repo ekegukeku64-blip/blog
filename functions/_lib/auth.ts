@@ -74,6 +74,31 @@ export async function deleteSessionByToken(request: Request, env: Env): Promise<
   await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?1').bind(tokenHash).run()
 }
 
+// Revokes every session of a user. `keepTokenHash` keeps one alive, which is what
+// a password change wants: other devices are signed out, the device that made the
+// change stays logged in.
+export async function deleteSessionsForUser(
+  env: Env,
+  userId: string,
+  keepTokenHash?: string,
+): Promise<number> {
+  const result = keepTokenHash
+    ? await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?1 AND token_hash != ?2')
+        .bind(userId, keepTokenHash)
+        .run()
+    : await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?1').bind(userId).run()
+
+  return result.meta?.changes ?? 0
+}
+
+// The hash of the token on the current request, so a route can keep "this"
+// session while revoking the rest.
+export async function currentTokenHash(request: Request): Promise<string | null> {
+  const token = bearerToken(request)
+  if (!token) return null
+  return sha256Hex(token)
+}
+
 export async function userFromRequest(request: Request, env: Env): Promise<SessionUser | null> {
   const token = bearerToken(request)
   if (!token) return null

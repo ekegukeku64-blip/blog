@@ -81,6 +81,18 @@ export function cleanPassword(value: unknown): string | null {
   return value
 }
 
+// For a credential we are about to *verify* rather than store. It deliberately
+// skips the minimum: enforcing it here would report a too-short old password as
+// "长度不符" (a 400) instead of the uniform "当前密码不正确" (401), which leaks
+// policy and confuses anyone whose password predates a rule change.
+export function cleanCredential(value: unknown): string | null {
+  if (!isPlainString(value)) return null
+  if (value.length === 0) return null
+  if (utf8Length(value) > PASSWORD_MAX) return null
+  if (hasControlChars(value)) return null
+  return value
+}
+
 export function cleanDisplayName(value: unknown): string | null {
   return cleanString(value, DISPLAY_NAME_MAX)
 }

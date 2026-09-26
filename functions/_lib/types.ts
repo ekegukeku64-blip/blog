@@ -7,6 +7,9 @@
 export interface D1Result<T> {
   results?: T[]
   success: boolean
+  // D1 reports affected-row counts here; used to tell the caller how many
+  // sessions a password change actually revoked.
+  meta?: { changes?: number }
 }
 
 export interface D1Statement {

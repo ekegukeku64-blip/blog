@@ -33,6 +33,16 @@ export function registerRules(ip: string): LimitRule[] {
   ]
 }
 
+// Changing a password means presenting the old one, which makes this endpoint an
+// online oracle for guessing it. Only the IP is counted: throttling per account
+// would let anyone lock a user out of their own password change.
+export function passwordChangeRules(ip: string): LimitRule[] {
+  return [
+    { bucket: `password:ip:${ip}`, windowMs: MINUTE, max: 10 },
+    { bucket: `password:ip:${ip}`, windowMs: HOUR, max: 30 },
+  ]
+}
+
 export interface LimitVerdict {
   ok: boolean
   retryAfterSeconds: number
