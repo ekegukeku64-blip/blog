@@ -22,6 +22,64 @@ PROJECT_LINK_RE = re.compile(
     re.IGNORECASE,
 )
 
+# 抓取失败时写进正文的占位句。用它来判断一份快照是不是「空壳」：
+# 页面的集合来自日报正文里的链接，而快照只对当天 trending 列表抓取，
+# 两个集合必然漂移，所以需要能识别出哪些仓库还没被真正补上。
+SNAPSHOT_FALLBACK_MARKER = "当前仅保存了项目摘要"
+
+# 有些被日报链接过的仓库后来在 GitHub 上被删掉了（首批 10 个里就有 4 个 404，
+# 多是些加密货币骗局仓库被平台下架）。这些页面永远填不上内容，记下来跳过，
+# 免得每次回填都白耗 API 调用。
+SKIP_LIST_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "config", "projects-without-readme.json"
+)
+
+
+def load_skip_entries() -> list[dict]:
+    if not os.path.exists(SKIP_LIST_PATH):
+        return []
+    try:
+        with open(SKIP_LIST_PATH, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (ValueError, OSError) as error:
+        print(f"  Skip list unreadable, ignoring it: {error}")
+        return []
+    entries = payload.get("projects")
+    return entries if isinstance(entries, list) else []
+
+
+def skipped_lookup(entries: list[dict]) -> set[str]:
+    return {
+        str(item.get("fullName", "")).lower()
+        for item in entries
+        if item.get("fullName")
+    }
+
+
+def save_skip_entries(entries: list[dict], newly_dead: list[str]) -> None:
+    merged: dict[str, dict] = {}
+    for item in entries:
+        name = str(item.get("fullName", ""))
+        if name:
+            merged[name.lower()] = {
+                "fullName": name,
+                "reason": str(item.get("reason") or "not-found"),
+            }
+    for name in newly_dead:
+        merged.setdefault(name.lower(), {"fullName": name, "reason": "not-found"})
+
+    payload = {
+        "note": (
+            "这些仓库已无法从 GitHub 取到（被删除或转为私有），站内无法生成 README 快照。"
+            "回填时跳过，避免每次白耗 API 调用。"
+        ),
+        "projects": [merged[key] for key in sorted(merged)],
+    }
+    os.makedirs(os.path.dirname(SKIP_LIST_PATH), exist_ok=True)
+    with open(SKIP_LIST_PATH, "w", encoding="utf-8", newline="\n") as handle:
+        json.dump(payload, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+
 with open(POLICY_PATH, "r", encoding="utf-8") as policy_file:
     PROJECT_SAFETY_POLICY = json.load(policy_file)
 
@@ -198,11 +256,49 @@ def repos_from_post(path: str) -> list[str]:
     ))
 
 
+def has_real_snapshot(output_dir: str, full_name: str) -> bool:
+    path = os.path.join(output_dir, snapshot_filename(full_name))
+    if not os.path.exists(path):
+        return False
+    with open(path, "r", encoding="utf-8") as handle:
+        return SNAPSHOT_FALLBACK_MARKER not in handle.read()
+
+
+def missing_snapshot_repos(posts_dir: str, output_dir: str,
+                           skip: set[str] | None = None) -> list[str]:
+    """按时间顺序列出「被日报链接过、但站内没有真实 README 快照」的仓库。
+
+    从最早的日报开始，所以每批回填补的都是被链接最久、空得最久的那些。
+    skip 里的仓库已知在 GitHub 上不存在，直接略过。
+    """
+    skipped = skip or set()
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for filename in sorted(os.listdir(posts_dir)):
+        if not filename.endswith(".md") or filename.startswith("risk-daily-"):
+            continue
+        for full_name in repos_from_post(os.path.join(posts_dir, filename)):
+            key = full_name.lower()
+            if key in seen or key in skipped:
+                continue
+            seen.add(key)
+            if not has_real_snapshot(output_dir, full_name):
+                ordered.append(full_name)
+    return ordered
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--from-post")
     source.add_argument("--repo", action="append", default=[])
+    source.add_argument(
+        "--missing-snapshots",
+        action="store_true",
+        help="回填：扫描全部日报，补齐没有真实 README 快照的仓库",
+    )
+    parser.add_argument("--posts-dir", default=os.path.join(
+        os.path.dirname(__file__), "..", "src", "content", "posts"))
     parser.add_argument("--output", default=os.path.join(
         os.path.dirname(__file__), "..", "src", "content", "projects"))
     parser.add_argument("--limit", type=int, default=10)
@@ -217,17 +313,46 @@ def main() -> None:
         headers["Authorization"] = f"Bearer {token}"
 
     repos = []
-    requested_repos = args.repo or repos_from_post(args.from_post)
+    skip_entries: list[dict] = []
+    newly_dead: list[str] = []
+    if args.missing_snapshots:
+        skip_entries = load_skip_entries()
+        pending = missing_snapshot_repos(
+            args.posts_dir, args.output, skipped_lookup(skip_entries)
+        )
+        print(f"缺少真实 README 快照的仓库：{len(pending)} 个"
+              f"（另有 {len(skip_entries)} 个已知无源，跳过）；"
+              f"本批处理前 {min(args.limit, len(pending))} 个（从最早的日报开始）")
+        requested_repos = pending
+    else:
+        requested_repos = args.repo or repos_from_post(args.from_post)
+
     for full_name in requested_repos[:args.limit]:
         path = urllib.parse.quote(full_name, safe="/")
         try:
             repos.append(api_get(f"https://api.github.com/repos/{path}", headers))
+        except urllib.error.HTTPError as error:
+            if error.code == 404:
+                newly_dead.append(full_name)
+                print(f"  Repo no longer exists (404): {full_name}")
+            else:
+                print(f"  Project metadata skipped for {full_name}: {error}")
         except Exception as error:
             print(f"  Project metadata skipped for {full_name}: {error}")
 
     bjt = timezone(timedelta(hours=8))
-    write_project_snapshots(repos, args.output, headers,
-                            datetime.now(bjt).strftime("%Y-%m-%d"))
+    written = write_project_snapshots(repos, args.output, headers,
+                                      datetime.now(bjt).strftime("%Y-%m-%d"))
+
+    if args.missing_snapshots:
+        if newly_dead:
+            save_skip_entries(skip_entries, newly_dead)
+            print(f"已记录 {len(newly_dead)} 个 404 仓库到 "
+                  f"config/projects-without-readme.json")
+        still = missing_snapshot_repos(
+            args.posts_dir, args.output, skipped_lookup(load_skip_entries())
+        )
+        print(f"\n回填结果：写入 {len(written)} 个，仍缺 {len(still)} 个")
 
 
 if __name__ == "__main__":
