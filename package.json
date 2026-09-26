@@ -18,6 +18,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "check:site": "node scripts/check-site.mjs",
     "preview": "astro preview",
     "daily": "npm run daily:digest && npm run daily:growth",
     "daily:digest": "node scripts/run-python.mjs scripts/generate_daily_digest.py",
@@ -29,7 +30,7 @@
     "firebase:deploy": "firebase deploy --only firestore:rules,firestore:indexes",
     "astro": "astro",
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test",
-    "verify": "npm run lint && npm run format:check && npm run test && npm run check && npm run build"
+    "verify": "npm run lint && npm run format:check && npm run test && npm run check && npm run build && npm run check:site"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.1",

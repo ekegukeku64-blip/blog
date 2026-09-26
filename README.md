@@ -77,7 +77,8 @@ npm run check         # Astro 类型检查与内容集合校验（不构建）
 npm run test          # 运行单元测试
 npm run lint          # ESLint 检查
 npm run format:check  # Prettier 格式检查
-npm run verify        # lint + 格式 + 测试 + 检查 + 构建（提交前跑这个）
+npm run verify        # lint + 格式 + 测试 + 检查 + 构建 + 站点体检（提交前跑这个）
+npm run check:site    # 只读站点体检：死链 / 孤儿页面 / 未被引用的资源
 npm run preview       # 预览构建产物
 npm run daily         # 本地补跑每日内容生成
 npm run build:api     # 构建评论 API（Pages Functions）产物
@@ -155,6 +156,18 @@ docs/add-tool.md
 ```text
 docs/comment-api.md
 ```
+
+### 站点体检
+
+`npm run check:site` 只读扫描 `dist`，报告三类「不足」（需先 `npm run build`）：
+
+| 检查项             | 说明                                       | 是否导致失败           |
+| ------------------ | ------------------------------------------ | ---------------------- |
+| 站内死链           | 链接目标在产物里不存在                     | 是（真 bug）           |
+| 孤儿页面           | 构建出来了但没有任何内链指向，访客无法到达 | 否，加 `--strict` 才算 |
+| 未被引用的静态资源 | `public/` 里没有任何产物引用到的文件       | 否，加 `--strict` 才算 |
+
+`--strict` 用法：`npm run check:site -- --strict`。脚本不改任何文件。
 
 ### 部署
 
