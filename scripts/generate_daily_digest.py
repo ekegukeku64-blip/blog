@@ -22,6 +22,7 @@ import urllib.parse
 from datetime import datetime, timezone, timedelta
 from unittest.mock import patch
 from github_project_snapshot import (
+    MIRROR_BLOCK_RE,
     is_safe_snapshot,
     sanitize_readme_markdown,
     write_project_snapshots,
@@ -128,12 +129,29 @@ def is_spam(repo: dict) -> tuple[bool, str]:
     desc = (repo.get("description") or "暂无描述").lower()
     topics = [t.lower() for t in repo.get("topics", [])]
 
-    # Check description patterns
+    # 关键词模式要逐个字段检查：仓库名、描述、标签都算。
+    #
+    # 原来只拿 desc 去匹配，而 name 取出来根本没用 —— 于是名字里明写着
+    # Discord-Token-Grabber-2026-Tool、描述却写得很正常的仓库一路放行，
+    # 被当成「每日精选」推荐了出去（实测 165 个已被 GitHub 下架的不良仓库里，
+    # 有 25 个名字明确命中规则却没被拦住）。
+    #
+    # 必须逐字段而不是拼接后匹配：SPAM_PATTERNS 里有 ^...$ 这类锚定模式
+    # （如「描述为空」），拼成一个长串会让它们永远匹配不上。
     for pattern, reason in SPAM_PATTERNS:
-        if re.search(pattern, desc):
-            return True, reason
+        for field in (name, desc, *topics):
+            if field and re.search(pattern, field):
+                return True, reason
 
-    # Check topic keywords
+    # 复用 config/project-safety.json。这份规则此前只用于「阻断快照」，
+    # 日报的推荐筛选完全没走它，导致两边标准不一致：同一个仓库
+    # 快照被拦下、却仍然出现在推荐位。
+    for field in (name, desc, *topics):
+        if field and MIRROR_BLOCK_RE.search(field):
+            return True, "project_safety_policy"
+
+    # 命中两个强关键词就足够。原来要求累计 3 个，
+    # 等于要求一个垃圾仓库在名字/描述/标签里同时踩中三个词，太宽松。
     spam_score = 0
     for kw in SPAM_TOPIC_KEYWORDS:
         if kw in name or kw in desc:
@@ -142,7 +160,7 @@ def is_spam(repo: dict) -> tuple[bool, str]:
             if kw in t:
                 spam_score += 1
 
-    if spam_score >= 3:
+    if spam_score >= 2:
         return True, "topic_spam_accumulated"
 
     # Duplicate descriptions (exact match across repos)
