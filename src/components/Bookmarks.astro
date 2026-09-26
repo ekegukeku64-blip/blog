@@ -76,7 +76,12 @@
       } else {
         bookmarks.push(slug)
       }
-      localStorage.setItem('bookmarks', JSON.stringify(bookmarks))
+      try {
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks))
+      } catch (error) {
+        // 存储被禁用或配额写满：本次会话内按钮状态仍然更新，只是不持久化。
+        console.error('Failed to save bookmarks:', error)
+      }
       updateUI()
       window.dispatchEvent(new CustomEvent('bookmarks:changed'))
     })

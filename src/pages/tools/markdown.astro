@@ -54,37 +54,12 @@ console.log('Hello!');
 
   <script>
     import { marked } from 'marked'
+    import { sanitizeHtml } from '../../lib/sanitizeHtml'
 
     const input = document.getElementById('input') as HTMLTextAreaElement
     const preview = document.getElementById('preview')!
 
     marked.setOptions({ breaks: true, gfm: true })
-
-    function sanitizeHtml(html: string) {
-      const template = document.createElement('template')
-      template.innerHTML = html
-      template.content
-        .querySelectorAll('script, iframe, object, embed, style, link')
-        .forEach((node) => node.remove())
-      template.content.querySelectorAll('*').forEach((element) => {
-        ;[...element.attributes].forEach((attribute) => {
-          const name = attribute.name.toLowerCase()
-          if (name.startsWith('on') || name === 'style') element.removeAttribute(attribute.name)
-          if (!['href', 'src', 'xlink:href'].includes(name)) return
-          try {
-            const url = new URL(attribute.value, window.location.href)
-            const allowed =
-              name === 'src' || name === 'xlink:href'
-                ? url.protocol === 'http:' || url.protocol === 'https:'
-                : ['http:', 'https:', 'mailto:', 'tel:', ''].includes(url.protocol)
-            if (!allowed) element.removeAttribute(attribute.name)
-          } catch {
-            element.removeAttribute(attribute.name)
-          }
-        })
-      })
-      return template.innerHTML
-    }
 
     function update() {
       preview.innerHTML = sanitizeHtml(marked.parse(input.value) as string)

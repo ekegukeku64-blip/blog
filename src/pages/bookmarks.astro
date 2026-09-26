@@ -105,6 +105,8 @@ const serializedPosts = serializeJsonForScript(posts)
 </BaseLayout>
 
 <script>
+  import { readJsonArray, writeJson } from '../lib/storage'
+
   type BookmarkPost = {
     slug: string
     title: string
@@ -118,19 +120,16 @@ const serializedPosts = serializeJsonForScript(posts)
   let renderActiveBookmarks = () => {}
   let clearConfirmationTimer = 0
 
-  function readBookmarkSlugs() {
-    try {
-      const value = JSON.parse(localStorage.getItem('bookmarks') || '[]')
-      return Array.isArray(value)
-        ? value.filter((slug): slug is string => typeof slug === 'string')
-        : []
-    } catch {
-      return []
-    }
+  function readBookmarkSlugs(): string[] {
+    // readJsonArray 已经把「存储不可用 / JSON 损坏 / 存成了对象」都兜住了，
+    // 这里再过滤一次元素类型，避免非字符串混进 slug 列表。
+    return readJsonArray<unknown>('bookmarks').filter(
+      (slug): slug is string => typeof slug === 'string',
+    )
   }
 
   function writeBookmarkSlugs(slugs: string[]) {
-    localStorage.setItem('bookmarks', JSON.stringify(slugs))
+    writeJson('bookmarks', slugs)
     window.dispatchEvent(new CustomEvent('bookmarks:changed'))
   }
 

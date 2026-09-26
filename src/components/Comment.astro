@@ -371,6 +371,7 @@
     type User,
   } from '../lib/api'
   import { CONTENT_MAX_BYTES, PASSWORD_MIN_BYTES, utf8Length } from '../utils/textLimits'
+  import { escapeHtml, safeImageUrl } from '../lib/dom'
 
   declare global {
     interface Window {
@@ -387,22 +388,6 @@
     if (!ts) return ''
     const d = ts.toDate()
     return d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
-  }
-
-  function escapeHtml(value: unknown) {
-    const div = document.createElement('div')
-    div.textContent = String(value ?? '')
-    return div.innerHTML
-  }
-
-  function safeImageUrl(value: unknown) {
-    if (typeof value !== 'string' || !value.trim()) return ''
-    try {
-      const url = new URL(value)
-      return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : ''
-    } catch {
-      return ''
-    }
   }
 
   function renderComments(list: HTMLElement, comments: Comment[]) {

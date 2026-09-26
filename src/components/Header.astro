@@ -6,6 +6,7 @@ declare global {
   interface Window {
     __initHeader?: () => void
     __headerPageLoadReady?: boolean
+    __headerMoreMenuReady?: boolean
     __headerScrollReady?: boolean
   }
 }
@@ -339,11 +340,6 @@ const currentPath = Astro.url.pathname
     const moreMenu = document.getElementById('more-menu')
     if (moreToggle && moreMenu && moreToggle.dataset.moreReady !== 'true') {
       moreToggle.dataset.moreReady = 'true'
-      const closeMore = () => {
-        moreMenu.classList.add('hidden')
-        moreMenu.setAttribute('aria-hidden', 'true')
-        moreToggle.setAttribute('aria-expanded', 'false')
-      }
       moreToggle.addEventListener('click', (e) => {
         e.stopPropagation()
         const open = moreMenu.classList.contains('hidden')
@@ -351,15 +347,38 @@ const currentPath = Astro.url.pathname
         moreMenu.setAttribute('aria-hidden', String(!open))
         moreToggle.setAttribute('aria-expanded', String(open))
       })
+    }
+
+    // document 级监听只注册一次。
+    // 原先这两个监听写在上面那个 if 里，而 __initHeader 每次 astro:page-load 都会跑，
+    // dataset.moreReady 标记又会随新 DOM 重置 —— 于是每导航一次就多一份 document 监听，
+    // 闭包还攥着已经被替换掉的旧菜单节点。处理器里改成每次重新查找当前节点。
+    if (!window.__headerMoreMenuReady) {
+      window.__headerMoreMenuReady = true
+
+      const closeMoreMenu = () => {
+        const menu = document.getElementById('more-menu')
+        const toggle = document.getElementById('more-menu-toggle')
+        if (menu) {
+          menu.classList.add('hidden')
+          menu.setAttribute('aria-hidden', 'true')
+        }
+        toggle?.setAttribute('aria-expanded', 'false')
+      }
+
       document.addEventListener('click', (e) => {
+        const menu = document.getElementById('more-menu')
+        // 菜单本来就没开时什么都不做，避免每次点击都白跑一遍 closest
+        if (!menu || menu.classList.contains('hidden')) return
         if (
           !(e.target instanceof Element) ||
-          !moreMenu.closest('#more-menu-wrap')?.contains(e.target)
-        )
-          closeMore()
+          !menu.closest('#more-menu-wrap')?.contains(e.target)
+        ) {
+          closeMoreMenu()
+        }
       })
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeMore()
+        if (e.key === 'Escape') closeMoreMenu()
       })
     }
   }

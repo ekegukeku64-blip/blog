@@ -185,7 +185,12 @@ const qrSvg = await QRCode.toString(currentUrl, {
 
         likeLabel.textContent = idx < 0 ? '已喜欢' : '喜欢'
         likeBtn.setAttribute('aria-pressed', String(idx < 0))
-        localStorage.setItem('blog_liked', JSON.stringify(likedNow))
+        try {
+          localStorage.setItem('blog_liked', JSON.stringify(likedNow))
+        } catch (error) {
+          // 存储不可用（隐私模式/配额写满）：点赞状态只保留在本次会话。
+          console.error('Failed to save like:', error)
+        }
       },
       { signal: controller.signal },
     )

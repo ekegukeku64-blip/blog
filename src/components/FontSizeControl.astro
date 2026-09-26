@@ -39,7 +39,18 @@
     control.classList.remove('hidden')
     control.classList.add('inline-flex')
 
-    let size = parseInt(localStorage.getItem('font_size') || '16')
+    // 内联脚本（is:inline）不经打包、不能用 import，所以这里就地兜住：
+    // 存储被禁用时访问 localStorage 本身就会抛，存进去的值也可能是非数字。
+    function readFontSize() {
+      try {
+        const parsed = parseInt(localStorage.getItem('font_size') || '', 10)
+        return Number.isFinite(parsed) && parsed >= 12 && parsed <= 22 ? parsed : 16
+      } catch {
+        return 16
+      }
+    }
+
+    let size = readFontSize()
     applySize(size)
 
     decrease.addEventListener('click', () => {
@@ -58,7 +69,11 @@
     function applySize(s) {
       document.querySelector('.prose').style.fontSize = s + 'px'
       label.textContent = s
-      localStorage.setItem('font_size', s)
+      try {
+        localStorage.setItem('font_size', String(s))
+      } catch {
+        // 存储不可用：字号只在本次会话生效，不影响阅读。
+      }
     }
   })
 </script>

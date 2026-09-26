@@ -308,6 +308,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     type Comment,
     type CommentStatus,
   } from '../lib/api'
+  import { escapeHtml, safeImageUrl } from '../lib/dom'
 
   declare global {
     interface Window {
@@ -337,22 +338,6 @@ import BaseLayout from '../layouts/BaseLayout.astro'
       hour: '2-digit',
       minute: '2-digit',
     })
-  }
-
-  function escapeHtml(value: unknown) {
-    const div = document.createElement('div')
-    div.textContent = String(value ?? '')
-    return div.innerHTML
-  }
-
-  function safeImageUrl(value: unknown) {
-    if (typeof value !== 'string' || !value.trim()) return ''
-    try {
-      const url = new URL(value)
-      return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : ''
-    } catch {
-      return ''
-    }
   }
 
   // 统计来自服务端的全表计数，不再由「当前取回的那一批」推算。
