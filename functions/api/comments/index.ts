@@ -2,7 +2,7 @@ import { corsHeaders } from '../../_lib/cors'
 import { fail, json, readJsonBody, rejectUnknownKeys } from '../../_lib/http'
 import { cleanContent, cleanDisplayName, cleanPageId, cleanPhotoUrl } from '../../_lib/validate'
 import { requireUser } from '../../_lib/auth'
-import { checkLimits, HOUR } from '../../_lib/ratelimit'
+import { checkLimits, clientIp, commentRules } from '../../_lib/ratelimit'
 import {
   COMMENT_COLUMNS,
   COMMENT_PAGE_LIMIT,
@@ -44,10 +44,9 @@ export async function onRequestPost(ctx: Ctx): Promise<Response> {
   const user = guard.user
 
   // Not in Firestore, but a comment endpoint with no ceiling is an open door for
-  // spam once registration is public.
-  const verdict = await checkLimits(ctx.env, [
-    { bucket: `comment:user:${user.id}`, windowMs: HOUR, max: 30 },
-  ])
+  // spam once registration is public. Counted per account and per IP: the account
+  // dimension alone is bypassed by simply registering another account.
+  const verdict = await checkLimits(ctx.env, commentRules(clientIp(ctx.request), user.id))
   if (!verdict.ok) {
     return fail(429, '评论过于频繁，请稍后再试', {
       ...cors,

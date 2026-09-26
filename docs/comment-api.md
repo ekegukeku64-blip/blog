@@ -115,7 +115,9 @@ PBKDF2_PEPPER=本地随便一个长字符串
 
 - **没有找回密码**。这需要邮件服务商（Resend、Cloudflare Email Workers 等），本项目没有接入。
   目前能做的是登录后改密（`POST /api/auth/password`），改密会吊销其他会话。
-- **`GET /api/comments` 没有限流**，评论创建也只按用户维度限流，没有 IP 维度。
+- **`GET /api/comments` 没有限流**。它是公开只读接口，用 D1 计数器给它限流意味着每次读都要写一次库，
+  得不偿失；真需要的话应该在 Cloudflare 边缘配速率限制，或给响应加 CDN 缓存。
+  写接口（注册 / 登录 / 评论 / 改密）都有限流，评论创建同时按账号与 IP 计。
 - **PBKDF2 迭代数 50000** 低于 OWASP 建议的 600k，原因是免费版 CPU 预算
   （600k 会触发 Error 1102）。迁移到付费计划后应通过 `PBKDF2_ITERATIONS` 提高，
   登录时的透明 rehash 会自动升级已有账号。

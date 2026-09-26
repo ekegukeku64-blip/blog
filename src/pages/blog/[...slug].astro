@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content'
 import PostLayout from '../../layouts/PostLayout.astro'
 import { calcReadingTime, calcWordCount } from '../../utils/readingTime'
 import { statSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft)
@@ -35,11 +35,20 @@ export async function getStaticPaths() {
       const items = seriesMap.get(series.name) || []
       seriesData = { name: series.name, items, currentSlug: post.id }
     }
+    // updatedDate 在 214 篇文章里一篇都没显式设置过，所以此前一律回退到文件 mtime。
+    //
+    // 那个回退其实一直是坏的：路径用 import.meta.url 拼，而构建时该模块的 url
+    // 并不指向 src/pages/blog/，statSync 抛错后被空 catch 吞掉 —— 全站 930 页里
+    // 只有 2 页「更新于」是正文里恰好写了这几个字，dateModified 一次都没输出过。
+    // 这里改成相对项目根解析（构建时 cwd 就是仓库根），回退才真正生效。
+    //
+    // CI 下必须跳过：checkout 会把所有文件的 mtime 变成构建时间，
+    // 于是每部署一次「更新于」和结构化数据里的 dateModified 就一起变成当天，
+    // 那是错误信息，不如不显示。本地开发时 mtime 仍有意义，所以只在非 CI 回退。
     let updatedDate = post.data.updatedDate
-    if (!updatedDate) {
+    if (!updatedDate && !process.env.CI) {
       try {
-        const fp = fileURLToPath(new URL(`../../content/posts/${post.id}.md`, import.meta.url))
-        updatedDate = statSync(fp).mtime
+        updatedDate = statSync(resolve(process.cwd(), 'src/content/posts', `${post.id}.md`)).mtime
       } catch {}
     }
     return {

@@ -21,12 +21,10 @@ test-results/
 BLOG_PROMPT.md
 HANDOVER.md
 .claude/settings.local.json
-.wolf/video-frames/
-.wolf/capture.mjs
-.wolf/designqc-captures/
-.wolf/*.png
-.wolf/*.jpg
-.wolf/*.jpeg
+# OpenWolf 的会话记忆属于本地工具产物，不该进仓库。
+# 之前只忽略了 .wolf 下的图片，却把 anatomy/buglog/cerebrum/memory 四个文件提交了上去，
+# 其中还记着「推送失败就 git config http.sslVerify false」这类削弱 TLS 校验的做法。
+.wolf/
 
 dist2/
 dist-new/
@@ -35,6 +33,7 @@ test_write/
 # environment variables
 .env
 .env.production
+.env.*.local
 # local Pages Functions secrets (PBKDF2 pepper) - never commit
 .dev.vars
 
@@ -58,3 +57,8 @@ dist_old/
 
 # jCodeMunch local venv (D-drive install)
 .venv-jcm/
+
+# 常见工具产物
+*.log
+.eslintcache
+coverage/

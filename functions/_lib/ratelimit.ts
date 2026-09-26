@@ -43,6 +43,18 @@ export function passwordChangeRules(ip: string): LimitRule[] {
   ]
 }
 
+// Comment creation is limited per account *and* per IP. The account bucket alone
+// is trivially bypassed by registering another account; the IP bucket is what
+// actually slows a spammer down. Kept looser than login so a shared campus or
+// CGNAT address is not locked out of commenting.
+export function commentRules(ip: string, userId: string): LimitRule[] {
+  return [
+    { bucket: `comment:user:${userId}`, windowMs: HOUR, max: 30 },
+    { bucket: `comment:ip:${ip}`, windowMs: HOUR, max: 60 },
+    { bucket: `comment:ip:${ip}`, windowMs: 24 * HOUR, max: 300 },
+  ]
+}
+
 export interface LimitVerdict {
   ok: boolean
   retryAfterSeconds: number
