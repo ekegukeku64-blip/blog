@@ -261,12 +261,49 @@ export async function deleteComment(id: string): Promise<void> {
   await request(`/api/comments/${encodeURIComponent(id)}`, { method: 'DELETE', auth: true })
 }
 
-export async function adminListComments(): Promise<Comment[]> {
-  const data = await request<{ comments: Parameters<typeof toComment>[0][] }>(
-    '/api/admin/comments',
-    { auth: true },
-  )
-  return data.comments.map(toComment)
+export type AdminCommentCounts = {
+  all: number
+  approved: number
+  pending: number
+  rejected: number
+}
+
+export type AdminCommentPage = {
+  comments: Comment[]
+  total: number
+  limit: number
+  offset: number
+  counts: AdminCommentCounts
+}
+
+// Paging and searching happen in SQL. The previous version fetched up to 500 rows
+// and filtered them in the browser, so both the stat cards and the search silently
+// ignored everything past row 500.
+export async function adminListComments(
+  params: { status?: CommentStatus; q?: string; limit?: number; offset?: number } = {},
+): Promise<AdminCommentPage> {
+  const query = new URLSearchParams()
+  if (params.status) query.set('status', params.status)
+  if (params.q) query.set('q', params.q)
+  if (params.limit !== undefined) query.set('limit', String(params.limit))
+  if (params.offset !== undefined) query.set('offset', String(params.offset))
+  const suffix = query.toString()
+
+  const data = await request<{
+    comments: Parameters<typeof toComment>[0][]
+    total: number
+    limit: number
+    offset: number
+    counts: AdminCommentCounts
+  }>(`/api/admin/comments${suffix ? `?${suffix}` : ''}`, { auth: true })
+
+  return {
+    comments: data.comments.map(toComment),
+    total: data.total,
+    limit: data.limit,
+    offset: data.offset,
+    counts: data.counts,
+  }
 }
 
 export async function adminSetStatus(id: string, status: CommentStatus): Promise<void> {
@@ -275,4 +312,18 @@ export async function adminSetStatus(id: string, status: CommentStatus): Promise
     auth: true,
     body: { status },
   })
+}
+
+// Changing the password signs out every other device. There is no "forgot
+// password" flow: that needs an email provider this project does not have.
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<{ revoked: number }> {
+  const data = await request<{ revoked?: number }>('/api/auth/password', {
+    method: 'POST',
+    auth: true,
+    body: { currentPassword, newPassword },
+  })
+  return { revoked: data.revoked ?? 0 }
 }

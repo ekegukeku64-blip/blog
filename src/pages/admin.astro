@@ -304,7 +304,9 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     adminListComments,
     adminSetStatus,
     deleteComment,
+    type AdminCommentCounts,
     type Comment,
+    type CommentStatus,
   } from '../lib/api'
 
   declare global {
@@ -313,10 +315,16 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     }
   }
 
-  let allComments: (Comment & { id: string })[] = []
-  let currentFilter = 'all'
+  // 服务端分页：只保留当前页数据，筛选与搜索都交给 SQL。
+  // 原实现一次取回最多 500 条、在浏览器里过滤，超过 500 条时四个统计卡和
+  // 搜索结果都会静默失真。
+  let pageItems: (Comment & { id: string })[] = []
+  let currentFilter: 'all' | CommentStatus = 'all'
   let currentPage = 1
   let searchQuery = ''
+  let totalItems = 0
+  let searchTimer = 0
+  let counts: AdminCommentCounts = { all: 0, approved: 0, pending: 0, rejected: 0 }
   const PAGE_SIZE = 20
   const selectedIds = new Set<string>()
 
@@ -347,32 +355,13 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     }
   }
 
-  function renderStats(comments: (Comment & { id: string })[]) {
-    const total = comments.length
-    const pending = comments.filter((c) => c.status === 'pending').length
-    const approved = comments.filter((c) => c.status === 'approved').length
-    const rejected = comments.filter((c) => c.status === 'rejected').length
+  // 统计来自服务端的全表计数，不再由「当前取回的那一批」推算。
+  function renderStats(next: AdminCommentCounts) {
     const el = (id: string) => document.getElementById(id)
-    if (el('stat-total')) el('stat-total')!.textContent = String(total)
-    if (el('stat-pending')) el('stat-pending')!.textContent = String(pending)
-    if (el('stat-approved')) el('stat-approved')!.textContent = String(approved)
-    if (el('stat-rejected')) el('stat-rejected')!.textContent = String(rejected)
-  }
-
-  function getFilteredComments() {
-    const byStatus =
-      currentFilter === 'all'
-        ? allComments
-        : allComments.filter((comment) => comment.status === currentFilter)
-    const normalizedQuery = searchQuery.trim().toLocaleLowerCase('zh-CN')
-    if (!normalizedQuery) return byStatus
-    return byStatus.filter((comment) =>
-      [comment.displayName, comment.pageId, comment.content].some((value) =>
-        String(value || '')
-          .toLocaleLowerCase('zh-CN')
-          .includes(normalizedQuery),
-      ),
-    )
+    if (el('stat-total')) el('stat-total')!.textContent = String(next.all)
+    if (el('stat-pending')) el('stat-pending')!.textContent = String(next.pending)
+    if (el('stat-approved')) el('stat-approved')!.textContent = String(next.approved)
+    if (el('stat-rejected')) el('stat-rejected')!.textContent = String(next.rejected)
   }
 
   function updateAdminControls(
@@ -426,14 +415,11 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     const container = document.getElementById('admin-comments')
     if (!container) return
 
-    const filtered = getFilteredComments()
-    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-    currentPage = Math.min(Math.max(currentPage, 1), totalPages)
-    const start = (currentPage - 1) * PAGE_SIZE
-    const pageItems = filtered.slice(start, start + PAGE_SIZE)
-    updateAdminControls(pageItems, filtered.length, totalPages)
+    // pageItems 已经是服务端返回的当前页，浏览器里不再切片。
+    const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
+    updateAdminControls(pageItems, totalItems, totalPages)
 
-    if (filtered.length === 0) {
+    if (pageItems.length === 0) {
       container.innerHTML =
         '<p class="text-center text-text-muted dark:text-dark-text-muted py-8">暂无评论</p>'
       return
@@ -501,7 +487,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
         if (!id) return
         if (input.checked) selectedIds.add(id)
         else selectedIds.delete(id)
-        updateAdminControls(pageItems, filtered.length, totalPages)
+        updateAdminControls(pageItems, totalItems, totalPages)
       })
     })
   }
@@ -513,8 +499,24 @@ import BaseLayout from '../layouts/BaseLayout.astro'
         '<p class="text-center text-text-muted dark:text-dark-text-muted py-8" role="status">正在加载评论…</p>'
     }
     try {
-      allComments = await adminListComments()
-      renderStats(allComments)
+      const page = await adminListComments({
+        status: currentFilter === 'all' ? undefined : currentFilter,
+        q: searchQuery.trim() || undefined,
+        limit: PAGE_SIZE,
+        offset: (currentPage - 1) * PAGE_SIZE,
+      })
+
+      // 删掉本页最后一条后，offset 可能越过末尾：回退一页重新取。
+      if (page.comments.length === 0 && currentPage > 1 && page.total > 0) {
+        currentPage -= 1
+        await loadComments()
+        return
+      }
+
+      pageItems = page.comments
+      totalItems = page.total
+      counts = page.counts
+      renderStats(counts)
       renderComments()
     } catch (error) {
       console.error('Failed to load admin comments:', error)
@@ -598,7 +600,9 @@ import BaseLayout from '../layouts/BaseLayout.astro'
       btn.addEventListener(
         'click',
         () => {
-          currentFilter = btn.getAttribute('data-filter') || 'all'
+          const next = btn.getAttribute('data-filter') || 'all'
+          currentFilter =
+            next === 'approved' || next === 'pending' || next === 'rejected' ? next : 'all'
           currentPage = 1
           selectedIds.clear()
           document.querySelectorAll('.filter-btn').forEach((b) => {
@@ -617,19 +621,23 @@ import BaseLayout from '../layouts/BaseLayout.astro'
             'dark:text-dark-text',
           )
           btn.classList.add('bg-accent', 'text-white')
-          renderComments()
+          void loadComments()
         },
         { signal: controller.signal },
       )
     })
 
+    // 搜索改为服务端查询，输入时防抖，避免每敲一个字就打一次接口。
     searchInput?.addEventListener(
       'input',
       () => {
         searchQuery = searchInput.value
         currentPage = 1
         selectedIds.clear()
-        renderComments()
+        window.clearTimeout(searchTimer)
+        searchTimer = window.setTimeout(() => {
+          void loadComments()
+        }, 300)
       },
       { signal: controller.signal },
     )
@@ -638,7 +646,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
       () => {
         currentPage = Math.max(1, currentPage - 1)
         selectedIds.clear()
-        renderComments()
+        void loadComments()
       },
       { signal: controller.signal },
     )
@@ -647,16 +655,14 @@ import BaseLayout from '../layouts/BaseLayout.astro'
       () => {
         currentPage += 1
         selectedIds.clear()
-        renderComments()
+        void loadComments()
       },
       { signal: controller.signal },
     )
     selectPage?.addEventListener(
       'click',
       () => {
-        const filtered = getFilteredComments()
-        const start = (currentPage - 1) * PAGE_SIZE
-        const pageItems = filtered.slice(start, start + PAGE_SIZE)
+        // pageItems 就是当前页
         const allSelected =
           pageItems.length > 0 && pageItems.every((comment) => selectedIds.has(comment.id))
         pageItems.forEach((comment) =>
@@ -697,6 +703,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     })
     window.__adminCleanup = () => {
       controller.abort()
+      window.clearTimeout(searchTimer)
       authUnsubscribe?.()
       authUnsubscribe = null
     }

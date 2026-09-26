@@ -93,19 +93,74 @@
     ></p>
   </div>
 
+  <!-- 修改密码：默认折叠。改完会踢掉其他设备上的登录。 -->
+  <form
+    id="comment-password-form"
+    class="hidden mb-4 p-4 space-y-3 rounded-xl border border-border/40 dark:border-dark-border/40"
+    novalidate
+  >
+    <label for="comment-password-current" class="sr-only">
+      当前密码
+    </label>
+    <input
+      id="comment-password-current"
+      class="comment-input px-4 py-3 rounded-xl text-sm w-full"
+      type="password"
+      autocomplete="current-password"
+      placeholder="当前密码"
+      required
+    />
+    <label for="comment-password-new" class="sr-only">
+      新密码
+    </label>
+    <input
+      id="comment-password-new"
+      class="comment-input px-4 py-3 rounded-xl text-sm w-full"
+      type="password"
+      autocomplete="new-password"
+      placeholder="新密码（至少 12 字节）"
+      required
+    />
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        type="submit"
+        id="comment-password-submit"
+        class="comment-submit px-5 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-300"
+      >
+        确认修改
+      </button>
+      <p
+        id="comment-password-status"
+        class="text-xs text-text-muted dark:text-dark-text-muted font-sans"
+        role="status"
+        aria-live="polite"
+      ></p>
+    </div>
+  </form>
+
   <!-- 已登录：留言表单 -->
   <form id="comment-form" class="mb-10 space-y-4 hidden">
     <div class="flex items-center gap-3 mb-2">
       <img id="comment-user-avatar" class="w-8 h-8 rounded-full" src="" alt="当前登录用户头像" />
       <span id="comment-user-name" class="text-sm font-medium text-text dark:text-dark-text"></span>
-      <button
-        type="button"
-        id="comment-logout"
-        class="ml-auto text-xs text-text-muted dark:text-dark-text-muted hover:text-accent dark:hover:text-dark-accent transition-colors cursor-pointer"
-      >
-        退出
-      </button>
+      <div class="ml-auto flex items-center gap-3">
+        <button
+          type="button"
+          id="comment-password-toggle"
+          class="text-xs text-text-muted dark:text-dark-text-muted hover:text-accent dark:hover:text-dark-accent transition-colors cursor-pointer"
+        >
+          修改密码
+        </button>
+        <button
+          type="button"
+          id="comment-logout"
+          class="text-xs text-text-muted dark:text-dark-text-muted hover:text-accent dark:hover:text-dark-accent transition-colors cursor-pointer"
+        >
+          退出
+        </button>
+      </div>
     </div>
+
     <label for="comment-content" class="sr-only">
       留言内容
     </label>
@@ -311,9 +366,11 @@
     subscribeComments,
     createComment,
     deleteComment,
+    changePassword,
     type Comment,
     type User,
   } from '../lib/api'
+  import { CONTENT_MAX_BYTES, PASSWORD_MIN_BYTES, utf8Length } from '../utils/textLimits'
 
   declare global {
     interface Window {
@@ -484,8 +541,10 @@
           setAuthStatus('请填写邮箱和密码')
           return
         }
-        if (password.length < 12) {
-          setAuthStatus('密码至少 12 位')
+        // 按字节判断，与后端 cleanPassword 一致。用 .length 会把「4 个汉字」
+        // 这类已达标的密码判为过短，导致注册能过、登录却被前端拦住。
+        if (utf8Length(password) < PASSWORD_MIN_BYTES) {
+          setAuthStatus(`密码至少 ${PASSWORD_MIN_BYTES} 字节（汉字按 3 字节计）`)
           return
         }
         if (authMode === 'register' && !displayName) {
@@ -527,6 +586,85 @@
       { signal: controller.signal },
     )
 
+    // 修改密码
+    const passwordForm = document.getElementById('comment-password-form') as HTMLFormElement | null
+    const passwordCurrent = document.getElementById(
+      'comment-password-current',
+    ) as HTMLInputElement | null
+    const passwordNew = document.getElementById('comment-password-new') as HTMLInputElement | null
+    const passwordSubmit = document.getElementById(
+      'comment-password-submit',
+    ) as HTMLButtonElement | null
+    const passwordStatus = document.getElementById('comment-password-status')
+
+    const setPasswordStatus = (message: string, isError = false) => {
+      if (!passwordStatus) return
+      passwordStatus.textContent = message
+      passwordStatus.classList.toggle('text-red-500', isError)
+    }
+
+    document.getElementById('comment-password-toggle')?.addEventListener(
+      'click',
+      () => {
+        passwordForm?.classList.toggle('hidden')
+        setPasswordStatus('')
+      },
+      { signal: controller.signal },
+    )
+
+    passwordForm?.addEventListener(
+      'submit',
+      async (event) => {
+        event.preventDefault()
+        const current = passwordCurrent?.value || ''
+        const next = passwordNew?.value || ''
+        if (!current || !next) {
+          setPasswordStatus('请填写当前密码和新密码', true)
+          return
+        }
+        if (utf8Length(next) < PASSWORD_MIN_BYTES) {
+          setPasswordStatus(`新密码至少 ${PASSWORD_MIN_BYTES} 字节（汉字按 3 字节计）`, true)
+          return
+        }
+        if (passwordSubmit) {
+          passwordSubmit.disabled = true
+          passwordSubmit.textContent = '提交中...'
+        }
+        try {
+          const { revoked } = await changePassword(current, next)
+          passwordForm.reset()
+          setPasswordStatus(
+            revoked > 0 ? `已修改，其他 ${revoked} 台设备的登录已退出` : '已修改密码',
+          )
+        } catch (error) {
+          setPasswordStatus(error instanceof Error ? error.message : '修改失败，请重试', true)
+        } finally {
+          if (passwordSubmit) {
+            passwordSubmit.disabled = false
+            passwordSubmit.textContent = '确认修改'
+          }
+        }
+      },
+      { signal: controller.signal },
+    )
+
+    // 实时字节计数。汉字在 .length 里算 1、按字节算 3，不提前提示的话
+    // 用户会以为能发出去，然后被后端 400 拒掉。
+    const contentInput = document.getElementById('comment-content') as HTMLTextAreaElement | null
+    const defaultSubmitHint = '评论提交后会先进入审核'
+    contentInput?.addEventListener(
+      'input',
+      () => {
+        if (!submitStatus) return
+        const bytes = utf8Length(contentInput.value.trim())
+        submitStatus.textContent =
+          bytes > CONTENT_MAX_BYTES
+            ? `内容太长：${bytes} / ${CONTENT_MAX_BYTES} 字节`
+            : defaultSubmitHint
+      },
+      { signal: controller.signal },
+    )
+
     // 认证状态
     authUnsubscribe = onAuth((user) => {
       currentUser = user
@@ -543,6 +681,9 @@
       } else {
         form.classList.add('hidden')
         authPrompt?.classList.remove('hidden')
+        passwordForm?.classList.add('hidden')
+        passwordForm?.reset()
+        setPasswordStatus('')
       }
       loadComments(list)
     })
@@ -554,8 +695,17 @@
         e.preventDefault()
         if (!currentUser) return
         const textarea = document.getElementById('comment-content') as HTMLTextAreaElement | null
-        const content = textarea?.value.trim().slice(0, 2000)
+        // 不再静默 slice(0, 2000)：一是按字符截断与后端的字节口径不一致，
+        // 二是截断会悄悄丢掉用户已经写下的内容。超限就明确报错。
+        const content = textarea?.value.trim() ?? ''
         if (!content) return
+        const contentBytes = utf8Length(content)
+        if (contentBytes > CONTENT_MAX_BYTES) {
+          if (submitStatus) {
+            submitStatus.textContent = `内容太长：${contentBytes} / ${CONTENT_MAX_BYTES} 字节，请精简后再发送`
+          }
+          return
+        }
         const submitBtn = document.getElementById('comment-submit-btn') as HTMLButtonElement | null
         if (submitBtn) {
           submitBtn.disabled = true

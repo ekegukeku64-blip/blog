@@ -147,6 +147,15 @@ src/pages/tools/
 docs/add-tool.md
 ```
 
+### 评论与账号 API
+
+自建的评论 / 账号接口（Cloudflare Pages Functions + D1）的接口清单、环境变量、
+一次性初始化步骤和已知缺口见：
+
+```text
+docs/comment-api.md
+```
+
 ### 部署
 
 站点与评论 API 分开部署：
