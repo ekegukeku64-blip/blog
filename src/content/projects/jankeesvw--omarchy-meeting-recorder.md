@@ -5,14 +5,14 @@ name: "omarchy-meeting-recorder"
 fullName: "jankeesvw/omarchy-meeting-recorder"
 description: "Record meetings on Omarchy: mic and computer audio as two tracks, transcribed on your own machine, with speakers, chapters and a player."
 sourceUrl: "https://github.com/jankeesvw/omarchy-meeting-recorder"
-stars: 136
-forks: 10
+stars: 249
+forks: 19
 language: "Rust"
 topics: ["gtk4", "hyprland", "libadwaita", "meeting-recorder", "omarchy", "rust", "speaker-diarization", "transcription"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-25"
-pushedAt: "2026-09-24T21:44:43Z"
+snapshotDate: "2026-09-26"
+pushedAt: "2026-09-25T17:14:05Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -109,6 +109,10 @@ When Omarchy has a default coding agent set (`omarchy default agent`, for instan
 
 Chapters are an extra, not a requirement: without an agent the button is simply not there and everything else works the same. The agent runs without any tools. It gets the transcript and the instructions, and can only answer with text.
 
+### Runs your own actions
+
+Put a few scripts of your own under **Actions** on the done page: store the transcript in your notes, publish it, mail it around. They go in `~/.config/omarchy-meeting-recorder/config.toml`, each with a name for the menu and a command. Until there is one, the button is **Add actions…** and explains how. See Actions.
+
 ### Wears your Omarchy theme
 
 The app reads the palette of the current theme (`colors.toml`): the background, the accent, and the theme's own colours for the speakers, the waves and the animation. Switch themes while it is open and it follows.
@@ -124,10 +128,11 @@ If the app quits while it records (a crash, a logout, a power cut), the next sta
 
 ## Handy to know
 
-- **Keyboard.** Ctrl+M switches between the full window and the compact strip. On the done page Enter copies the transcript. Ctrl+W and Ctrl+Q close, and ask first while recording or transcribing.
+- **Keyboard.** Ctrl+M switches between the full window and the compact strip. Ctrl+N opens another window. On the done page Enter copies the transcript. Ctrl+W closes the window and Ctrl+Q all of them, and they ask first while recording or transcribing.
 - **The name** stays editable all the time. After the transcript is done, changing it (Enter, or leaving the field) renames the meeting folder and the heading in the transcript.
 - **Closing** while recording or transcribing asks first. You can stop and close, let the transcription finish in the background and quit afterwards, or cancel the transcription; the audio is kept either way.
-- **Opening a meeting later.** Double-click its `.meeting-recorder` file, or run `omarchy-meeting-recorder `. It opens on the done page with the settings it was made with.
+- **Opening a meeting later.** Double-click its `.meeting-recorder` file, or run `omarchy-meeting-recorder `. It opens on the done page with the settings it was made with. When the window is busy recording or transcribing, the meeting opens in a window of its own.
+- **More than one window.** Ctrl+N, `omarchy-meeting-recorder new-window` or New Window in the launcher opens another one, to read an older meeting or start the next while the last one is still transcribing. Every window shows its own meeting; one records at a time. The bar widget and the keybindings follow the window that is recording, else the one transcribing.
 - **Keybindings.** `omarchy-meeting-recorder start`, `pause`, `stop` and `compact` control the running app, so you can bind them to keys in Hyprland.
 
 ## What it writes to disk
@@ -155,7 +160,7 @@ Both tracks are always recorded separately, and each is levelled to the same spe
 
 - **Recording.** The mic (`@DEFAULT_SOURCE@`) and the monitor of the default output (`@DEFAULT_MONITOR@`) are captured with `parec`. Because it follows the default output, switching to a headset during a call keeps working. `ffmpeg` encodes the audio to Opus when you stop.
 - **Transcription.** After the call both tracks are mixed and transcribed in one pass with whisper-rs, using the `large-v3-turbo` model unless you pick another, so there is a single timeline. Long silences are skipped, which keeps whisper from inventing text in them, and word times come from whisper's attention alignment (DTW).
-- **Who said what.** The speaker of each line is read off the two tracks, like whisper.cpp's `--diarize`: where the mic is louder it is you, where the computer audio is louder it is the other side. Echo of the other side in your mic, when you use speakers instead of a headset, is always quieter than the original, so it does not become a line of its own. When more than one person talks on the computer audio, the voices there are told apart as well (see below), and the other side becomes "Remote 1", "Remote 2" and so on, each with its own name field.
+- **Who said what.** The mic and the computer audio are transcribed one at a time, so the side of each line is simply its track, and two people talking at once, or someone talking over music, are both kept. Through speakers the other side leaks into your mic; the app leaves out what is only that echo. When several voices share one side, a colleague next to you or three people on the other end, they are told apart as well (see below): "You 1", "You 2" and "Remote 1", "Remote 2" and so on, each with its own name field.
 - **Imported files.** A single audio file has no second track to tell the speakers apart, so the voices themselves are told apart with NVIDIA's [Nemotron 3 Diarization](https://huggingface.co/nvidia/Nemotron-3-Diarization), run locally through ONNX Runtime. It follows up to eight speakers, also when they talk at the same time, and numbers them "Speaker 1", "Speaker 2" and so on in the order they first speak. The number of speakers is found automatically (voices heard for only a few seconds are folded into the nearest real speaker) or can be fixed. A sentence always goes to one speaker as a whole. Similar voices and fast back-and-forth can still land on the wrong speaker, which the swap-speaker button fixes per line.
 - **Chapters.** The recorder runs `omarchy-default-agent`'s agent headless and with every tool switched off, in an empty working directory, bounded in time and size. Agents that cannot run without tools are not used.
 - **Playback.** `ffmpeg` decodes into `pacat`, so playing a meeting back needs nothing beyond what recording already uses.
@@ -175,16 +180,28 @@ The command-line `transcribe` and `transcribe-file` take `--model` instead. When
 
 The app looks for `ggml-.bin`, for instance `ggml-large-v3-turbo.bin`, in `~/.local/share/omarchy-meeting-recorder/models/`. If you use [voxtype](https://voxtype.io) and it already downloaded that model to `~/.local/share/voxtype/models/`, that copy is used. Otherwise it is downloaded (about 1.6 GB for `large-v3-turbo`) from [Hugging Face](https://huggingface.co/ggerganov/whisper.cpp). Finding speakers downloads the speaker model on first use (about 120 MB) to `nemotron-3-diarization/` in the same directory: the int8 ONNX export of Nemotron 3 Diarization from the [Hugging Face ONNX community](https://huggingface.co/onnx-community/Nemotron-3-Diarization-ONNX), pinned to one revision. The model is NVIDIA's, under the [OpenMDW license](https://huggingface.co/nvidia/Nemotron-3-Diarization). ONNX Runtime is compiled into the binary, so nothing else is needed at runtime.
 
+## Actions
+
+Your own scripts, picked from the **Actions** menu on the done page: store the transcript in Obsidian, publish it, mail it around. Each is a name and a command in `~/.config/omarchy-meeting-recorder/config.toml`; the command gets the meeting folder and the meeting's details, and what it prints last shows up in the app, with an **Open** button for a link.
+
+
+docs/actions.md explains it all, with two complete examples (Store transcript in Obsidian, and Publish as public transcript, where your default agent writes the summary) and a section for your agent, so you can ask it to write actions for you.
+
+## Testing
+
+`bench/` holds a small test suite: recordings of calls with people talking at once, echo through speakers, two people at one mic, music in the background and silence, plus a real meeting from the AMI corpus. `bench/run.py` runs the app over them and scores the transcript and the speakers; CI runs it on every pull request and posts the scores there. See bench/README.md.
+
 ## Privacy
 
-The audio, the transcript and everything else stay on your computer. The only thing that leaves it is the transcript text for the chapters, and only when you have set a default agent: it goes to that agent's service, the one you already chose and pay for. No agent, no chapters, nothing sent.
+The audio, the transcript and everything else stay on your computer. The only thing that leaves it is the transcript text for the chapters, and only when you have set a default agent: it goes to that agent's service, the one you already chose and pay for. No agent, no chapters, nothing sent. Actions are yours: they send whatever your scripts send, and only when you pick one.
 
 ## Requirements
 
 - PipeWire with `parec` and `pacat` (both from `libpulse`), for recording and for playing a meeting back
 - `ffmpeg` with libopus
 - GTK 4 and libadwaita 1.6 or newer
-- Rust and CMake, to build it (whisper.cpp is compiled along)
+- Rust, CMake, Vulkan headers and `glslc`, to build it (whisper.cpp is compiled along)
+- Vulkan loader at runtime; a compatible Vulkan GPU driver enables accelerated transcription
 - Optional: a default agent in Omarchy for chapters
 
 ## Build from source
@@ -201,11 +218,23 @@ xdg-mime default omarchy-meeting-recorder.desktop application/x-omarchy-meeting
 
 The last three lines register the `.meeting-recorder` file type, so a double-click opens the meeting in the app. File managers that go through GIO (Nautilus) pick that up right away; restart Nautilus if it still opens the file as text. `xdg-open`, which most launchers and terminals use on Hyprland, looks at the contents with `file` instead and sees JSON, so it opens the file in your text editor. Install `perl-file-mimeinfo` (`yay -S perl-file-mimeinfo`) and `xdg-open` goes by the registered type too.
 
-The default build transcribes on the CPU, which is fast enough on a modern machine: a few seconds for a short call. For the GPU, build with whisper.cpp's Vulkan backend. That needs the Vulkan headers and `glslc` (`vulkan-headers` and `shaderc` on Arch):
+The default build includes whisper.cpp's Vulkan backend and uses a compatible GPU when available. With no usable GPU it falls back to the CPU. GPU support accelerates speech-to-text; speaker identification still runs on the CPU. Processing time depends on the model, audio and hardware, and can be substantial for long recordings on CPU.
+
+On Arch, the default build needs `vulkan-headers` and `shaderc`. The installed binary needs `vulkan-icd-loader`, plus the Vulkan driver appropriate for your GPU to use acceleration. Existing CPU-only release binaries do not gain GPU support from installing a driver: rebuild or install a release compiled with Vulkan enabled. Restart the recorder after replacing its binary, once any recording or processing has finished.
+
+For a CPU-only binary without Vulkan build or runtime dependencies:
 
 ```bash
-cargo build --release --features vulkan
+cargo build --release --no-default-features
 ```
+
+To check which support was compiled into a binary:
+
+```bash
+omarchy-meeting-recorder --version
+```
+
+This reports build support, not whether a particular transcription actually ran on a GPU. The `vulkan` feature remains available explicitly for build scripts using `--no-default-features --features vulkan`.
 
 The window floats nicely with a Hyprland rule on its class:
 
@@ -244,10 +273,12 @@ This also recovers a failed first-start “Add to Bar” attempt in version 1.0.
 | `omarchy-meeting-recorder pause` | Pause or resume the running recording |
 | `omarchy-meeting-recorder stop` | Stop the running recording |
 | `omarchy-meeting-recorder compact` | Switch the recording window between full and compact |
+| `omarchy-meeting-recorder new-window` | Open another window, or the app when it is not running |
 | `omarchy-meeting-recorder watch` | Stream the recorder state as NDJSON, for the bar widget |
 | `omarchy-meeting-recorder transcribe   [--language xx] [--model name]` | Transcribe two tracks and print the transcript as Markdown |
 | `omarchy-meeting-recorder transcribe-file  [--speakers N] [--language xx] [--model name]` | Transcribe one file, telling the voices apart, and print the transcript as Markdown |
 | `omarchy-meeting-recorder ask "" < text` | Run a prompt over stdin through the default agent, without tools (`ask --agent` shows which agent that is) |
+| `omarchy-meeting-recorder action "" ` | Run one of your actions on a meeting, as the done page does; without arguments it lists them |
 
 For example:
 

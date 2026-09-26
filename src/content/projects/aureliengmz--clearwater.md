@@ -5,14 +5,14 @@ name: "clearwater"
 fullName: "Aureliengmz/clearwater"
 description: "Real-time, photoreal shallow water in a single HTML file. WebGL2, no libraries, no build step."
 sourceUrl: "https://github.com/Aureliengmz/clearwater"
-stars: 147
-forks: 26
+stars: 420
+forks: 76
 language: "HTML"
 topics: ["caustics", "fft", "realtime-rendering", "shaders", "single-file", "water", "webgl2"]
 license: "MIT"
 homepage: "https://aureliengmz.github.io/clearwater/"
 defaultBranch: "main"
-snapshotDate: "2026-09-24"
+snapshotDate: "2026-09-26"
 pushedAt: "2026-09-23T13:20:28Z"
 ---
 
