@@ -5,6 +5,7 @@ import mdx from '@astrojs/mdx'
 import { unified } from '@astrojs/markdown-remark'
 import sitemap from '@astrojs/sitemap'
 import remarkInternalProjectLinks from './scripts/remark-internal-project-links.mjs'
+import rehypeDemoteProjectHeadings from './scripts/rehype-demote-project-headings.mjs'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -56,6 +57,8 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [[remarkInternalProjectLinks, { base }]],
+      // 项目快照的 README 自带一级标题，会把页面变成两个 <h1>，这里整体降一级。
+      rehypePlugins: [rehypeDemoteProjectHeadings],
     }),
     shikiConfig: {
       theme: 'one-dark-pro',
