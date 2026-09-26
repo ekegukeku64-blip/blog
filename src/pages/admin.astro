@@ -500,6 +500,13 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 
       pageItems = page.comments
       totalItems = page.total
+      if (!page.serverPaginated) {
+        // 旧版 API（站点与 API 分开部署，可能还没跟上）会忽略 limit / offset / q，
+        // 一次返回最多 500 条。退回浏览器内分页，避免把全部评论铺在一页上。
+        // 该状态下搜索不生效（服务端没实现），但分页与状态筛选仍可用。
+        const start = (currentPage - 1) * PAGE_SIZE
+        pageItems = page.comments.slice(start, start + PAGE_SIZE)
+      }
       counts = page.counts
       renderStats(counts)
       renderComments()

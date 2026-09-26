@@ -274,6 +274,9 @@ export type AdminCommentPage = {
   limit: number
   offset: number
   counts: AdminCommentCounts
+  // 服务端是否真的支持分页/搜索。站点与 API 分开部署，旧版接口会忽略
+  // limit / offset / q，此时调用方需要退回浏览器内分页。
+  serverPaginated: boolean
 }
 
 // Paging and searching happen in SQL. The previous version fetched up to 500 rows
@@ -291,19 +294,36 @@ export async function adminListComments(
 
   const data = await request<{
     comments: Parameters<typeof toComment>[0][]
-    total: number
-    limit: number
-    offset: number
-    counts: AdminCommentCounts
+    total?: number
+    limit?: number
+    offset?: number
+    counts?: AdminCommentCounts
   }>(`/api/admin/comments${suffix ? `?${suffix}` : ''}`, { auth: true })
 
+  const comments = (data.comments ?? []).map(toComment)
+
+  // 站点和 API 是分开部署的，所以两边版本会错位：旧版接口只返回 { comments }，
+  // 没有 total / limit / offset / counts。这里必须给出可用的兜底值，
+  // 否则 admin.astro 里的 renderStats(undefined) 会直接抛错，整个后台打不开。
+  // 兜底后退化成旧行为（统计只基于当前取回的那一批），但页面仍然可用。
   return {
-    comments: data.comments.map(toComment),
-    total: data.total,
-    limit: data.limit,
-    offset: data.offset,
-    counts: data.counts,
+    comments,
+    total: typeof data.total === 'number' ? data.total : comments.length,
+    limit: typeof data.limit === 'number' ? data.limit : comments.length,
+    offset: typeof data.offset === 'number' ? data.offset : 0,
+    counts: data.counts ?? countByStatus(comments),
+    serverPaginated: typeof data.total === 'number' && typeof data.limit === 'number',
   }
+}
+
+function countByStatus(comments: Comment[]): AdminCommentCounts {
+  const counts: AdminCommentCounts = { all: comments.length, approved: 0, pending: 0, rejected: 0 }
+  for (const comment of comments) {
+    if (comment.status === 'approved') counts.approved += 1
+    else if (comment.status === 'pending') counts.pending += 1
+    else if (comment.status === 'rejected') counts.rejected += 1
+  }
+  return counts
 }
 
 export async function adminSetStatus(id: string, status: CommentStatus): Promise<void> {
