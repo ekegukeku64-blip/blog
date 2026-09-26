@@ -26,15 +26,31 @@ for f in os.listdir(POSTS_DIR):
     if m:
         existing.append(int(m.group(1)))
 
+# 今天是否已经有草稿：必须按 pubDate 判断，不能按编号判断。
+#
+# 原来的写法是先算 next_num = max + 1，再检查 growth-{next_num}.md 是否存在——
+# 那个文件名就是刚刚算出来的新编号，按构造不可能已存在，于是条件恒为假，
+# 「今日已生成」的守卫从来没生效过：每次运行都会新建一篇，同一天重跑一次
+# （重试、手动 workflow_dispatch）就多出一篇 growth-xxx。
+today_draft = None
+for f in sorted(os.listdir(POSTS_DIR)):
+    if not re.match(r'growth-\d+\.md', f):
+        continue
+    try:
+        with open(os.path.join(POSTS_DIR, f), encoding='utf-8') as fh:
+            head = fh.read(4000)
+    except OSError:
+        continue
+    if re.search(rf'^pubDate:\s*{re.escape(date_str)}\s*$', head, re.M):
+        today_draft = f
+        break
+
+if today_draft:
+    print(f'今日草稿已存在: {today_draft}')
+    exit(0)
+
 next_num = max(existing, default=0) + 1
 file_num = f'{next_num:03d}'
-
-# 检查今天是否已生成
-filename = f'growth-{file_num}.md'
-filepath = os.path.join(POSTS_DIR, filename)
-if os.path.exists(filepath):
-    print(f'今日草稿已存在: {filename}')
-    exit(0)
 
 # 模板主题（随机挑一个方向，你也可以改成固定）
 templates = [
