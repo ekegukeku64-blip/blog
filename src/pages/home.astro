@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import HomeHero from '../components/home/HomeHero.astro'
 import HomeReadingPaths from '../components/home/HomeReadingPaths.astro'
+import HomeTechDaily from '../components/home/HomeTechDaily.astro'
 import HomeRecentPosts from '../components/home/HomeRecentPosts.astro'
 import HomeNowSnapshot from '../components/home/HomeNowSnapshot.astro'
 import HomeCurrentMe from '../components/home/HomeCurrentMe.astro'
@@ -120,6 +121,7 @@ const activityItems = [
       />
       <HomeCurrentMe />
       <HomeReadingPaths paths={readingPaths} />
+      <HomeTechDaily />
       <HomeRecentPosts posts={recentPosts} />
       <HomeNowSnapshot />
       <HomeFootnote />

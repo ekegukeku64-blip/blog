@@ -200,9 +200,15 @@ function main() {
 
   // Keep existing pack boundaries when the character set has not changed so the
   // generated font files stay byte-identical and browsers keep their cache.
+  //
+  // Characters inside a pack are stored sorted by codepoint: the frequency ranking
+  // decides *which* pack a character lands in, but keeping rank order in the file
+  // made the config churn on every build whenever a document-frequency tie shifted
+  // by one page (same set and same fingerprint, but a rewritten 4 KB line).
   const boundaryCharacters = []
   for (let start = 0; start < ranked.length; start += PACK_CHARS) {
-    boundaryCharacters.push(ranked.slice(start, start + PACK_CHARS))
+    const slice = ranked.slice(start, start + PACK_CHARS)
+    boundaryCharacters.push([...slice].sort((a, b) => a.codePointAt(0) - b.codePointAt(0)))
   }
 
   const knownByFingerprint = new Map(previous.packs.map((pack) => [pack.fingerprint, pack]))
