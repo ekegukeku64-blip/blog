@@ -22,6 +22,10 @@ config/font-packs.json
 config/font-pack-jobs.json
 public/fonts/
 
+# 已消失项目的实测清单（scripts/check_gone_projects.py 产出）；
+# 它的形状由 tests/gone-projects.test.mjs 锁住，不需要 Prettier 再管一遍
+config/projects-gone.json
+
 # 依赖锁文件由 npm 维护
 package-lock.json
 

@@ -8,7 +8,8 @@
 //   1. 站内死链            —— 链接目标在产物里不存在（真 bug）
 //   2. 孤儿页面            —— 构建出来了但没有任何内链指向，访客无法到达
 //   3. 未被引用的静态资源  —— public/ 里没有任何产物引用到的文件
-//   4. 规模概览            —— 页面数、内链数、体积
+//   4. 已删除仓库的链接    —— 站外 GitHub 链接指向已经消失的仓库（读者会撞 404）
+//   5. 规模概览            —— 页面数、内链数、体积
 //
 // 需要先 `npm run build`（脚本读的是 dist 产物，不是源码）。
 
@@ -124,7 +125,35 @@ if (existsSync('public')) {
 }
 unreferenced.sort((a, b) => b.size - a.size)
 
-// ---------- 4：规模 ----------
+// ---------- 4：对外链接指向已删除的仓库 ----------
+// config/projects-gone.json 是 scripts/check_gone_projects.py 逐仓库实测 GitHub API
+// 得到的「仓库已经没了」清单（站内无快照的项目里约 46% 已被删除或封号）。
+// 页面上再把它做成可点击链接，读者点过去只会撞 404。
+//
+// 站内死链由第 1 项覆盖，但这一项查的是**站外**目标，所以需要单独检查。
+const goneListPath = 'config/projects-gone.json'
+const goneNames = existsSync(goneListPath)
+  ? (JSON.parse(readFileSync(goneListPath, 'utf8')).projects ?? [])
+      .map((item) => String(item.fullName ?? '').toLowerCase())
+      .filter(Boolean)
+  : []
+const goneSet = new Set(goneNames)
+const deadRepoLinks = new Map()
+
+if (goneSet.size) {
+  for (const page of pages) {
+    const html = readFileSync(page, 'utf8')
+    const from = relative(DIST, page).split(sep).join('/')
+    for (const match of html.matchAll(/href="(https:\/\/github\.com\/([^/"]+)\/([^/"]+))"/g)) {
+      const key = `${match[2]}/${match[3]}`.toLowerCase()
+      if (!goneSet.has(key)) continue
+      if (!deadRepoLinks.has(match[1])) deadRepoLinks.set(match[1], new Set())
+      deadRepoLinks.get(match[1]).add(from)
+    }
+  }
+}
+
+// ---------- 5：规模 ----------
 let distBytes = 0
 ;(function walkSize(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -158,8 +187,18 @@ unreferenced
   .forEach((item) => console.log(`    ${kb(item.size).padStart(8)}  ${item.name}`))
 if (unreferenced.length > 15) console.log(`    … 其余 ${unreferenced.length - 15} 个`)
 
-// 死链是真 bug；孤儿页与未引用资源只提示，除非 --strict。
-const failed = broken.size > 0 || (strict && (orphans.length > 0 || unreferenced.length > 0))
+console.log(
+  `\n[4] 指向已删除仓库的链接: ${deadRepoLinks.size}` +
+    (goneSet.size ? `（清单 ${goneSet.size} 个项目）` : '（清单缺失，未检查）'),
+)
+for (const [target, sources] of [...deadRepoLinks.entries()].slice(0, 15)) {
+  console.log(`    ${target}  <- ${[...sources].slice(0, 3).join(', ')}`)
+}
+
+// 死链是真 bug；孤儿页、未引用资源、失效仓库链接只提示，除非 --strict。
+const failed =
+  broken.size > 0 ||
+  (strict && (orphans.length > 0 || unreferenced.length > 0 || deadRepoLinks.size > 0))
 console.log('\n' + '─'.repeat(52))
 console.log(failed ? '结果: 有需要处理的问题' : '结果: 通过（警告项未计入失败）')
 process.exit(failed ? 1 : 0)

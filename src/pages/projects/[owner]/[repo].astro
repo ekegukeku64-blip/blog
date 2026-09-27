@@ -8,6 +8,7 @@ import {
   type GithubProjectArchiveItem,
 } from '../../../lib/githubProjectArchive'
 import { extractOfficialPackageLinks } from '../../../lib/officialPackageLinks'
+import { loadGoneProjects } from '../../../lib/goneProjects'
 
 type ProjectAccess = 'snapshot' | 'summary' | 'restricted'
 
@@ -96,6 +97,7 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props as { project: ProjectPageData }
+const goneNames = loadGoneProjects()
 const snapshot = project.snapshotId ? await getEntry('projects', project.snapshotId) : undefined
 const renderedSnapshot = snapshot ? await render(snapshot) : null
 const Content = renderedSnapshot?.Content
@@ -104,7 +106,14 @@ const isSnapshot = project.access === 'snapshot'
 const isRestricted = project.access === 'restricted'
 // 仓库已从 GitHub 消失：链接会 404，页面上要如实说明。
 // 与 access 并列而不是并入，因为它和「是否有快照」「是否命中安全策略」互不冲突。
-const isRetired = loadRetiredProjects().has(project.fullName.toLowerCase())
+//
+// 两份清单都要查，因为它们记录的是不同来源的事实：
+//   projects-without-readme.json —— 回填快照时发现仓库已经不在了
+//   projects-gone.json           —— check_gone_projects.py 逐仓库实测 API 得到的结论
+// 后者覆盖面更广（429 个站内无快照的项目里 198 个已删），两者可能只有一份命中。
+const retiredNames = loadRetiredProjects()
+const isRetired =
+  retiredNames.has(project.fullName.toLowerCase()) || goneNames.has(project.fullName.toLowerCase())
 
 const distributionLinks =
   isSnapshot && snapshot ? extractOfficialPackageLinks(snapshot.body ?? '') : []

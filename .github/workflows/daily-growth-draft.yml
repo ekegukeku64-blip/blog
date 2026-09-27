@@ -46,11 +46,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_growth_draft.py
 
+      # 日报推荐的项目里，站内没有快照的那些只能直连 GitHub，而其中相当一部分
+      # 已被删除或封号（实测 46%）。逐仓库实测一遍，结果供首页与项目页判断
+      # 「这个链接还能不能给」。有凭据时才跑，失败也不该拖垮内容流水线。
+      - name: 检查已消失的项目仓库
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/check_gone_projects.py
+
       - name: Check for changes
         id: changes
         run: |
           shopt -s nullglob
-          git add src/content/posts/daily-*.md src/content/posts/risk-daily-*.md src/content/posts/growth-*.md src/content/projects/*.md public/hero/daily-*.svg public/hero/growth-*.svg
+          git add src/content/posts/daily-*.md src/content/posts/risk-daily-*.md src/content/posts/growth-*.md src/content/projects/*.md public/hero/daily-*.svg public/hero/growth-*.svg config/projects-gone.json
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
