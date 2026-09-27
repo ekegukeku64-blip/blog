@@ -20,6 +20,23 @@ const latest = dailyPosts[0]
 const digest = latest ? parseDailyDigest(latest.body ?? '', { base }) : { picks: [] }
 const picks = digest.picks.slice(0, 6)
 
+// 站内有没有这个项目的快照页，决定了卡片该往哪跳。
+//
+// 日报正文里的链接形态并不可靠：生成脚本对**每一条**推荐都写 ../../projects/...，
+// 但被安全过滤拦下、没写快照的项目根本没有页面（现存日报里有 17 条这样的死链）；
+// 反过来，早期日报一律直连 GitHub，其中 257 条其实站内已经有快照页可看。
+// 所以不信任正文里的链接，直接按快照集合决定：有快照 → 站内页面，没有 → GitHub。
+const snapshotNames = new Set(
+  (await getCollection('projects')).map((snapshot) => snapshot.data.fullName.toLowerCase()),
+)
+
+function targetFor(pick: { name: string; href: string | null; sourceUrl: string | null }) {
+  if (snapshotNames.has(pick.name.toLowerCase()) && pick.href) {
+    return { href: pick.href, external: false }
+  }
+  return { href: pick.sourceUrl ?? pick.href ?? '#', external: true }
+}
+
 const latestDate = latest
   ? latest.data.pubDate
       .toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
@@ -55,31 +72,34 @@ function formatStars(value: number | null) {
       </div>
 
       <ol class="home-daily-list">
-        {picks.map((pick) => (
-          <li class="home-daily-item">
-            <a
-              class="home-daily-card"
-              href={pick.href ?? pick.sourceUrl ?? '#'}
-              rel={pick.href ? undefined : 'noopener noreferrer'}
-              target={pick.href ? undefined : '_blank'}
-            >
-              <span class="home-daily-index">{String(pick.index).padStart(2, '0')}</span>
-              <span class="home-daily-body">
-                <strong class="home-daily-name">{pick.name}</strong>
-                {pick.description && (
-                  <span class="home-daily-desc">{plainText(pick.description)}</span>
-                )}
-                <span class="home-daily-meta">
-                  {pick.stars !== null && (
-                    <span class="home-daily-stars">★ {formatStars(pick.stars)}</span>
+        {picks.map((pick) => {
+          const target = targetFor(pick)
+          return (
+            <li class="home-daily-item">
+              <a
+                class="home-daily-card"
+                href={target.href}
+                rel={target.external ? 'noopener noreferrer' : undefined}
+                target={target.external ? '_blank' : undefined}
+              >
+                <span class="home-daily-index">{String(pick.index).padStart(2, '0')}</span>
+                <span class="home-daily-body">
+                  <strong class="home-daily-name">{pick.name}</strong>
+                  {pick.description && (
+                    <span class="home-daily-desc">{plainText(pick.description)}</span>
                   )}
-                  {pick.language && <span class="home-daily-lang">{pick.language}</span>}
-                  {!pick.href && <span class="home-daily-external">GitHub</span>}
+                  <span class="home-daily-meta">
+                    {pick.stars !== null && (
+                      <span class="home-daily-stars">★ {formatStars(pick.stars)}</span>
+                    )}
+                    {pick.language && <span class="home-daily-lang">{pick.language}</span>}
+                    {target.external && <span class="home-daily-external">GitHub</span>}
+                  </span>
                 </span>
-              </span>
-            </a>
-          </li>
-        ))}
+              </a>
+            </li>
+          )
+        })}
       </ol>
     </div>
   </section>
