@@ -5,14 +5,14 @@ name: "bridgeclip"
 fullName: "bridge-mind/bridgeclip"
 description: "Open-source AI video clipping desktop app by BridgeMind"
 sourceUrl: "https://github.com/bridge-mind/bridgeclip"
-stars: 225
-forks: 49
+stars: 272
+forks: 59
 language: "TypeScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-26"
-pushedAt: "2026-09-25T23:05:49Z"
+snapshotDate: "2026-09-27"
+pushedAt: "2026-09-26T16:39:02Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

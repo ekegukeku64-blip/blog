@@ -5,13 +5,13 @@ name: "zh-tech-writing"
 fullName: "leter/zh-tech-writing"
 description: "写中文技术文档的 Agent Skill，基于阮一峰《中文技术文档的写作规范》：短句、平实、没有 AI 腔"
 sourceUrl: "https://github.com/leter/zh-tech-writing"
-stars: 88
-forks: 4
+stars: 285
+forks: 13
 language: "未知"
 topics: ["agent-skills", "chinese", "claude-code", "documentation", "style-guide", "technical-writing"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-25"
+snapshotDate: "2026-09-27"
 pushedAt: "2026-09-24T17:49:53Z"
 ---
 

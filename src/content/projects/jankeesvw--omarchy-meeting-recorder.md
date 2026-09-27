@@ -5,14 +5,14 @@ name: "omarchy-meeting-recorder"
 fullName: "jankeesvw/omarchy-meeting-recorder"
 description: "Record meetings on Omarchy: mic and computer audio as two tracks, transcribed on your own machine, with speakers, chapters and a player."
 sourceUrl: "https://github.com/jankeesvw/omarchy-meeting-recorder"
-stars: 249
-forks: 19
+stars: 278
+forks: 21
 language: "Rust"
 topics: ["gtk4", "hyprland", "libadwaita", "meeting-recorder", "omarchy", "rust", "speaker-diarization", "transcription"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-26"
-pushedAt: "2026-09-25T17:14:05Z"
+snapshotDate: "2026-09-27"
+pushedAt: "2026-09-26T18:45:05Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

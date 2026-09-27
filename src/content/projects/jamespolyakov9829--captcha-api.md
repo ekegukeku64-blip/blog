@@ -5,13 +5,13 @@ name: "captcha-api"
 fullName: "jamespolyakov9829/captcha-api"
 description: "Captcha-solving API client - Cloudflare Challenge and Turnstile in one interface, with cost tracking and concurrent batch solves."
 sourceUrl: "https://github.com/jamespolyakov9829/captcha-api"
-stars: 212
+stars: 263
 forks: 37
 language: "Python"
 topics: ["api", "automation", "captcha", "captcha-api", "challenge", "cloudflare", "python", "turnstile"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-26"
+snapshotDate: "2026-09-27"
 pushedAt: "2026-09-25T19:28:10Z"
 ---
 

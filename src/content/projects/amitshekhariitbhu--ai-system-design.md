@@ -5,14 +5,14 @@ name: "ai-system-design"
 fullName: "amitshekhariitbhu/ai-system-design"
 description: "AI System Design - Learn how to design AI systems built on LLMs, RAG, and AI Agents step by step."
 sourceUrl: "https://github.com/amitshekhariitbhu/ai-system-design"
-stars: 172
-forks: 29
+stars: 435
+forks: 49
 language: "Markdown"
 topics: ["ai", "ai-agents", "ai-engineering", "ai-system", "ai-system-design", "ai-systems", "ai-systems-design", "llm"]
 license: "Apache-2.0"
 homepage: "https://outcomeschool.com/program/ai-and-machine-learning"
 defaultBranch: "main"
-snapshotDate: "2026-09-26"
+snapshotDate: "2026-09-27"
 pushedAt: "2026-09-25T04:53:31Z"
 ---
 
