@@ -82,6 +82,15 @@ jobs:
         with:
           path: dist
 
+      - name: 生成今日项目审核清单
+        # 只做汇报，所以 continue-on-error：审核脚本万一出错也不该拖垮内容流水线。
+        # 但它仍会在这次运行里显示为失败，不会被静默吞掉。
+        if: always()
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 scripts/review_daily_picks.py | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
         run: |
