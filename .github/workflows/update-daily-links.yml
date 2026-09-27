@@ -31,6 +31,9 @@ jobs:
           cache: npm
 
       - run: npm ci
+      # 中文字体分档需要 fontTools（见 daily-growth-draft.yml 的说明）。
+      - name: Install font subsetting tools
+        run: pip install fonttools brotli
       - run: npm run lint
       - run: npm run format:check
       - run: npm test

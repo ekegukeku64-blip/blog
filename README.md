@@ -45,15 +45,15 @@
 
 ## 技术栈
 
-| 层   | 技术                                       |
-| ---- | ------------------------------------------ |
-| 框架 | Astro v6                                   |
-| 样式 | Tailwind CSS v4 + 自定义 CSS 变量          |
-| 内容 | Markdown / MDX + Astro Content Collections |
-| 搜索 | Pagefind                                   |
-| 字体 | `@fontsource` 自托管字体                   |
-| 部署 | GitHub Pages + GitHub Actions              |
-| 评论 | 自建 API：Cloudflare Pages Functions + D1  |
+| 层   | 技术                                                          |
+| ---- | ------------------------------------------------------------- |
+| 框架 | Astro v6                                                      |
+| 样式 | Tailwind CSS v4 + 自定义 CSS 变量                             |
+| 内容 | Markdown / MDX + Astro Content Collections                    |
+| 搜索 | Pagefind                                                      |
+| 字体 | `@fontsource` 自托管字体 + 按词频分档的中文子集（构建时生成） |
+| 部署 | GitHub Pages + GitHub Actions                                 |
+| 评论 | 自建 API：Cloudflare Pages Functions + D1                     |
 
 ## 本地开发
 
@@ -61,6 +61,9 @@
 npm install
 npm run dev
 ```
+
+生成中文子集字体需要 `fonttools` 与 `brotli`（`pip install fonttools brotli`）。没装也能构建，
+中文会回退到系统衬线体，`npm run fonts:check` 会提示分档已经落后于内容。
 
 开发地址通常是：
 
@@ -77,12 +80,27 @@ npm run check         # Astro 类型检查与内容集合校验（不构建）
 npm run test          # 运行单元测试
 npm run lint          # ESLint 检查
 npm run format:check  # Prettier 格式检查
-npm run verify        # lint + 格式 + 测试 + 检查 + 构建 + 站点体检（提交前跑这个）
+npm run verify        # lint + 格式 + 测试 + 检查 + 构建 + 字体覆盖 + 站点体检（提交前跑这个）
 npm run check:site    # 只读站点体检：死链 / 孤儿页面 / 未被引用的资源
+npm run fonts:build   # 单独重跑中文分档：排序 → 生成子集 → 注入 @font-face
+npm run fonts:check   # 校验每页每个汉字都有字体覆盖
 npm run preview       # 预览构建产物
 npm run daily         # 本地补跑每日内容生成
 npm run build:api     # 构建评论 API（Pages Functions）产物
 ```
+
+### 中文体积是怎么降下来的
+
+中文衬线体 Noto Serif SC 整字库 1.4MB。`@fontsource` 按**码点**把它切成约 100 个分片，
+浏览器按码点命中，于是每页要拉 16 个文件、约 640KB，才能显示正文里那 250 多个汉字。
+
+改成按**词频**（这个字出现在多少页）排序分档后，每页只需要它真正用到的那 1~2 档：
+**中位 118KB / 1 个请求**，降幅约 81%。分档与页面映射由 `scripts/build-font-packs.mjs`、
+`scripts/subset_font_packs.py`、`scripts/inject-font-packs.mjs` 三个脚本在构建时完成，
+详见 `CLAUDE.md`。细节可自查：`config/font-packs.json` 是分档表，`public/fonts/` 是产物。
+
+首页与全站背景的枫树素材也做过取舍：海报用 WebP（124KB，JPEG 193KB 作回退），
+背景视频按 CRF 33 重编码（571KB → 465KB），在 56% 不透明度 + 遮罩下看不出差别。
 
 ## 项目结构
 
@@ -113,6 +131,8 @@ functions/               # 评论 API（Cloudflare Pages Functions）
 migrations/              # D1 建表 SQL
 tests/                   # node:test 单元测试
 scripts/                 # 构建与内容生成脚本（Node + Python）
+config/                  # 分档表、白名单等构建期配置（font-packs.json 由脚本维护）
+public/fonts/            # 中文子集字体（构建时生成，文件名带内容指纹）
 .github/workflows/       # CI/CD（含 PR 门禁、站点部署、API 部署、日更）
 ```
 

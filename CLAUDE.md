@@ -66,6 +66,31 @@ npm run indexnow     # 手动提交 sitemap URL 到 IndexNow（需 Git Bash）
 
 需要临时补跑时，在 GitHub Actions 页面手动触发 `workflow_dispatch`；本地的 `npm run daily` 只是备用入口。
 
+## 中文字体分档（构建时）
+
+全站中文走 Noto Serif SC。直接 `@fontsource/noto-serif-sc/400.css` 会引入约 100 个按**码点**切分的
+unicode-range 分片，浏览器按码点命中，于是每页要拉约 16 个文件、约 640KB 才能显示正文里那 250
+多个汉字。改成按**词频**分档：
+
+- `scripts/build-font-packs.mjs` 扫描 `dist/`，按「出现在多少页」给汉字排序，切成 5 档写进
+  `config/font-packs.json`；只对变更过的档生成任务文件 `config/font-pack-jobs.json`。
+- `scripts/subset_font_packs.py` 用 fontTools 生成 `public/fonts/p0N-<字重>-<指纹>.woff2`。
+  文件名带指纹，内容变则 URL 变（缓存安全），内容不变则字节相同（缓存命中）。
+  字体源用 `.woff`（TrueType）而不是 `.woff2`：后者解压一次要 ~12s，前者只要 ~0.1s。
+- `scripts/inject-font-packs.mjs` 按页注入：只把该页真正用到的档写进 `<head>`，每档一个
+  `src`，共用一个 `unicode-range`，浏览器仍只下载命中字符的那个文件。
+- `scripts/check-font-coverage.mjs`（`npm run fonts:check`）验证每页每个汉字都有覆盖。
+
+实测：每页 400 字重字体从 **中位 638KB / 16 个请求**降到 **118KB / 1 个请求**（约 −81%）。
+freq 排序后 708 页只需 1 档，只有 37 页需要 5 档。
+
+依赖：`pip install fonttools brotli`。**装不上也不会构建失败** —— 脚本会跳过字体生成，
+中文回退到系统衬线体（`--font-serif` 里保留了 'Songti SC' / 'SimSun'），但 `fonts:check` 会报错，
+提醒你分档和内容已经不匹配了。三个会构建站点的工作流都装了这两个包。
+
+> 改了 `src/content/` 里会让新汉字出现的内容后，本地跑一次 `npm run build` 即可让分档跟上；
+> 旧的字体文件会被自动清理。
+
 ## 自定义 Skills
 
 项目包含两个自定义 skill：

@@ -6,8 +6,11 @@
 @import './motion.css';
 
 @theme {
-  --font-serif: 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
-  --font-display: 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
+  /* 中文衬线体由 scripts/inject-font-packs.mjs 按页注入（见 layouts/BaseLayout.astro）：
+     注入成功时页面用 'Noto Serif SC'，注入缺失时才落到这里的系统字体，所以不会出现
+     “等字体”或空白。 */
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'SimSun', 'Noto Serif CJK SC', serif;
+  --font-display: 'Noto Serif SC', 'Songti SC', 'SimSun', 'Noto Serif CJK SC', serif;
   --font-sans: 'Inter', '-apple-system', 'PingFang SC', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 

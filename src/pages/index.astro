@@ -8,7 +8,14 @@ const latestPost = sortedPosts[0]
 ---
 
 <BaseLayout title="枫迹 - Entrance">
-  <link slot="head" rel="preload" as="image" href={`${import.meta.env.BASE_URL}maple.jpg`} />
+  <!-- WebP 优先：同一张图 124KB vs JPEG 193KB。旧浏览器走后面的 jpg 回退。 -->
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    type="image/webp"
+    href={`${import.meta.env.BASE_URL}maple.webp`}
+  />
   <div class="entrance-container" id="entrance-root">
     <div class="bg-layer">
       <video
@@ -19,7 +26,7 @@ const latestPost = sortedPosts[0]
         muted
         playsinline
         data-src={`${import.meta.env.BASE_URL}maple.mp4`}
-        poster={`${import.meta.env.BASE_URL}maple.jpg`}
+        poster={`${import.meta.env.BASE_URL}maple.webp`}
       ></video>
     </div>
 

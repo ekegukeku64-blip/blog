@@ -63,6 +63,11 @@ jobs:
           cache: npm
 
       - run: npm ci
+      # 中文字体分档需要 fontTools：日报/成长草稿经常引入新汉字，新增的分档必须在
+      # 构建时生成，否则那些字会回退到系统字体。装不上也不致命 —— 构建会跳过字体
+      # 分档并给出提示，站点仍可正常构建（scripts/subset_font_packs.py 会优雅退出）。
+      - name: Install font subsetting tools
+        run: pip install fonttools brotli
       - run: npm run lint
       - run: npm run format:check
       - run: npm test

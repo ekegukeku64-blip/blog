@@ -5,7 +5,10 @@ import '@fontsource/inter/500.css'
 import '@fontsource/inter/600.css'
 import '@fontsource/inter/700.css'
 import '@fontsource/jetbrains-mono/400.css'
-import '@fontsource/noto-serif-sc/400.css'
+// 中文（Noto Serif SC）不走 @fontsource 的 100 个 unicode-range 分片：那样每页要拉
+// 约 22 个文件（~800KB）才能显示约 250 个汉字。改成 scripts/build-font-packs.mjs
+// 按词频分档，由 scripts/inject-font-packs.mjs 把页面真正用到的那 1~2 档写进 <head>。
+// 因此这里的字体栈不再列出 Noto Serif SC —— 未注入的页面回退到系统衬线体，而不是卡住。
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import BackToTop from '../components/BackToTop.astro'
@@ -122,16 +125,19 @@ const isEntrance = Astro.url.pathname === import.meta.env.BASE_URL || Astro.url.
       跳到正文
     </a>
     <div class="global-bg-layer" aria-hidden="true">
-      <img
-        id="global-bg-poster"
-        class="global-bg-video"
-        src={`${import.meta.env.BASE_URL}maple.jpg`}
-        alt=""
-      />
+      <picture>
+        <source srcset={`${import.meta.env.BASE_URL}maple.webp`} type="image/webp" />
+        <img
+          id="global-bg-poster"
+          class="global-bg-video"
+          src={`${import.meta.env.BASE_URL}maple.jpg`}
+          alt=""
+        />
+      </picture>
       <video
         id="global-bg-video"
         class="global-bg-video"
-        poster={`${import.meta.env.BASE_URL}maple.jpg`}
+        poster={`${import.meta.env.BASE_URL}maple.webp`}
         preload="metadata"
         loop
         muted
