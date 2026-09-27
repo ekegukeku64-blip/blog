@@ -2,6 +2,26 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 export { isRestrictedGithubProject } from './projectSafety'
+
+// 已从 GitHub 消失的仓库（被删除或转为私有），由回填脚本记录在
+// config/projects-without-readme.json。这些页面的「原始仓库」链接会 404，
+// 页面上要如实说明，而不是继续显示「README 稍后补充」。
+export function loadRetiredProjects(): Set<string> {
+  try {
+    const policyPath = resolve(process.cwd(), 'config', 'projects-without-readme.json')
+    const payload = JSON.parse(readFileSync(policyPath, 'utf8')) as {
+      projects?: { fullName?: string }[]
+    }
+    return new Set(
+      (payload.projects ?? [])
+        .map((item) => String(item.fullName ?? '').toLowerCase())
+        .filter((name) => name.length > 0),
+    )
+  } catch {
+    // 清单缺失或损坏时按「没有下架项目」处理，不影响构建
+    return new Set()
+  }
+}
 export interface GithubProjectArchiveItem {
   owner: string
   name: string

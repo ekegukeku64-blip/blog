@@ -4,6 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro'
 import {
   isRestrictedGithubProject,
   loadGithubProjectArchive,
+  loadRetiredProjects,
   type GithubProjectArchiveItem,
 } from '../../../lib/githubProjectArchive'
 import { extractOfficialPackageLinks } from '../../../lib/officialPackageLinks'
@@ -101,6 +102,9 @@ const Content = renderedSnapshot?.Content
 const base = import.meta.env.BASE_URL
 const isSnapshot = project.access === 'snapshot'
 const isRestricted = project.access === 'restricted'
+// 仓库已从 GitHub 消失：链接会 404，页面上要如实说明。
+// 与 access 并列而不是并入，因为它和「是否有快照」「是否命中安全策略」互不冲突。
+const isRetired = loadRetiredProjects().has(project.fullName.toLowerCase())
 
 const distributionLinks =
   isSnapshot && snapshot ? extractOfficialPackageLinks(snapshot.body ?? '') : []
@@ -133,14 +137,19 @@ function formatNumber(value: number) {
         <p class="project-description">{project.description}</p>
       </div>
 
-      <div class:list={['project-availability', { 'is-restricted': isRestricted }]} role="status">
+      <div
+        class:list={['project-availability', { 'is-restricted': isRestricted || isRetired }]}
+        role="status"
+      >
         <span class="project-availability-dot" aria-hidden="true"></span>
         <span>
-          {Content
-            ? 'README 已保存到本站，可直接阅读'
-            : isRestricted
-              ? '本站仅保留安全提示，不提供使用内容'
-              : '项目摘要已保存到本站'}
+          {isRetired
+            ? '该项目已从 GitHub 下架，站内仅保留当时的公开摘要'
+            : Content
+              ? 'README 已保存到本站，可直接阅读'
+              : isRestricted
+                ? '本站仅保留安全提示，不提供使用内容'
+                : '项目摘要已保存到本站'}
         </span>
       </div>
     </header>
@@ -157,7 +166,13 @@ function formatNumber(value: number) {
                   : 'Local project summary'}
             </p>
             <h2 id="readme-heading">
-              {isSnapshot ? 'README 快照' : isRestricted ? '站内安全提示' : '项目摘要'}
+              {isSnapshot
+                ? 'README 快照'
+                : isRetired
+                  ? '项目已下架'
+                  : isRestricted
+                    ? '站内安全提示'
+                    : '项目摘要'}
             </h2>
           </div>
 
@@ -172,6 +187,16 @@ function formatNumber(value: number) {
               <p>
                 自动筛选检测到外挂、破解或其他高风险特征。本站不保存
                 README、安装说明、下载地址或可执行文件。
+              </p>
+              {isRetired && <p>该仓库现已在 GitHub 上不可访问。</p>}
+            </div>
+          ) : isRetired ? (
+            <div class="project-empty-readme project-retired-notice">
+              <h3>该项目已从 GitHub 下架</h3>
+              <p>{project.description}</p>
+              <p>
+                原始仓库已无法访问（被删除或转为私有），因此本站不会再补齐 README 快照。
+                这里保留的只是当时抓取到的公开摘要，内容已不再更新。
               </p>
             </div>
           ) : (
@@ -304,14 +329,18 @@ function formatNumber(value: number) {
                 项目主页
               </a>
             )}
-            <a
-              class="project-source-link"
-              href={project.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              原始仓库
-            </a>
+            {isRetired ? (
+              <span class="project-source-link is-retired">原始仓库已不可访问</span>
+            ) : (
+              <a
+                class="project-source-link"
+                href={project.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                原始仓库
+              </a>
+            )}
           </div>
         )}
       </aside>
@@ -449,6 +478,21 @@ function formatNumber(value: number) {
 
   .project-risk-notice h3 {
     color: var(--color-warm);
+  }
+
+  /* 仓库已从 GitHub 消失：提示框用弱化样式，避免和「安全提示」抢注意力 */
+  .project-retired-notice {
+    border-style: dashed;
+  }
+
+  .project-retired-notice h3 {
+    color: var(--color-text-muted);
+  }
+
+  .project-source-link.is-retired {
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+    cursor: not-allowed;
   }
 
   .project-empty-readme p,
