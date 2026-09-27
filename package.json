@@ -24,13 +24,14 @@
     "daily:digest": "node scripts/run-python.mjs scripts/generate_daily_digest.py",
     "daily:growth": "node scripts/run-python.mjs scripts/generate_growth_draft.py",
     "daily:dry": "node scripts/run-python.mjs scripts/generate_daily_digest.py --dry-run",
+    "self-test": "node scripts/run-python.mjs scripts/generate_daily_digest.py --self-test && node scripts/run-python.mjs scripts/generate_growth_draft.py --self-test",
     "weekly": "node scripts/run-python.mjs scripts/generate_weekly_picks.py",
     "weekly:dry": "node scripts/run-python.mjs scripts/generate_weekly_picks.py --dry-run",
     "indexnow": "bash scripts/submit-indexnow.sh",
     "firebase:deploy": "firebase deploy --only firestore:rules,firestore:indexes",
     "astro": "astro",
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test",
-    "verify": "npm run lint && npm run format:check && npm run test && npm run check && npm run build && npm run check:site"
+    "verify": "npm run lint && npm run format:check && npm run test && npm run check && npm run self-test && npm run build && npm run check:site"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.1",

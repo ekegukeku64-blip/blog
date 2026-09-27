@@ -4,15 +4,91 @@
 import io
 import os
 import re
+import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone, timedelta
 
 # Windows 终端编码兼容
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-POSTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'src', 'content', 'posts')
-HERO_DIR = os.path.join(os.path.dirname(__file__), '..', 'public', 'hero')
+
+def run_self_test() -> int:
+    """把「主路径」完整跑一遍（写进临时目录），而不是只验证提前退出的分支。
+
+    为什么需要：这个脚本有两条路径 —— 「当天已有草稿 → 提前 exit(0)」和
+    「没有草稿 → 真正生成文件」。在本地手工验证时只走了前者，于是漏掉了一个
+    NameError（写入时用的 filepath 变量被误删），它只在后者触发，
+    结果定时任务直接在 CI 上炸掉。这个自检让两条路径都必须通过。
+
+    用子进程 + 环境变量指向临时目录来做，因为脚本是顺序执行的顶层代码，
+    不能在同一次运行里换目录再跑一遍。
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        posts_dir = os.path.join(tmp, 'posts')
+        hero_dir = os.path.join(tmp, 'hero')
+        os.makedirs(posts_dir)
+        os.makedirs(hero_dir)
+        env = dict(
+            os.environ,
+            GROWTH_POSTS_DIR=posts_dir,
+            GROWTH_HERO_DIR=hero_dir,
+        )
+
+        first = subprocess.run(
+            [sys.executable, __file__],
+            env=env,
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+        )
+        if first.returncode != 0:
+            print('自检失败：主路径无法生成草稿')
+            print(first.stdout)
+            print(first.stderr)
+            return 1
+
+        produced = sorted(os.listdir(posts_dir))
+        if len(produced) != 1:
+            print(f'自检失败：期望生成 1 个草稿，实际 {len(produced)} 个 {produced}')
+            return 1
+        if not os.path.exists(os.path.join(hero_dir, 'growth-001.svg')):
+            print('自检失败：没有生成封面 SVG')
+            return 1
+
+        # 再跑一次：同一天应当命中守卫，不重复生成
+        second = subprocess.run(
+            [sys.executable, __file__],
+            env=env,
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+        )
+        if second.returncode != 0:
+            print('自检失败：重复运行时退出码非 0')
+            print(second.stderr)
+            return 1
+        if len(os.listdir(posts_dir)) != 1:
+            print('自检失败：同一天重复生成了草稿（守卫未生效）')
+            return 1
+
+    print('Self-test passed: 主路径可写，且同一天不会重复生成。')
+    return 0
+
+
+if '--self-test' in sys.argv:
+    sys.exit(run_self_test())
+
+# 允许通过环境变量改写输出目录，供自检使用；正常运行走仓库内的默认路径。
+POSTS_DIR = os.environ.get('GROWTH_POSTS_DIR') or os.path.join(
+    os.path.dirname(__file__), '..', 'src', 'content', 'posts'
+)
+HERO_DIR = os.environ.get('GROWTH_HERO_DIR') or os.path.join(
+    os.path.dirname(__file__), '..', 'public', 'hero'
+)
 
 # 北京时间
 BJT = timezone(timedelta(hours=8))
@@ -51,6 +127,9 @@ if today_draft:
 
 next_num = max(existing, default=0) + 1
 file_num = f'{next_num:03d}'
+# 写入目标。注意这两个变量在下面「写入文件」处会用到，删守卫时别一起删掉。
+filename = f'growth-{file_num}.md'
+filepath = os.path.join(POSTS_DIR, filename)
 
 # 模板主题（随机挑一个方向，你也可以改成固定）
 templates = [
