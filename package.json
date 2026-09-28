@@ -22,6 +22,7 @@
     "format:check": "prettier --check .",
     "check:site": "node scripts/check-site.mjs",
     "preview": "astro preview",
+    "preview:daily": "node scripts/build-daily-preview.mjs",
     "daily": "npm run daily:digest && npm run daily:growth",
     "daily:digest": "node scripts/run-python.mjs scripts/generate_daily_digest.py",
     "daily:growth": "node scripts/run-python.mjs scripts/generate_growth_draft.py",
