@@ -9,6 +9,7 @@ import {
 } from '../../../lib/githubProjectArchive'
 import { extractOfficialPackageLinks } from '../../../lib/officialPackageLinks'
 import { loadGoneProjects } from '../../../lib/goneProjects'
+import { loadProjectAliases } from '../../../lib/projectAliases'
 
 type ProjectAccess = 'snapshot' | 'summary' | 'restricted'
 
@@ -98,6 +99,7 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props as { project: ProjectPageData }
 const goneNames = loadGoneProjects()
+const aliases = loadProjectAliases()
 const snapshot = project.snapshotId ? await getEntry('projects', project.snapshotId) : undefined
 const renderedSnapshot = snapshot ? await render(snapshot) : null
 const Content = renderedSnapshot?.Content
@@ -114,6 +116,12 @@ const isRestricted = project.access === 'restricted'
 const retiredNames = loadRetiredProjects()
 const isRetired =
   retiredNames.has(project.fullName.toLowerCase()) || goneNames.has(project.fullName.toLowerCase())
+
+// 第三种情况：仓库既没消失、也不是被安全策略拦下，而是**改名/转手了**。
+// 日报正文里留下的是收录当时的旧名，所以这种旧名页面会一直存在；页面上必须说明
+// 它搬去哪了，否则读者会以为项目没了（实测 9 个回填候选全是改名）。
+const renamedTo = aliases.get(project.fullName.toLowerCase())
+const isRenamed = Boolean(renamedTo) && !isSnapshot && !isRetired
 
 const distributionLinks =
   isSnapshot && snapshot ? extractOfficialPackageLinks(snapshot.body ?? '') : []
@@ -206,6 +214,17 @@ function formatNumber(value: number) {
               <p>
                 原始仓库已无法访问（被删除或转为私有），因此本站不会再补齐 README 快照。
                 这里保留的只是当时抓取到的公开摘要，内容已不再更新。
+              </p>
+            </div>
+          ) : renamedTo ? (
+            // 这个仓库**没有**消失，只是改名或转手了。日报里留下的是收录当时的名字，
+            // 所以旧名页面会一直存在；不说明的话读者会以为项目没了。
+            <div class="project-empty-readme project-renamed-notice">
+              <h3>这个项目改名了</h3>
+              <p>{project.description}</p>
+              <p>
+                仓库现在叫 <a href={`${base}projects/${renamedTo}/`}>{renamedTo}</a>
+                （GitHub 上从 {project.fullName} 重定向过去），README 快照在那边。
               </p>
             </div>
           ) : (
