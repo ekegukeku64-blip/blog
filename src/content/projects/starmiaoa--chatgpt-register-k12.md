@@ -5,13 +5,13 @@ name: "chatgpt-register-k12"
 fullName: "starmiaoa/chatgpt-register-k12"
 description: "ChatGPT register to Sub2API exporter with workspace and alias support"
 sourceUrl: "https://github.com/starmiaoa/chatgpt-register-k12"
-stars: 243
-forks: 74
+stars: 244
+forks: 75
 language: "Python"
 topics: []
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-09-27"
+snapshotDate: "2026-09-28"
 pushedAt: "2026-07-23T16:01:55Z"
 ---
 

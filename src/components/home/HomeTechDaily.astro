@@ -8,6 +8,7 @@
 import { getCollection } from 'astro:content'
 import { parseDailyDigest } from '../../lib/dailyDigest'
 import { loadGoneProjects } from '../../lib/goneProjects'
+import { loadProjectAliases } from '../../lib/projectAliases'
 
 const base = import.meta.env.BASE_URL
 const posts = await getCollection('posts', ({ data }) => !data.draft && !data.noindex)
@@ -35,6 +36,15 @@ const snapshotNames = new Set(
 // 或封号 —— 再做成可点击的 GitHub 按钮，读者点过去就是 404。
 const goneNames = loadGoneProjects()
 
+// 还有一批是**改过名/转过手**：日报里记的是收录当时的旧名字，快照却按现行名建。
+// 不查别名表就会误判成「站内没有快照」—— 实测回填那批候选 9 个全是这种情况。
+const aliases = loadProjectAliases()
+
+/** 日报里的名字 → 站内快照用的现行名（没改过名就返回原值）。 */
+function canonicalName(name: string) {
+  return aliases.get(name.toLowerCase()) ?? name
+}
+
 /**
  * 三种去向：
  *   internal —— 站内有快照页，跳站内（读者不用翻墙也能看 README）
@@ -42,6 +52,15 @@ const goneNames = loadGoneProjects()
  *   gone     —— 仓库已经没了，不做成链接，只说明情况
  */
 function targetFor(pick: { name: string; href: string | null; sourceUrl: string | null }) {
+  const canonical = canonicalName(pick.name)
+  if (snapshotNames.has(canonical.toLowerCase())) {
+    // 用现行名拼站内路径：项目页是按 owner/name 生成的，旧名的页面只是归档。
+    const [owner, repo] = canonical.split('/')
+    return {
+      kind: 'internal' as const,
+      href: `${base.replace(/\/$/, '')}/projects/${owner}/${repo}/`,
+    }
+  }
   if (snapshotNames.has(pick.name.toLowerCase()) && pick.href) {
     return { kind: 'internal' as const, href: pick.href }
   }

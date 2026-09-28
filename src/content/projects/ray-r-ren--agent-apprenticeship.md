@@ -5,14 +5,14 @@ name: "agent-apprenticeship"
 fullName: "ray-r-ren/agent-apprenticeship"
 description: "The living ecosystem where AI agents complete tasks through workflow loops, improve through iterative execution, are evaluated by mentor agents or humans in the loop, and turn completed work into reusable work experience and data to improve future agents."
 sourceUrl: "https://github.com/ray-r-ren/agent-apprenticeship"
-stars: 1617
+stars: 1616
 forks: 62
 language: "Python"
 topics: ["agent-apprenticeship", "agent-economy", "agent-experience", "agent-learning", "agent-traces", "agentic-ai", "ai-agents", "autonomous-agents"]
 license: "MIT"
 homepage: "https://forsy.ai"
 defaultBranch: "main"
-snapshotDate: "2026-09-27"
+snapshotDate: "2026-09-28"
 pushedAt: "2026-07-06T15:17:36Z"
 ---
 

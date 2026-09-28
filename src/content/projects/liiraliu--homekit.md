@@ -12,7 +12,7 @@ topics: ["ai-agent", "apple-home", "automation", "claude", "cli", "cursor", "hom
 license: "MIT"
 homepage: "https://homekit.builders"
 defaultBranch: "main"
-snapshotDate: "2026-09-27"
+snapshotDate: "2026-09-28"
 pushedAt: "2026-09-21T09:19:45Z"
 ---
 

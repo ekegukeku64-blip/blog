@@ -5,14 +5,14 @@ name: "odysseus"
 fullName: "odysseus-dev/odysseus"
 description: "Self-hosted AI workspace. "
 sourceUrl: "https://github.com/odysseus-dev/odysseus"
-stars: 87612
-forks: 975
+stars: 87647
+forks: 994
 language: "Python"
 topics: []
 license: "AGPL-3.0"
 homepage: "https://odysseus-dev.github.io/odysseus"
 defaultBranch: "dev"
-snapshotDate: "2026-09-27"
+snapshotDate: "2026-09-28"
 pushedAt: "2026-09-24T17:38:36Z"
 ---
 

@@ -5,15 +5,15 @@ name: "emulo"
 fullName: "ohad6k/emulo"
 description: "Mine your Claude Code and Codex logs into a local you.md agent profile."
 sourceUrl: "https://github.com/ohad6k/emulo"
-stars: 292
-forks: 31
+stars: 293
+forks: 32
 language: "HTML"
 topics: ["agent-memory", "agent-skills", "ai", "ai-agents", "ai-coding", "ai-memory", "claude", "claude-code"]
 license: "MIT"
 homepage: "https://emulo.vercel.app"
 defaultBranch: "main"
-snapshotDate: "2026-09-27"
-pushedAt: "2026-09-26T14:48:07Z"
+snapshotDate: "2026-09-28"
+pushedAt: "2026-09-28T11:10:57Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

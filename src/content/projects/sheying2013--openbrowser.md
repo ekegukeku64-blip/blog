@@ -5,13 +5,13 @@ name: "OpenBrowser"
 fullName: "sheying2013/OpenBrowser"
 description: "本地指纹浏览器 · 多环境隔离 · 代理 / 指纹 / 同步 / RPA"
 sourceUrl: "https://github.com/sheying2013/OpenBrowser"
-stars: 736
-forks: 143
+stars: 739
+forks: 144
 language: "JavaScript"
 topics: ["chromium", "electron", "fingerprint-browser", "proxy", "rpa"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-27"
+snapshotDate: "2026-09-28"
 pushedAt: "2026-09-25T17:25:00Z"
 ---
 

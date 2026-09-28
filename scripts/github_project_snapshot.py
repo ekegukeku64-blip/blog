@@ -34,6 +34,50 @@ SKIP_LIST_PATH = os.path.join(
     os.path.dirname(__file__), "..", "config", "projects-without-readme.json"
 )
 
+# 仓库改名/转手后，日报正文里留下的还是旧名字，而快照文件是按新名字建的。
+# 把「旧名 -> 现行名」记在这里，让页面能把两边对上（否则卡片会一直指向 GitHub，
+# 明明站内已经有可以读的 README 页面）。实测这批回填里 9 个候选全部是改名过。
+ALIAS_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "config", "project-aliases.json"
+)
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+
+def load_aliases() -> dict[str, str]:
+    if not os.path.exists(ALIAS_PATH):
+        return {}
+    try:
+        with open(ALIAS_PATH, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (ValueError, OSError) as error:
+        print(f"  Alias file unreadable, ignoring it: {error}")
+        return {}
+    aliases = payload.get("aliases") or {}
+    return {
+        str(old).lower(): str(new)
+        for old, new in aliases.items()
+        if old and new
+    }
+
+
+def save_renames(renames: dict[str, str]) -> None:
+    """合并新发现的改名记录；只增不改，避免旧名字的映射被覆盖掉。"""
+    merged = load_aliases()
+    for old, new in renames.items():
+        merged[old.lower()] = new
+    payload = {
+        "note": (
+            "仓库改名或转手后的旧名到现行名映射。日报正文里记的是收录当时的名字，"
+            "改过名的仓库需要靠这张表才能对上站内快照页。由 "
+            "scripts/github_project_snapshot.py 在抓取时自动记录。"
+        ),
+        "aliases": {key: merged[key] for key in sorted(merged)},
+    }
+    os.makedirs(os.path.dirname(ALIAS_PATH), exist_ok=True)
+    with open(ALIAS_PATH, "w", encoding="utf-8", newline="\n") as handle:
+        json.dump(payload, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+
 
 def load_skip_entries() -> list[dict]:
     if not os.path.exists(SKIP_LIST_PATH):
@@ -315,6 +359,7 @@ def main() -> None:
     repos = []
     skip_entries: list[dict] = []
     newly_dead: list[str] = []
+    renames: dict[str, str] = {}
     if args.missing_snapshots:
         skip_entries = load_skip_entries()
         pending = missing_snapshot_repos(
@@ -330,7 +375,15 @@ def main() -> None:
     for full_name in requested_repos[:args.limit]:
         path = urllib.parse.quote(full_name, safe="/")
         try:
-            repos.append(api_get(f"https://api.github.com/repos/{path}", headers))
+            repo = api_get(f"https://api.github.com/repos/{path}", headers)
+            repos.append(repo)
+            # 仓库改名/转手后，用旧名字请求也能拿到数据，但返回的 full_name 是新名字
+            # （GitHub 会 301 重定向）。这个差异必须记下来：日报里写的是旧名字，
+            # 而快照文件是按新名字建的，不记的话卡片永远匹配不上站内页。
+            canonical = str(repo.get("full_name") or "")
+            if canonical and canonical.lower() != full_name.lower():
+                renames[full_name] = canonical
+                print(f"  Renamed: {full_name} -> {canonical}")
         except urllib.error.HTTPError as error:
             if error.code == 404:
                 newly_dead.append(full_name)
@@ -343,6 +396,11 @@ def main() -> None:
     bjt = timezone(timedelta(hours=8))
     written = write_project_snapshots(repos, args.output, headers,
                                       datetime.now(bjt).strftime("%Y-%m-%d"))
+
+    if renames:
+        save_renames(renames)
+        print(f"已记录 {len(renames)} 个改名/转手的仓库到 "
+              f"{os.path.relpath(ALIAS_PATH, REPO_ROOT)}")
 
     if args.missing_snapshots:
         if newly_dead:

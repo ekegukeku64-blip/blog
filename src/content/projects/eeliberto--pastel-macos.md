@@ -5,13 +5,13 @@ name: "Pastel-macOS"
 fullName: "EEliberto/Pastel-macOS"
 description: "一款用于安装 IPA 历史版本的工具，适用于获取旧版应用并自动捕获数据包。下载后，可直接通过 AirDrop 传输至 iPhone、iPad 上并安装并使用。"
 sourceUrl: "https://github.com/EEliberto/Pastel-macOS"
-stars: 1873
-forks: 121
+stars: 1877
+forks: 123
 language: "Swift"
 topics: []
 license: "Apache-2.0"
 defaultBranch: "main"
-snapshotDate: "2026-09-27"
+snapshotDate: "2026-09-28"
 pushedAt: "2026-09-07T02:05:08Z"
 ---
 

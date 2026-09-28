@@ -5,14 +5,14 @@ name: "meatshell"
 fullName: "yituorou/meatshell"
 description: "一个轻量级、低内存占用的 SSH / 终端客户端（A lightweight, low-memory SSH / terminal client）"
 sourceUrl: "https://github.com/yituorou/meatshell"
-stars: 1482
-forks: 185
+stars: 1484
+forks: 187
 language: "Rust"
 topics: []
 license: "未标注"
 homepage: "https://ixbaicn.github.io/meatshell-docs/"
 defaultBranch: "main"
-snapshotDate: "2026-09-27"
+snapshotDate: "2026-09-28"
 pushedAt: "2026-09-23T06:38:46Z"
 ---
 
