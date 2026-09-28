@@ -21,6 +21,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:site": "node scripts/check-site.mjs",
+    "guard:images": "node scripts/guard-content-images.mjs",
     "preview": "astro preview",
     "preview:daily": "node scripts/build-daily-preview.mjs",
     "daily": "npm run daily:digest && npm run daily:growth",
@@ -34,7 +35,7 @@
     "firebase:deploy": "firebase deploy --only firestore:rules,firestore:indexes",
     "astro": "astro",
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test",
-    "verify": "npm run lint && npm run format:check && npm run test && npm run check && npm run self-test && npm run build && npm run fonts:check && npm run check:site"
+    "verify": "npm run lint && npm run format:check && npm run test && npm run check && npm run self-test && npm run guard:images && npm run build && npm run fonts:check && npm run check:site"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.1",
