@@ -28,7 +28,8 @@ const INTENTIONAL_UNLINKED = new Set([
 ])
 
 // 有意不入站内导航的页面
-const INTENTIONAL_ORPHANS = new Set(['admin/index.html'])
+// offline.html 只由 public/sw.js 在断网时提供，本来就不该有内链指向它
+const INTENTIONAL_ORPHANS = new Set(['admin/index.html', 'offline.html'])
 
 if (!existsSync(DIST)) {
   console.error('找不到 dist/，请先运行 `npm run build`。')
