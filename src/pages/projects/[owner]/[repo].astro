@@ -200,12 +200,13 @@ function formatNumber(value: number) {
           {Content ? (
             <>
               {readmeIsForeign && (
-                // 主体方案：服务端生成中文摘要（默认展开）。原文留在下方，可折叠。
+                // 读者主动触发：默认只给一个「翻译成中文」按钮，不自动生成译文。
+                // 用浏览器整页翻译的做法写在这块内部的说明里（下方另有一条静态提示兜底）。
                 <ProjectSummary slug={project.fullName} body={snapshot?.body ?? ''} />
               )}
               {readmeIsForeign && (
-                // 补充方案：摘要生成失败或读者想要更完整的中文时，浏览器整页翻译仍然可用。
-                // 这条提示不依赖任何 API，也不依赖摘要服务是否配好。
+                // 不依赖任何 API 的兜底提示：摘要服务没配好、或读者想要更完整的中文时，
+                // 浏览器自带的整页翻译始终可用。
                 <p class="project-language-note">
                   下面正文是项目自己的英文 README。想读全文就用<b>浏览器自带的整页翻译</b>： Chrome
                   / Edge 点地址栏右侧的翻译图标，或用右键菜单里的「翻译成中文」；
