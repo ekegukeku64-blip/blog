@@ -159,7 +159,6 @@ function remoteBlobs(treeSha) {
   return map
 }
 
-let parentSha = remoteHead
 for (const sha of commits) {
   // 从本地 git 读取这个提交的全部信息
   const treeSha = git(['rev-parse', `${sha}^{tree}`]).trim()
@@ -228,7 +227,6 @@ for (const sha of commits) {
     throw new Error(`远端 commit sha 不一致：期望 ${sha}，得到 ${created.sha}`)
   }
   console.log(`  提交已建：${created.sha.slice(0, 7)}（与本地一致）`)
-  parentSha = sha
 }
 
 apiJson([`repos/${REPO}/git/refs/heads/${BRANCH}`, '-X', 'PATCH', '--input', '-'], {
