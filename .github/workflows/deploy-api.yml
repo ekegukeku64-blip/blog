@@ -1,6 +1,6 @@
 name: Deploy API
 
-# Deploys the auth + comments API (Cloudflare Pages Functions + D1).
+# Deploys the auth + comments + translation API (Cloudflare Pages Functions + D1).
 #
 # Deliberately separate from the GitHub Pages workflows: path filters mean it
 # only runs when API code changes, and its own concurrency group means an API
@@ -13,6 +13,16 @@ name: Deploy API
 #   npx wrangler d1 create blog-comments          # put the id in wrangler.toml
 #   npx wrangler pages project create blog-api    # then this workflow can deploy
 #   npx wrangler pages secret put PBKDF2_PEPPER --project-name blog-api
+#
+# Translation (optional feature: /api/translate turns foreign READMEs into Chinese
+# summaries). Without the key below the endpoint answers 503 and the project pages
+# simply fall back to the "use your browser's translate" hint — the site still
+# builds and works.
+#   npx wrangler pages secret put DEEPSEEK_API_KEY --project-name blog-api
+#
+# The key must live ONLY as a Cloudflare secret. It is never written to this repo,
+# never included in the built site, and never sent to a browser: the frontend calls
+# /api/translate and the key stays server-side.
 
 on:
   push:

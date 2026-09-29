@@ -55,6 +55,19 @@ export function commentRules(ip: string, userId: string): LimitRule[] {
   ]
 }
 
+// Translation spends money on every cache miss, so it needs a ceiling that
+// comment posting does not. Counted per IP only: there is no account here (the
+// whole point is that readers who cannot use GitHub/browser translation still
+// get Chinese), and a per-account bucket would just be bypassed by not logging
+// in. 20/minute is far above human reading pace; 300/day keeps a scripted caller
+// from running up a bill while still covering a shared campus address.
+export function translateRules(ip: string): LimitRule[] {
+  return [
+    { bucket: `translate:ip:${ip}`, windowMs: MINUTE, max: 20 },
+    { bucket: `translate:ip:${ip}`, windowMs: 24 * HOUR, max: 300 },
+  ]
+}
+
 export interface LimitVerdict {
   ok: boolean
   retryAfterSeconds: number

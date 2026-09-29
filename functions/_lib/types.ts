@@ -29,6 +29,11 @@ export interface Env {
   PBKDF2_PEPPER?: string
   PBKDF2_ITERATIONS?: string
   ALLOWED_ORIGINS?: string
+  // 译文生成用的模型服务（OpenAI 兼容接口）。密钥只放在 Cloudflare 的 secret 里，
+  // 绝不进仓库、也绝不下发到前端 —— 前端只能调 /api/translate 这个中间层。
+  DEEPSEEK_API_KEY?: string
+  DEEPSEEK_BASE_URL?: string
+  DEEPSEEK_MODEL?: string
 }
 
 export interface Ctx {

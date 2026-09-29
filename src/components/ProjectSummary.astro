@@ -1,0 +1,294 @@
+---
+// 项目页的「中文摘要」块。
+//
+// 背景：项目页正文是各项目自己的 README，实测 675 个有正文的快照里 616 个（91%）以英文
+// 为主。站内原有的「设备端翻译」依赖 Chrome 内置 Translator API，QQ/360/UC/Firefox/
+// Safari 都没有 —— 目标读者（不会翻墙、也不会用浏览器翻译的人）在英文正文前没有出路。
+//
+// 所以这里给一个不依赖浏览器能力的方案：服务端把正文翻成中文摘要（按源文本缓存，
+// 同一段文字全站只付费翻译一次），前端把结果再缓存一份到 localStorage。
+//
+// 默认**展开**摘要、原文同时保留。原因就是这个功能存在的意义 —— 如果默认收起，
+// 最不会操作的读者依然看不到中文。想看原文的人点一下折叠即可（并要求浏览器记住）。
+import { buildSummaryPayload, isMostlyNonChinese } from '../lib/textLanguage'
+
+interface Props {
+  /** 项目标识，用于本地缓存键与调试 */
+  slug: string
+  /** 正文原文（Markdown） */
+  body: string
+}
+
+const { slug, body } = Astro.props
+
+// 只发给模型够读懂项目的开头部分；服务端还会再截断一次（MAX_SOURCE_CHARS）。
+// 这里先截断是因为请求体有 8KB 上限，而 README 动辄上万字。
+const payload = buildSummaryPayload(body)
+
+// 中文正文不需要摘要；正文太短也不值得调用模型
+const eligible = isMostlyNonChinese(body) && payload.length >= 200
+---
+
+{eligible && (
+  <details class="project-summary" data-summary-slug={slug} data-summary-text={payload} open>
+    <summary class="project-summary-head">
+      <span class="project-summary-badge">摘</span>
+      <span class="project-summary-title">中文摘要</span>
+      <span class="project-summary-state" data-summary-state>
+        正在加载…
+      </span>
+      <span class="project-summary-toggle" data-summary-toggle>
+        收起
+      </span>
+    </summary>
+
+    <div class="project-summary-body">
+      <p class="project-summary-text" data-summary-text hidden></p>
+      <p class="project-summary-fallback" data-summary-fallback hidden>
+        <span data-summary-error>摘要暂时拿不到。</span>
+        <button type="button" class="project-summary-retry" data-summary-retry>
+          重试
+        </button>
+        <span class="project-summary-hint">
+          也可以直接用浏览器自带的整页翻译（Chrome/Edge 点地址栏右侧的翻译图标，
+          或用右键菜单里的「翻译成中文」）。
+        </span>
+      </p>
+      <p class="project-summary-note">
+        机器翻译的项目简介，仅供参考 · 原文是项目自己的 README，已保留在下方
+      </p>
+    </div>
+  </details>
+)}
+
+<script>
+  import { isFirebaseConfigured, translateText } from '../lib/api'
+
+  // localStorage 缓存：同一台设备二次访问立刻出结果，不再打接口。
+  // 服务端也有缓存（按源文本 sha256），两层加起来同一段文字全站只付费翻译一次。
+  const CACHE_PREFIX = 'project-summary-v1:'
+  const COLLAPSED_KEY = 'project-summary-collapsed'
+
+  function cacheKey(slug: string) {
+    return `${CACHE_PREFIX}${slug}`
+  }
+
+  function readCache(slug: string): string | null {
+    try {
+      return localStorage.getItem(cacheKey(slug))
+    } catch {
+      return null
+    }
+  }
+
+  function writeCache(slug: string, summary: string) {
+    try {
+      localStorage.setItem(cacheKey(slug), summary)
+    } catch {
+      // 隐私模式或存储写满：不影响本次显示
+    }
+  }
+
+  function initProjectSummary() {
+    const root = document.querySelector<HTMLElement>('.project-summary[data-summary-slug]')
+    if (!root || root.dataset.summaryReady === 'true') return
+    root.dataset.summaryReady = 'true'
+
+    const slug = root.dataset.summarySlug || ''
+    const text = root.dataset.summaryText || ''
+    const stateEl = root.querySelector<HTMLElement>('[data-summary-state]')
+    const toggleEl = root.querySelector<HTMLElement>('[data-summary-toggle]')
+    const textEl = root.querySelector<HTMLElement>('[data-summary-text]')
+    const fallbackEl = root.querySelector<HTMLElement>('[data-summary-fallback]')
+    const errorEl = root.querySelector<HTMLElement>('[data-summary-error]')
+    const retryEl = root.querySelector<HTMLButtonElement>('[data-summary-retry]')
+
+    // 折叠状态全站记忆：想看原文的人只需关一次
+    try {
+      if (localStorage.getItem(COLLAPSED_KEY) === 'true') root.removeAttribute('open')
+    } catch {
+      // 忽略
+    }
+    const syncToggleLabel = () => {
+      if (toggleEl) toggleEl.textContent = root.hasAttribute('open') ? '收起' : '展开摘要'
+    }
+    syncToggleLabel()
+    root.addEventListener('toggle', () => {
+      syncToggleLabel()
+      try {
+        localStorage.setItem(COLLAPSED_KEY, String(!root.hasAttribute('open')))
+      } catch {
+        // 忽略
+      }
+    })
+
+    if (!isFirebaseConfigured) {
+      // 没配 API 就整个不显示，别留一个永远转圈的占位
+      root.hidden = true
+      return
+    }
+
+    function showSummary(summary: string, fromCache: boolean) {
+      if (textEl) {
+        textEl.textContent = summary
+        textEl.hidden = false
+      }
+      if (fallbackEl) fallbackEl.hidden = true
+      if (stateEl) stateEl.textContent = fromCache ? '已缓存' : '机器翻译'
+    }
+
+    function showFailure(message: string) {
+      if (fallbackEl) fallbackEl.hidden = false
+      if (textEl) textEl.hidden = true
+      if (errorEl) errorEl.textContent = message
+      if (stateEl) stateEl.textContent = '未能生成'
+    }
+
+    let inFlight = false
+    async function load(force = false) {
+      if (inFlight) return
+      const cached = force ? null : readCache(slug)
+      if (cached) {
+        showSummary(cached, true)
+        return
+      }
+      if (!text) {
+        showFailure('这段内容太短，无法生成摘要。')
+        return
+      }
+      inFlight = true
+      if (stateEl) stateEl.textContent = '正在生成…'
+      try {
+        const result = await translateText(text, 'zh')
+        writeCache(slug, result.summary)
+        showSummary(result.summary, result.cached)
+      } catch (error) {
+        showFailure((error as Error).message || '摘要暂时拿不到。')
+      } finally {
+        inFlight = false
+      }
+    }
+
+    retryEl?.addEventListener('click', () => {
+      void load(true)
+    })
+
+    // 打开就加载：读者不需要先理解「点一下才有中文」这件事
+    void load()
+  }
+
+  initProjectSummary()
+  document.addEventListener('astro:page-load', initProjectSummary)
+</script>
+
+<style>
+  .project-summary {
+    margin-bottom: 1.75rem;
+    border: 1px solid rgba(122, 149, 175, 0.24);
+    border-radius: 0.9rem;
+    background: linear-gradient(150deg, rgba(122, 149, 175, 0.1), rgba(6, 10, 18, 0.16));
+    overflow: hidden;
+  }
+
+  .project-summary[hidden] {
+    display: none;
+  }
+
+  .project-summary-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.1rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .project-summary-head::-webkit-details-marker {
+    display: none;
+  }
+
+  .project-summary-badge {
+    display: inline-flex;
+    width: 1.6rem;
+    height: 1.6rem;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background: rgba(122, 149, 175, 0.2);
+    color: var(--color-accent-hover);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .project-summary-title {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .project-summary-state {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: rgba(168, 175, 186, 0.7);
+  }
+
+  .project-summary-toggle {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: rgba(122, 149, 175, 0.85);
+  }
+
+  .project-summary-body {
+    padding: 0 1.1rem 1rem;
+  }
+
+  .project-summary-text {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 0.92rem;
+    line-height: 1.95;
+    color: rgba(226, 229, 234, 0.92);
+  }
+
+  .project-summary-fallback {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    line-height: 1.85;
+    color: rgba(214, 218, 225, 0.75);
+  }
+
+  .project-summary-retry {
+    margin-left: 0.4rem;
+    border: 1px solid rgba(122, 149, 175, 0.4);
+    border-radius: 0.4rem;
+    padding: 0.1rem 0.5rem;
+    color: var(--color-accent-hover);
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+
+  .project-summary-hint {
+    display: block;
+    margin-top: 0.5rem;
+    color: rgba(168, 175, 186, 0.7);
+    font-size: 0.78rem;
+  }
+
+  .project-summary-note {
+    margin: 0.75rem 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 0.6rem;
+    font-size: 0.72rem;
+    color: rgba(168, 175, 186, 0.6);
+  }
+
+  @media (max-width: 768px) {
+    .project-summary-state {
+      display: none;
+    }
+  }
+</style>

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import test from 'node:test'
 
-import { isMostlyNonChinese } from '../src/lib/textLanguage.ts'
+import { buildSummaryPayload, isMostlyNonChinese } from '../src/lib/textLanguage.ts'
 
 // 这条判断决定「项目页要不要提示用浏览器整页翻译」。本站的翻译控件依赖 Chrome 内置
 // 的 Translator API（QQ/360/UC/Firefox/Safari 都没有），所以外文页面必须有静态兜底
@@ -72,4 +72,53 @@ test('当前项目快照里存在被判为外文的正文', () => {
   }
   assert.ok(foreign > 0, '应当有大量英文 README 被判为外文')
   console.log(`    （${foreign}/${files.length} 个项目快照被判为外文）`)
+})
+
+// ── 翻译载荷 ───────────────────────────────────────────────────────
+// 载荷会直接发给翻译模型。里面混进站内脚手架句子，模型就会把「本页保存的是公开项目
+// 资料快照」当成项目描述 —— 快照正文开头恰好就有这句。
+
+test('载荷剔除了快照的站内说明句', () => {
+  const body = [
+    '> 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。',
+    '',
+    'LangChain is a framework for building agents and LLM-powered applications.',
+  ].join('\n')
+  const payload = buildSummaryPayload(body)
+  assert.ok(!payload.includes('本页保存的是'), `载荷不该含站内说明：${payload.slice(0, 60)}`)
+  assert.ok(!payload.includes('阅读过程不需要连接'), '载荷不该含站内说明')
+  assert.ok(payload.includes('LangChain is a framework'), '项目描述必须保留')
+})
+
+test('载荷剔除「已下架」警示句', () => {
+  const body = [
+    '> ⚠️ 该项目已从 GitHub 下架（原仓库已不可访问）。下方为当时抓取的公开摘要，仅作留存。',
+    'A small CLI that prints the weather forecast for your city.',
+  ].join('\n')
+  const payload = buildSummaryPayload(body)
+  assert.ok(!payload.includes('已从 GitHub 下架'))
+  assert.ok(!payload.includes('仅作留存'))
+  assert.ok(payload.includes('prints the weather forecast'))
+})
+
+test('载荷去掉 Markdown 结构符号但保留链接文字', () => {
+  const body = [
+    '# Title of the project',
+    '![screenshot](https://example.com/a.png)',
+    'See [the docs](https://example.com/docs) for install steps.',
+    '- bullet one',
+    '- bullet two',
+  ].join('\n')
+  const payload = buildSummaryPayload(body)
+  assert.ok(!payload.includes('#'), '标题符号应去掉')
+  assert.ok(!payload.includes('screenshot'), '图片应去掉')
+  assert.ok(!payload.includes('https://'), 'URL 应去掉')
+  assert.ok(payload.includes('the docs'), '链接文字应保留')
+  assert.ok(payload.includes('bullet one'))
+})
+
+test('载荷按上限截断', () => {
+  const long = 'word '.repeat(1000)
+  assert.equal(buildSummaryPayload(long, 100).length, 100)
+  assert.equal(buildSummaryPayload('short', 100), 'short')
 })

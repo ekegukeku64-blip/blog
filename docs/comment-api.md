@@ -70,12 +70,37 @@ Cookie 属于第三方，会被 Safari ITP / Firefox TCP / Chrome 分区直接�
 | `PBKDF2_PEPPER`         | Pages secret         | PBKDF2 之前的 HMAC pepper，泄露即等于密码可离线爆破   |
 | `PBKDF2_ITERATIONS`     | Pages secret（可选） | 默认 50000，受免费版 CPU 预算限制                     |
 | `ALLOWED_ORIGINS`       | Pages secret（可选） | CORS 白名单，逗号分隔；留空用内置默认值               |
+| `DEEPSEEK_API_KEY`      | Pages secret（可选） | `/api/translate` 生成中文摘要用的模型密钥             |
+| `DEEPSEEK_MODEL`        | Pages secret（可选） | 默认 `deepseek-chat`                                  |
+| `DEEPSEEK_BASE_URL`     | Pages secret（可选） | 默认 `https://api.deepseek.com`（OpenAI 兼容接口）    |
 | `CLOUDFLARE_API_TOKEN`  | 仓库 secret          | **`Deploy API` 必需**，否则工作流会在 D1 迁移步骤失败 |
 | `CLOUDFLARE_ACCOUNT_ID` | 仓库 secret          | 同上                                                  |
 
 > `PBKDF2_PEPPER` 缺失时注册/登录会返回 500。`CLOUDFLARE_API_TOKEN` 缺失时
 > `Deploy API` 会失败，而 `functions/**` 的改动不会上线——注意线上 API 仍然可用，
 > 所以这个问题不会自己暴露出来。
+>
+> `DEEPSEEK_API_KEY` 缺失时 `/api/translate` 返回 503，项目页上的「中文摘要」块会显示
+> 「摘要暂时拿不到」并提示改用浏览器整页翻译 —— 站点本身照常构建和访问，不会因此报错。
+
+### `/api/translate`（中文摘要）
+
+项目页正文是各项目自己的 README，实测 675 个有正文的快照里 616 个（91%）以英文为主。
+读者点开页面时，前端把正文开头（约 1500 字）发给这个接口，服务端调模型生成中文摘要。
+
+| 设计点   | 做法                                                                |
+| -------- | ------------------------------------------------------------------- |
+| 缓存     | 键是**源文本的 sha256** + 目标语言 + 模型，存 D1 `translations` 表  |
+| 限流     | 每 IP 每分钟 20 次、每天 300 次；**命中缓存不计入限流**（详见下文） |
+| 输入上限 | 服务端只取前 2000 字，长 README 不按全文计费                        |
+| 鉴权     | 不需要登录 —— 受众正是「不会用 GitHub、也不会用浏览器翻译」的读者   |
+| 密钥     | 只存在 Cloudflare secret 里，绝不下发到前端                         |
+
+缓存按**文本**而不是仓库名做键：同一段文字会出现在项目页、日报卡片和历史日报里，
+按文本缓存才能保证全站只付费翻译一次（实测重复请求从 749ms 降到 23ms）。
+
+命中缓存不计限流是刻意的：热门项目的同一段文字会被很多读者请求，如果计数，
+先到的读者会把后面的人限死，而这个请求其实一分钱不花。
 
 ## 一次性初始化
 
@@ -83,6 +108,7 @@ Cookie 属于第三方，会被 Safari ITP / Firefox TCP / Chrome 分区直接�
 npx wrangler d1 create blog-comments          # 把打印出的 id 填进 wrangler.toml
 npx wrangler pages project create blog-api
 npx wrangler pages secret put PBKDF2_PEPPER --project-name blog-api
+npx wrangler pages secret put DEEPSEEK_API_KEY --project-name blog-api   # 可选：中文摘要
 gh secret set CLOUDFLARE_API_TOKEN            # 在 Cloudflare 后台创建 token 后填入
 gh secret set CLOUDFLARE_ACCOUNT_ID
 ```

@@ -347,3 +347,25 @@ export async function changePassword(
   })
   return { revoked: data.revoked ?? 0 }
 }
+
+export interface TranslationResult {
+  summary: string
+  cached: boolean
+  createdAt?: number
+}
+
+// 把外文正文交给服务端翻成中文摘要。
+//
+// 为什么不在浏览器里直接调模型：密钥一旦下发到前端就等于公开。这里只调自建接口，
+// 服务端按源文本 sha256 缓存译文，所以同一段文字全站只付费翻译一次。
+//
+// 不要求登录：这个功能的受众正是「不会用 GitHub、也不会用浏览器整页翻译」的读者，
+// 让人先注册等于把最需要的人挡在门外。服务端按 IP 限流。
+export async function translateText(text: string, targetLang = 'zh'): Promise<TranslationResult> {
+  const data = await request<{ summary?: string; cached?: boolean; createdAt?: number }>(
+    '/api/translate',
+    { method: 'POST', body: { text, targetLang } },
+  )
+  if (!data.summary) throw new Error('翻译接口没有返回内容')
+  return { summary: data.summary, cached: data.cached === true, createdAt: data.createdAt }
+}
