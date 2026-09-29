@@ -10,6 +10,7 @@ import {
 import { extractOfficialPackageLinks } from '../../../lib/officialPackageLinks'
 import { loadGoneProjects } from '../../../lib/goneProjects'
 import { loadProjectAliases } from '../../../lib/projectAliases'
+import { isMostlyNonChinese } from '../../../lib/textLanguage'
 
 type ProjectAccess = 'snapshot' | 'summary' | 'restricted'
 
@@ -125,6 +126,8 @@ const isRenamed = Boolean(renamedTo) && !isSnapshot && !isRetired
 
 const distributionLinks =
   isSnapshot && snapshot ? extractOfficialPackageLinks(snapshot.body ?? '') : []
+// 正文是不是外文（多数项目是英文 README），决定要不要给「用浏览器整页翻译」的提示
+const readmeIsForeign = isMostlyNonChinese(snapshot?.body ?? '')
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat('zh-CN', { notation: 'compact', maximumFractionDigits: 1 }).format(
@@ -194,9 +197,20 @@ function formatNumber(value: number) {
           </div>
 
           {Content ? (
-            <div class="project-readme prose">
-              <Content />
-            </div>
+            <>
+              {readmeIsForeign && (
+                // 正文是项目自己的英文 README。给一个不依赖任何 API 的提示：
+                // 本站翻译控件要 Chrome 138+，而 QQ/360/UC/Firefox/Safari 都没有。
+                <p class="project-language-note">
+                  本页是项目自己的英文原文 README。看不懂就用<b>浏览器自带的整页翻译</b>： Chrome /
+                  Edge 点在地址栏右侧的翻译图标，或用右键菜单里的「翻译成中文」；
+                  手机浏览器一般在菜单里。
+                </p>
+              )}
+              <div class="project-readme prose">
+                <Content />
+              </div>
+            </>
           ) : isRestricted ? (
             <div class="project-empty-readme project-risk-notice">
               <h3>此项目仅保留站内风险提示</h3>
@@ -511,6 +525,22 @@ function formatNumber(value: number) {
   /* 仓库已从 GitHub 消失：提示框用弱化样式，避免和「安全提示」抢注意力 */
   .project-retired-notice {
     border-style: dashed;
+  }
+
+  /* 外文 README 的翻译提示：不依赖任何 API，静态文字即可生效 */
+  .project-language-note {
+    margin-bottom: 1.5rem;
+    border-left: 2px solid rgba(122, 149, 175, 0.4);
+    border-radius: 0.4rem;
+    padding: 0.7rem 1rem;
+    background: rgba(122, 149, 175, 0.07);
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.75;
+  }
+
+  .project-language-note b {
+    color: var(--color-text);
   }
 
   .project-retired-notice h3 {
