@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-29T05:21:35Z",
+  "checkedAt": "2026-09-30T05:09:09Z",
   "note": "仓库已从 GitHub 删除或转为私有；链接会 404，页面上不再做成可点击的按钮。",
   "projects": [
     {
@@ -171,6 +171,10 @@
       "seenIn": "src/content/posts/daily-2026-09-06.md"
     },
     {
+      "fullName": "MiaAI-Lab/Qwen3\\.8-Flash-Next-Single-DGX-Spark-TensorFold",
+      "seenIn": "src/content/posts/daily-2026-09-30.md"
+    },
+    {
       "fullName": "MoHanDada/Meccha-Stealth-X",
       "seenIn": "src/content/posts/daily-2026-07-17.md"
     },
@@ -277,6 +281,10 @@
     {
       "fullName": "Signal-Trade-Core/weather-prediction-bot",
       "seenIn": "src/content/posts/daily-2026-05-30.md"
+    },
+    {
+      "fullName": "Signalbrerhythm/Vape-V4-Vape-Lite",
+      "seenIn": "src/content/posts/daily-2026-06-26.md"
     },
     {
       "fullName": "SolidPondSwell/UmbrellaAssistant-Dota2",
