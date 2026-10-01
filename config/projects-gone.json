@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-30T05:09:09Z",
+  "checkedAt": "2026-10-01T05:24:01Z",
   "note": "仓库已从 GitHub 删除或转为私有；链接会 404，页面上不再做成可点击的按钮。",
   "projects": [
     {
@@ -57,6 +57,10 @@
     {
       "fullName": "Captureandencoder/Marvel-Rivals-Menu-2026",
       "seenIn": "src/content/posts/daily-2026-07-03.md"
+    },
+    {
+      "fullName": "CharlesFeng0314/JEV\\_sees",
+      "seenIn": "src/content/posts/daily-2026-10-01.md"
     },
     {
       "fullName": "Ching0346mi7/Flash-USDT-Sender",
