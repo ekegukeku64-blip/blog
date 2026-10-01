@@ -5,8 +5,8 @@ import { requireAdmin, requireUser } from '../../_lib/auth'
 import { COMMENT_COLUMNS, toPublicComment, type CommentRow } from '../../_lib/comments'
 import type { Ctx } from '../../_lib/types'
 
-// firestore.rules: `allow delete: if resource.data.uid == request.auth.uid`
-// OR the caller is an admin.
+// 原 firestore.rules 的 `allow delete: if resource.data.uid == request.auth.uid`，
+// 或者调用者是管理员。规则文件已随 Firebase 删除，等价判断在下面。
 export async function onRequestDelete(ctx: Ctx): Promise<Response> {
   const cors = corsHeaders(ctx.request, ctx.env)
 
@@ -29,9 +29,9 @@ export async function onRequestDelete(ctx: Ctx): Promise<Response> {
   return empty(204, cors)
 }
 
-// firestore.rules: `allow update: if isAdmin && affectedKeys().hasOnly(['status'])`.
-// So this is admin-only, the body may contain nothing but `status`, and a user
-// trying to approve their own pending comment gets a 403 here.
+// 原 firestore.rules 的 `allow update: if isAdmin && affectedKeys().hasOnly(['status'])`。
+// 也就是：只有管理员能做，请求体里除 status 不能有别的东西，用户想自己批准自己的
+// 待审评论会在这里拿到 403。
 export async function onRequestPatch(ctx: Ctx): Promise<Response> {
   const cors = corsHeaders(ctx.request, ctx.env)
 

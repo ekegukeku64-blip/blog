@@ -11,8 +11,9 @@ import {
 } from '../../_lib/comments'
 import type { Ctx } from '../../_lib/types'
 
-// firestore.rules: `allow read: if resource.data.status == 'approved'`.
-// Unauthenticated, and only ever approved rows.
+// 授权模型原本写在 firestore.rules（`allow read: if status == 'approved'`），
+// 那份文件已随 Firebase 一起删除 —— 现在这个判断就在下面这条 SQL 的 WHERE 里。
+// 未登录可读，且只返回已通过的评论。
 export async function onRequestGet(ctx: Ctx): Promise<Response> {
   const cors = corsHeaders(ctx.request, ctx.env)
 
@@ -32,10 +33,10 @@ export async function onRequestGet(ctx: Ctx): Promise<Response> {
   return json({ comments: (rows.results ?? []).map(toPublicComment) }, 200, cors)
 }
 
-// firestore.rules: create requires auth, uid == auth.uid, a strict key
-// whitelist, per-field length/format limits, status == 'pending' and
-// createdAt == request.time. Here the server decides uid, status and createdAt
-// itself and refuses any unexpected key, so none of those can be forged.
+// 原 firestore.rules 对 create 的要求是：必须登录、uid == auth.uid、字段白名单、
+// 每个字段的长度/格式限制、status == 'pending'、createdAt == request.time。
+// 那份规则文件已删除，等价约束现在由这里执行：服务端自己决定 uid、status、createdAt，
+// 并且拒绝任何未声明的字段，所以这些都无法被伪造。
 export async function onRequestPost(ctx: Ctx): Promise<Response> {
   const cors = corsHeaders(ctx.request, ctx.env)
 
@@ -43,9 +44,9 @@ export async function onRequestPost(ctx: Ctx): Promise<Response> {
   if (!guard.ok) return guard.response
   const user = guard.user
 
-  // Not in Firestore, but a comment endpoint with no ceiling is an open door for
-  // spam once registration is public. Counted per account and per IP: the account
-  // dimension alone is bypassed by simply registering another account.
+  // 这条限流在原 Firestore 里没有（Firestore 只有规则、没有频率概念）。
+  // 注册一旦公开，没有上限的评论接口就是垃圾评论的大门。按账号 + 按 IP 双重计数：
+  // 只按账号的话，再注册一个账号就绕过去了。
   const verdict = await checkLimits(ctx.env, commentRules(clientIp(ctx.request), user.id))
   if (!verdict.ok) {
     return fail(429, '评论过于频繁，请稍后再试', {

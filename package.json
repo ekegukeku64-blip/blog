@@ -32,7 +32,6 @@
     "weekly": "node scripts/run-python.mjs scripts/generate_weekly_picks.py",
     "weekly:dry": "node scripts/run-python.mjs scripts/generate_weekly_picks.py --dry-run",
     "indexnow": "bash scripts/submit-indexnow.sh",
-    "firebase:deploy": "firebase deploy --only firestore:rules,firestore:indexes",
     "astro": "astro",
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test",
     "verify": "npm run lint && npm run format:check && npm run test && npm run check && npm run self-test && npm run guard:images && npm run build && npm run fonts:check && npm run check:site"
@@ -48,7 +47,6 @@
     "@imgly/background-removal": "^1.7.0",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.4.8",
-    "firebase": "^12.14.0",
     "marked": "^18.0.5",
     "pagefind": "^1.5.2",
     "qrcode": "^1.5.4",
