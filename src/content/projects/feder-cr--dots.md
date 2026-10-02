@@ -5,13 +5,13 @@ name: "dots"
 fullName: "feder-cr/dots"
 description: "Open-source dots for the web: an AI agent with its own browser, one that does not get blocked."
 sourceUrl: "https://github.com/feder-cr/dots"
-stars: 214
-forks: 12
+stars: 2402
+forks: 419
 language: "Python"
-topics: ["ai-agent", "ai-browser", "anti-detect-browser", "browser-agent", "browser-automation", "dots", "firefox", "llm-agent"]
+topics: ["ai-agent", "ai-agents", "ai-browser", "anti-detect-browser", "browser-agent", "browser-automation", "chatgpt", "dotfiles"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-09-30"
+snapshotDate: "2026-10-02"
 pushedAt: "2026-09-29T23:24:01Z"
 ---
 

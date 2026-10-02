@@ -5,14 +5,14 @@ name: "mcp-extensions"
 fullName: "openai/mcp-extensions"
 description: "Build plugins that feel like native, first-class features of ChatGPT."
 sourceUrl: "https://github.com/openai/mcp-extensions"
-stars: 280
-forks: 10
+stars: 642
+forks: 32
 language: "TypeScript"
 topics: []
 license: "Apache-2.0"
 defaultBranch: "main"
-snapshotDate: "2026-09-30"
-pushedAt: "2026-09-29T19:30:39Z"
+snapshotDate: "2026-10-02"
+pushedAt: "2026-09-30T23:18:08Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

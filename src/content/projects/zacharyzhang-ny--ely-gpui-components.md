@@ -5,15 +5,14 @@ name: "Ely-GPUI-Components"
 fullName: "ZacharyZhang-NY/Ely-GPUI-Components"
 description: "A component library for GPUI, in light and dark. Every component runs live in the browser."
 sourceUrl: "https://github.com/ZacharyZhang-NY/Ely-GPUI-Components"
-stars: 252
-forks: 17
+stars: 281
+forks: 18
 language: "Rust"
 topics: ["design-system", "gpui", "rust", "ui-components", "webassembly"]
 license: "Apache-2.0"
-homepage: "https://ely-gpui.zacharyzhang.com"
 defaultBranch: "main"
-snapshotDate: "2026-10-01"
-pushedAt: "2026-09-30T04:29:08Z"
+snapshotDate: "2026-10-02"
+pushedAt: "2026-10-01T18:14:14Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -23,9 +22,9 @@ pushedAt: "2026-09-30T04:29:08Z"
 A component library for [GPUI](https://www.gpui.rs), the Rust UI framework behind Zed.
 Every component ships in light and dark. The palette is warm and quiet. Color carries meaning, not decoration.
 
-Every component runs live at https://ely-gpui.zacharyzhang.com, compiled to WebAssembly.
+Every component runs live at https://elygpui.com, compiled to WebAssembly.
 
-Status: early. `TASKS.md` tracks every component, chapter by chapter.
+Status: early. `TASKS.md` tracks every component, chapter by chapter. To help, see `CONTRIBUTING.md`.
 
 ## Use
 

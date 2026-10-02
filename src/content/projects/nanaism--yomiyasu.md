@@ -3,16 +3,16 @@ title: "nanaism/yomiyasu"
 owner: "nanaism"
 name: "yomiyasu"
 fullName: "nanaism/yomiyasu"
-description: "AI生成された文章の不自然さを取り除き、人間にとって自然な日本語へ書き直すためのAgent Skill"
+description: "AI生成の日本語を自然な日本語へ推敲するAgent Skill / Agent Skill for Refining AI-Generated Japanese into Natural Japanese"
 sourceUrl: "https://github.com/nanaism/yomiyasu"
-stars: 556
-forks: 9
+stars: 1033
+forks: 21
 language: "Python"
-topics: ["agent-skills", "ai-writing", "claude-code", "codex", "cursor", "japanese", "linter", "llm"]
+topics: ["agent-skills", "ai-writing", "antigravity", "claude-code", "codex", "cursor", "gemini", "japanese"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-01"
-pushedAt: "2026-10-01T05:18:03Z"
+snapshotDate: "2026-10-02"
+pushedAt: "2026-10-02T04:34:06Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -25,6 +25,8 @@ pushedAt: "2026-10-01T05:18:03Z"
 ## これは何？
 
 『yomiyasu（よみやす）』は、AIが生成した日本語の不自然さを解消し、人間が読みやすく情報密度の高い日本語へ推敲するためのスキルです。
+
+主に技術記事、設計書・仕様書、PR説明文、社内レポートなどの実務的な文章を対象として設計されています。
 
 Codex、Claude Code、CursorをはじめとするAIコーディング環境に読み込ませて使用してください。
 
@@ -153,10 +155,14 @@ AIによる文章生成は日常的な道具となりました。一方で、生
 ### 1. `npx skills add`（推奨）
 
 ```bash
+# 新規インストール
 npx skills add nanaism/yomiyasu
+
+# 最新版へのアップデート
+npx skills update yomiyasu
 ```
 
-Claude Codeなどのエージェント設定ディレクトリへインストールします。
+Claude Codeなどのエージェント設定ディレクトリへインストール・更新します（すでに導入済みの場合は `npx skills update yomiyasu` で最新版へ更新できます）。
 
 ### 2. `npx openskills install`（Cursor / Codexなど）
 
