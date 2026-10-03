@@ -5,13 +5,13 @@ name: "universal-modder"
 fullName: "rehan-remade/universal-modder"
 description: "Point Claude at any game. Skills, tools and the fal MCP that let Claude Code mod almost any PC game you own: recon, reverse engineering, fal-generated art/3D/audio, in-game testing, showcase videos."
 sourceUrl: "https://github.com/rehan-remade/universal-modder"
-stars: 1636
-forks: 121
+stars: 2216
+forks: 171
 language: "Python"
 topics: ["age-of-empires", "claude-code", "claude-code-plugin", "fal", "game-assets", "game-modding", "mcp", "modding"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-02"
+snapshotDate: "2026-10-03"
 pushedAt: "2026-09-30T23:39:09Z"
 ---
 

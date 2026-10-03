@@ -5,13 +5,13 @@ name: "bootloops"
 fullName: "BootLoops-ai/bootloops"
 description: "BootLoops 1.0: certified computational tools and house engines for exact and high-precision physics and quantitative science, built to be driven by LLM agents. MIT; docs CC BY 4.0."
 sourceUrl: "https://github.com/BootLoops-ai/bootloops"
-stars: 35
-forks: 9
+stars: 158
+forks: 32
 language: "Python"
 topics: ["bootloops", "feynman-integrals", "llm-agents", "physics", "scientific-computing"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-02"
+snapshotDate: "2026-10-03"
 pushedAt: "2026-10-01T15:29:34Z"
 ---
 

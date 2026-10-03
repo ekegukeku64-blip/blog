@@ -5,14 +5,14 @@ name: "Ely-GPUI-Components"
 fullName: "ZacharyZhang-NY/Ely-GPUI-Components"
 description: "A component library for GPUI, in light and dark. Every component runs live in the browser."
 sourceUrl: "https://github.com/ZacharyZhang-NY/Ely-GPUI-Components"
-stars: 281
-forks: 18
+stars: 328
+forks: 21
 language: "Rust"
 topics: ["design-system", "gpui", "rust", "ui-components", "webassembly"]
 license: "Apache-2.0"
 defaultBranch: "main"
-snapshotDate: "2026-10-02"
-pushedAt: "2026-10-01T18:14:14Z"
+snapshotDate: "2026-10-03"
+pushedAt: "2026-10-02T23:28:01Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

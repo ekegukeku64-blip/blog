@@ -5,13 +5,13 @@ name: "playport"
 fullName: "youcci/playport"
 description: "Wireless CarPlay in your browser — a server-side receiver that turns any screen on your network into a head unit."
 sourceUrl: "https://github.com/youcci/playport"
-stars: 157
-forks: 10
+stars: 229
+forks: 12
 language: "Kotlin"
 topics: ["airplay", "browser", "carplay", "head-unit", "kotlin", "ktor", "macos", "webcodecs"]
 license: "GPL-3.0"
 defaultBranch: "main"
-snapshotDate: "2026-10-02"
+snapshotDate: "2026-10-03"
 pushedAt: "2026-10-01T12:30:32Z"
 ---
 

@@ -5,14 +5,14 @@ name: "yomiyasu"
 fullName: "nanaism/yomiyasu"
 description: "AI生成の日本語を自然な日本語へ推敲するAgent Skill / Agent Skill for Refining AI-Generated Japanese into Natural Japanese"
 sourceUrl: "https://github.com/nanaism/yomiyasu"
-stars: 1033
-forks: 21
+stars: 1209
+forks: 27
 language: "Python"
 topics: ["agent-skills", "ai-writing", "antigravity", "claude-code", "codex", "cursor", "gemini", "japanese"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-02"
-pushedAt: "2026-10-02T04:34:06Z"
+snapshotDate: "2026-10-03"
+pushedAt: "2026-10-02T15:10:08Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -239,7 +239,7 @@ AIっぽさ 検査レポート (スコア: 100/100)
 ・太字頻度: 1,000字あたり 1.4 個 (推奨: 2.0以下 / 警告: 3.0超)
 ・箇条書き比率: 8.2% (推奨: 15%以下 / 警告: 25%超)
 ------------------------------------------------------------
-[PASS] AIっぽさは検出されませんでした。設定された検査ルールによる指摘はありません。
+[PASS] 設定された検査ルールによる指摘はありません。
 ```
 
 ---

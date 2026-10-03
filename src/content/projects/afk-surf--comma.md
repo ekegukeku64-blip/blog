@@ -3,17 +3,17 @@ title: "AFK-surf/Comma"
 owner: "AFK-surf"
 name: "Comma"
 fullName: "AFK-surf/Comma"
-description: "The sessionless, relentless personal agent."
+description: "The sessionless, relentless personal agent. Open source alternative to Muse, Dots, Instinct and Town."
 sourceUrl: "https://github.com/AFK-surf/Comma"
-stars: 53
-forks: 3
+stars: 158
+forks: 11
 language: "Elixir"
-topics: ["agent", "ai", "elixir", "lean"]
+topics: ["agent", "elixir-lang", "golang", "personal-ai"]
 license: "AGPL-3.0"
 homepage: "https://comma.surf"
 defaultBranch: "main"
-snapshotDate: "2026-10-01"
-pushedAt: "2026-09-30T17:16:23Z"
+snapshotDate: "2026-10-03"
+pushedAt: "2026-10-02T14:59:48Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -31,6 +31,20 @@ It breaks down your goals into Tasks and keeps working through agentic loops unt
 Built by AFK Inc., Comma is our attempt to create an open agentic system that keeps you away from software — and away from the keyboard.
 
 You can use the hosted service at [comma.surf](https://comma.surf), or run your own instance from this repository.
+
+## See Comma in action
+
+### No more applications.
+
+Hand over your work and life. Comma gets it done.
+
+https://github.com/user-attachments/assets/cefa2954-f29c-4434-9246-a82cb19a51fe
+
+### Personal context, aligned.
+
+Save money. Shop smarter based on your preferences. Check out on your trusted device.
+
+https://github.com/user-attachments/assets/486cde78-d927-4ff0-85de-00c46edc498e
 
 ## Philosophy
 
