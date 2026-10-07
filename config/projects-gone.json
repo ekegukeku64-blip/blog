@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-01T05:24:01Z",
+  "checkedAt": "2026-10-07T05:30:06Z",
   "note": "仓库已从 GitHub 删除或转为私有；链接会 404，页面上不再做成可点击的按钮。",
   "projects": [
     {
@@ -693,6 +693,10 @@
     {
       "fullName": "roppik/tomodachi-pc",
       "seenIn": "src/content/posts/daily-2026-06-21.md"
+    },
+    {
+      "fullName": "saidi-walid-architecte/saidi-walid-architecte\\.github\\.io",
+      "seenIn": "src/content/posts/daily-2026-10-07.md"
     },
     {
       "fullName": "samuto69/claude-ai-desktop-app",
