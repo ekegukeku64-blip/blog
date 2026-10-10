@@ -5,14 +5,14 @@ name: "cadcraft"
 fullName: "storytold/cadcraft"
 description: "CADCraft: computer-aided design and drafting — an open-source, clean-room AutoCAD-style app in pure Rust"
 sourceUrl: "https://github.com/storytold/cadcraft"
-stars: 301
-forks: 144
+stars: 1444
+forks: 607
 language: "Rust"
 topics: []
 license: "Apache-2.0"
 defaultBranch: "main"
-snapshotDate: "2026-10-08"
-pushedAt: "2026-10-08T03:07:48Z"
+snapshotDate: "2026-10-10"
+pushedAt: "2026-10-10T02:51:15Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -61,6 +61,7 @@ CADCraft
   Agents, MCP and the CLI ·
   Architecture ·
   Roadmap ·
+  Downloads ·
   The Crafting Apps ·
   License and credits
 
@@ -102,7 +103,56 @@ numbers):
 | Area | Status |
 |---|---|
 | Drawing area | Model space with adaptive grid, axes, pan/zoom (wheel, middle-drag, pinch), crosshair cursor with pickbox, UCS icon, ViewCube, viewport label |
-| Command line | Prompts with keywords, history, AutoComplete, aliases, `@dx,dy`, `@d | **PhotoCraft** | Image editing: layers, masks, type and real PSD files | GitHub | [Website](https://getartcraft.com/apps/photocraft) |
+| Command line | Prompts with keywords, history, AutoComplete, aliases, `@dx,dy`, `@d` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
+
+### Windows
+
+| Build | Installer | Portable |
+|---|---|---|
+| x64 (64-bit Intel/AMD) | `cadcraft--windows-x64.msi` | `cadcraft--windows-x64-portable.zip` |
+| arm64 (Snapdragon and other ARM PCs) | `cadcraft--windows-arm64.msi` | `cadcraft--windows-arm64-portable.zip` |
+| x86 (32-bit) | `cadcraft--windows-x86.msi` | `cadcraft--windows-x86-portable.zip` |
+
+Installers and executables are code-signed.
+
+### macOS
+
+| Build | File | Notes |
+|---|---|---|
+| App, universal (Apple silicon + Intel) | `cadcraft--macos-universal.dmg` | Signed and notarized |
+| Command-line tool, universal | `cadcraft-cli--macos-universal.zip` | Signed and notarized |
+
+### Linux
+
+| Format | x86_64 | aarch64 (ARM64) | Notes |
+|---|---|---|---|
+| AppImage | `cadcraft--linux-x86_64.AppImage` | `cadcraft--linux-aarch64.AppImage` | Runs anywhere; updates itself with AppImageUpdate (`.zsync` files) |
+| Flatpak | `cadcraft--linux-x86_64.flatpak` | `cadcraft--linux-aarch64.flatpak` | Sandboxed; `flatpak install --user ` |
+| Debian/Ubuntu | `cadcraft--linux-x86_64.deb` | `cadcraft--linux-aarch64.deb` | |
+| Fedora/RHEL/openSUSE | `cadcraft--linux-x86_64.rpm` | `cadcraft--linux-aarch64.rpm` | |
+| Tarball | `cadcraft--linux-x86_64.tar.gz` | `cadcraft--linux-aarch64.tar.gz` | Unpack anywhere |
+
+### FreeBSD
+
+| Build | File |
+|---|---|
+| x86_64 | `cadcraft--freebsd-x86_64.tar.gz` |
+
+### Web (WebAssembly)
+
+| Build | File | Notes |
+|---|---|---|
+| Static site | `cadcraft-web-.zip` | Runs in a modern browser; host it on any static server |
+
+## The Crafting Apps
+
+CADCraft is one of the **Crafting Apps**: free, open-source creative tools from the
+[ArtCraft](https://getartcraft.com/) team, each written from scratch in Rust and each able to
+stand on its own.
+
+| | App | What it's for | Code | Learn more |
+|:-:|---|---|---|---|
+|  | **PhotoCraft** | Image editing: layers, masks, type and real PSD files | GitHub | [Website](https://getartcraft.com/apps/photocraft) |
 |  | **VectorCraft** | Vector illustration | GitHub | [Website](https://getartcraft.com/apps/vectorcraft) |
 |  | **FilmCraft** | Video editing, color and sound | GitHub | [Website](https://getartcraft.com/apps/filmcraft) |
 |  | **LightCraft** | Photo library and raw development | GitHub | [Website](https://getartcraft.com/apps/lightcraft) |

@@ -5,15 +5,15 @@ name: "soundcraft"
 fullName: "storytold/soundcraft"
 description: "An open-source, clean-room reimplementation of Avid Pro Tools in pure Rust"
 sourceUrl: "https://github.com/storytold/soundcraft"
-stars: 229
-forks: 115
+stars: 1028
+forks: 543
 language: "Rust"
 topics: []
 license: "Apache-2.0"
 homepage: "https://getartcraft.com/apps/soundcraft"
 defaultBranch: "main"
-snapshotDate: "2026-10-08"
-pushedAt: "2026-10-08T02:08:12Z"
+snapshotDate: "2026-10-10"
+pushedAt: "2026-10-10T02:51:45Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -60,6 +60,7 @@ SoundCraft
   Agents &amp; scripts ·
   How it's built ·
   Status ·
+  Downloads ·
   The Crafting Apps ·
   License
 
@@ -163,6 +164,28 @@ F1–F4 edit modes, F5–F10 tools, ⌘E
 separate, ⌘D duplicate, Enter new marker, ⌘⇧N
 new tracks. **Setup › Keyboard Shortcuts** lists them all.
 
+### Logs
+
+The desktop app writes its `log` records to standard error and to `logs/soundcraft.log` in the
+settings directory, beside `ui.json`, `Autosave/` and `Presets/` (Linux `~/.config/soundcraft/logs/`,
+or `$XDG_CONFIG_HOME/soundcraft/logs/`; macOS `~/Library/Application Support/SoundCraft/logs/`;
+Windows `%APPDATA%\SoundCraft\logs\`). A start from a desktop menu or the Dock has no terminal, so
+this file is what to attach to a bug report: the engine's panic report, audio devices that failed to
+open or broke, plugins that refused their stored state, CLAP plugins' own messages and files that
+failed to open land there. Each launch moves the previous log to `soundcraft.1.log` (and that one to
+`soundcraft.2.log`), so the log of a run that crashed survives the next start. The file stops
+growing at 16 MiB. `--version` writes no file, and runs with `SOUNDCRAFT_NO_PREFS` log to standard
+error only.
+
+| Variable | Effect |
+|---|---|
+| `RUST_LOG` | Log levels for standard error and the log file. Default: `info` for SoundCraft's own crates, `warn` for everything else. env_logger-style directives replace that, e.g. `RUST_LOG=debug`, `RUST_LOG=warn,soundcraft_mix=trace` or `RUST_LOG=info,wgpu_core=warn`; a directive ending in `*` covers every target starting with it (`soundcraft*=debug`). |
+| `SOUNDCRAFT_NO_PREFS` | No preferences read or written and no log file (agents' test runs). |
+
+The realtime audio thread never writes a record itself: the logger keeps the first one it logs
+(without waiting or allocating), counts the rest, and the UI thread writes them. The logger is
+`apps/soundcraft/src/logging.rs`. The web app logs to the browser console instead.
+
 ## For agents and scripts
 
 Everything you can click is also a command with an id and JSON parameters, and the same commands
@@ -188,6 +211,12 @@ claude mcp add soundcraft -- soundcraft-cli mcp --demo
 
 See `docs/control-protocol.md` and `docs/mcp.md`.
 `soundcraft-cli commands` lists every command.
+
+Open **SoundCraft › Session Audio Health** to check loaded audio availability, sample-rate
+mismatches and clip source bounds across all playlists, including alternate takes. The report
+offers a refresh button and suggests how to resolve each issue. Scripts can obtain the same JSON
+report with `soundcraft-cli run --demo --cmd 'session.audio_health={}'`. This checks loaded media,
+not files on disk, signal levels, plugins or routing.
 
 ## How it's built
 
@@ -218,6 +247,64 @@ items and roughly two thirds of its features in depth. The core works and is fun
 honest status, what's next and our effort estimates are in `ROADMAP.md`; the
 menu-by-menu comparison is in `docs/parity.md`. Bug reports and wish lists are
 very welcome, in the issues or on Discord.
+
+## Downloads
+
+**Download SoundCraft** from GitHub: the latest release has every build listed below, and all releases has earlier versions and their notes. `` in the file names is the version number, and `SHA256SUMS.txt` lists a checksum for every file.
+
+### Windows
+
+| Build | Installer | Portable |
+|---|---|---|
+| x64 (64-bit Intel/AMD) | `soundcraft--windows-x64.msi` | `soundcraft--windows-x64-portable.zip` |
+| arm64 (Snapdragon and other ARM PCs) | `soundcraft--windows-arm64.msi` | `soundcraft--windows-arm64-portable.zip` |
+| x86 (32-bit) | `soundcraft--windows-x86.msi` | `soundcraft--windows-x86-portable.zip` |
+
+Installers and executables are code-signed.
+
+**If the app doesn't open on Windows:** the desktop app initializes only DirectX 12 by default.
+Letting wgpu also create an OpenGL instance can crash some graphics drivers (AMD's
+`atio6axx.dll`) before the window appears, so the app would flash in Task Manager and quit.
+`WGPU_BACKEND` overrides the default for troubleshooting (for example `dx12` or `vulkan`). In
+PowerShell, from the folder containing the executable:
+
+```powershell
+$env:WGPU_BACKEND = "vulkan"
+& .\soundcraft.exe
+Remove-Item Env:WGPU_BACKEND                     # restore the default for later launches
+```
+
+An explicit `gl` override can bring the driver crash back on affected systems. The macOS, Linux
+and web backend defaults are unchanged.
+
+### macOS
+
+| Build | File | Notes |
+|---|---|---|
+| App, universal (Apple silicon + Intel) | `soundcraft--macos-universal.dmg` | Signed and notarized |
+| Command-line tool, universal | `soundcraft-cli--macos-universal.zip` | Signed and notarized |
+
+### Linux
+
+| Format | x86_64 | aarch64 (ARM64) | Notes |
+|---|---|---|---|
+| AppImage | `soundcraft--linux-x86_64.AppImage` | `soundcraft--linux-aarch64.AppImage` | Runs anywhere; updates itself with AppImageUpdate (`.zsync` files) |
+| Flatpak | `soundcraft--linux-x86_64.flatpak` | `soundcraft--linux-aarch64.flatpak` | Sandboxed; `flatpak install --user ` |
+| Debian/Ubuntu | `soundcraft--linux-x86_64.deb` | `soundcraft--linux-aarch64.deb` | |
+| Fedora/RHEL/openSUSE | `soundcraft--linux-x86_64.rpm` | `soundcraft--linux-aarch64.rpm` | |
+| Tarball | `soundcraft--linux-x86_64.tar.gz` | `soundcraft--linux-aarch64.tar.gz` | Unpack anywhere |
+
+### FreeBSD
+
+| Build | File |
+|---|---|
+| x86_64 | `soundcraft--freebsd-x86_64.tar.gz` |
+
+### Web (WebAssembly)
+
+| Build | File | Notes |
+|---|---|---|
+| Static site | `soundcraft-web-.zip` | Runs in a modern browser; host it on any static server |
 
 ## The Crafting Apps
 
