@@ -11,7 +11,7 @@ language: "未知"
 topics: ["activation-fix", "free-excel-word", "key-management-system", "kms-auto-2026", "kms-auto-get", "kms-pico-free", "kmsauto-get", "microsoft-office-26"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-10-10"
+snapshotDate: "2026-10-11"
 pushedAt: "2026-10-09T13:53:14Z"
 ---
 

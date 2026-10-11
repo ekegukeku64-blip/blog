@@ -5,14 +5,14 @@ name: "ai-newtab"
 fullName: "ThariqS/ai-newtab"
 description: "Claude generates a daily new tab page based on your browser history."
 sourceUrl: "https://github.com/ThariqS/ai-newtab"
-stars: 293
-forks: 20
+stars: 701
+forks: 67
 language: "TypeScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-09"
-pushedAt: "2026-10-08T20:56:58Z"
+snapshotDate: "2026-10-11"
+pushedAt: "2026-10-10T04:20:03Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -93,6 +93,13 @@ over the agent's own defaults. This box sets both the content and the look:
 | *"Skip sports and politics. Always show the weather and my next three calendar events."* | Your rules, every day |
 
 Click **Save & rebuild** to apply them right away.
+
+**Sites the agent never reads.** Enter one host per line; subdomains are included,
+and `*.example.com` is supported. The editable defaults include common webmail,
+sign-in and document hosts. **Save & rebuild** saves the list and applies it to
+history summaries and URLs requested through `getPageHtml`. A page that redirects
+onto a blocked host is dropped before its content is uploaded. Local-network
+addresses (localhost, private IPs, `.local` and `.internal` hosts) are always blocked.
 
 **Model.** Choose which Claude model writes your page:
 

@@ -11,7 +11,7 @@ language: "未知"
 topics: ["discord-destroyer", "discordraid", "multi-selfbot-tool", "raid", "raid-discord", "raider", "selfbot-tool", "tool-raid"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-10-10"
+snapshotDate: "2026-10-11"
 pushedAt: "2026-10-09T13:50:25Z"
 ---
 

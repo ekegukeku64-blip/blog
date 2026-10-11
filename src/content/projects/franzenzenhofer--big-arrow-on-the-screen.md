@@ -5,14 +5,14 @@ name: "big-arrow-on-the-screen"
 fullName: "franzenzenhofer/big-arrow-on-the-screen"
 description: "Let your AI agents paint big arrows, boxes and text on your Mac screen. One CLI, click-through, gone by itself. Skill for Claude Code and Codex. MIT."
 sourceUrl: "https://github.com/franzenzenhofer/big-arrow-on-the-screen"
-stars: 497
-forks: 6
+stars: 595
+forks: 10
 language: "Swift"
 topics: ["accessibility", "ai-agents", "claude-code", "cli", "codex", "macos", "swift"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-10"
-pushedAt: "2026-10-09T21:54:24Z"
+snapshotDate: "2026-10-11"
+pushedAt: "2026-10-10T10:59:51Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -292,7 +292,7 @@ Say, by covering the Decline button? **Not beyond what it can already do.** An a
 
 ### Why a skill? Is that a lot of tokens?
 
-**182 tokens, most of the time.** That is the skill's description, the only part the agent always sees. The instructions, 1,398 tokens (Anthropic's token-count API, Claude Opus 5.5), load only when it decides to point; pane ids and look flags (1,008 more) only when it needs them.
+**182 tokens, most of the time.** That is the skill's description, the only part the agent always sees. The instructions, 1,528 tokens (Anthropic's token-count API, Claude Opus 5.5), load only when it decides to point; pane ids and look flags (1,118 more) only when it needs them.
 
 ### Why not just use a screen annotation app?
 

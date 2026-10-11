@@ -11,7 +11,7 @@ language: "未知"
 topics: ["bd-theme", "better-discord-plugins", "betterdiscord-addon", "betterdiscord-plugin", "betterdiscord-plugins", "betterdiscordlibrary", "betterdiscordthemes", "discord-hack"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-10-10"
+snapshotDate: "2026-10-11"
 pushedAt: "2026-10-09T13:46:26Z"
 ---
 

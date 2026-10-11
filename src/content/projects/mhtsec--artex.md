@@ -5,14 +5,14 @@ name: "ARTEX"
 fullName: "mhtsec/ARTEX"
 description: "AI 自主渗透测试系统 | 百度“agent+”攻防挑战赛冠军项目"
 sourceUrl: "https://github.com/mhtsec/ARTEX"
-stars: 1149
-forks: 2797
+stars: 2973
+forks: 5389
 language: "Go"
 topics: []
 license: "AGPL-3.0"
 defaultBranch: "main"
-snapshotDate: "2026-10-09"
-pushedAt: "2026-10-08T13:45:54Z"
+snapshotDate: "2026-10-11"
+pushedAt: "2026-10-10T09:16:20Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -22,16 +22,16 @@ pushedAt: "2026-10-08T13:45:54Z"
 AI 自主渗透测试系统（Go 后端 + Next.js 前端）
 
 
-🌐 **在线 Demo**： [https://artex-demo.vercel.app/](https://artex-demo.vercel.app/)
+🌐 **在线 Demo（模拟数据）**： [https://artex-demo.mhtsec.com](https://artex-demo.mhtsec.com)
 
-📦 **该仓库为ARTEX最后一个版本纯源码备份，docker部署源失效自行让AI本地构建即可**
+📦 **该仓库为ARTEX最后一个版本纯源码备份。原 Docker 镜像源 `autumn27/artex` 已失效，现由本仓库自维护镜像 `mianhuatang11/artex`（Docker Hub）；拉取失败时可 `docker compose build` 从纯源码本地构建，无任何外部预编译依赖。**
 
 
 ---
 
 ## 截图预览
 
-> 完整交互见[在线 Demo](https://artex-demo.vercel.app/)。
+> 完整交互见[在线 Demo](https://artex-demo.mhtsec.com)（纯前端 + Mock 数据，无需后端）。
 
 | 仪表盘（总览 / Token 消耗 / 活动流） | 任务列表 |
 | :---: | :---: |
@@ -87,7 +87,7 @@ AegisHook 的审批详情组件，沿用 ARTEX 的组件和主题：
 ### 方式一：一键安装脚本（推荐）
 
 ```bash
-git clone https://github.com/Autumn-27/ARTEX.git
+git clone https://github.com/mhtsec/ARTEX.git
 cd ARTEX
 ./install.sh
 ```
@@ -102,12 +102,16 @@ cd ARTEX
 ### 方式二：Docker Compose（手动）
 
 ```bash
-git clone https://github.com/Autumn-27/ARTEX.git
+git clone https://github.com/mhtsec/ARTEX.git
 cd ARTEX
 cp .env.example .env          # 填 POSTGRES_PASSWORD、可选 ANTHROPIC_API_KEY
-docker compose up -d          # 拉取 autumn27/artex 镜像 + postgres
+docker compose up -d          # 拉取 mianhuatang11/artex 镜像 + postgres
 # → http://localhost:8787
 ```
+
+> 原镜像源 `autumn27/artex` 已从 Docker Hub 删除，镜像现由本仓库自维护为 **`mianhuatang11/artex`**。
+> 镜像源不可用（或想自行改代码）时，本地从纯源码构建即可：`docker compose build && docker compose up -d`。
+> Dockerfile 为多阶段构建（前端静态导出 → Go 静态编译 → 运行镜像），默认走国内友好依赖源，可加 `--build-arg GOPROXY=... / --build-arg NPM_REGISTRY=...` 覆盖。
 
 镜像已含常用工具（ripgrep/curl/vim/npm/nmap…）；`./skills` 与 `./data` 以绑定挂载持久化。
 
@@ -118,7 +122,7 @@ docker compose up -d          # 拉取 autumn27/artex 镜像 + postgres
 
 ### 方式三：下载预编译二进制（Releases）
 
-到 Releases 下载对应平台的 zip，解压后得到 `artex` + `start.sh`（Windows 为 `start.bat`）+ `skills/` + `config.example.json`：
+到原仓库 Releases 下载对应平台的 zip（**本备份仓库不托管二进制**，若原 Releases 也失效请用方式二或方式四）：解压后得到 `artex` + `start.sh`（Windows 为 `start.bat`）+ `skills/` + `config.example.json`：
 
 ```bash
 cp config.example.json config.json   # 填好 database 连接
@@ -294,6 +298,11 @@ server {
 - 前端：`cd web && npm run dev`（`/api` 反代到后端，带热更新）
 - 测试：`go test ./...`
 - Mock 预览（无后端）：`cd web && NEXT_PUBLIC_MOCK=1 npm run dev`
+- 在线 Demo 重新部署（Cloudflare Pages，静态导出 + Mock 数据）：
+  ```bash
+  cd web && NEXT_PUBLIC_MOCK=1 npm run build:static
+  CLOUDFLARE_API_TOKEN= npx wrangler pages deploy out --project-name=artex-demo --branch=main
+  ```
 
 ---
 

@@ -11,7 +11,7 @@ language: "未知"
 topics: ["fps-booster-no-lag", "frame-rate-boost", "game-booster-free", "optimize-windows", "optimizer-tool", "speed-up-pc", "unattendedwininstall", "windows-10-optimizer"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-10-10"
+snapshotDate: "2026-10-11"
 pushedAt: "2026-10-09T13:59:45Z"
 ---
 
