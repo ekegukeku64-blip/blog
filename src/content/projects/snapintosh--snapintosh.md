@@ -5,14 +5,14 @@ name: "Snapintosh"
 fullName: "Snapintosh/Snapintosh"
 description: "EL2 hypervisor and toolchain that boots macOS on the ASUS A16 (Snapdragon X2 Elite), with an Adreno Metal/IOGPU stack"
 sourceUrl: "https://github.com/Snapintosh/Snapintosh"
-stars: 780
-forks: 45
+stars: 887
+forks: 50
 language: "Python"
 topics: []
 license: "NOASSERTION"
 defaultBranch: "main"
-snapshotDate: "2026-10-24"
-pushedAt: "2026-10-23T08:23:24Z"
+snapshotDate: "2026-10-25"
+pushedAt: "2026-10-24T22:28:36Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

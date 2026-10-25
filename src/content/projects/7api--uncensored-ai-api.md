@@ -5,14 +5,14 @@ name: "uncensored-ai-api"
 fullName: "7API/uncensored-ai-api"
 description: "Uncensored AI API and models — one key for Claude, GPT, Gemini, Grok, DeepSeek, GLM and Kimi, with uncensored and abliterated variants where available. OpenAI- and Anthropic-compatible. Pay per token."
 sourceUrl: "https://github.com/7API/uncensored-ai-api"
-stars: 222
+stars: 223
 forks: 62
 language: "未知"
 topics: ["abliterated-models", "ai-gateway", "anthropic-compatible", "claude-api", "claude-code", "deepseek-api", "gemini-api", "glm-api"]
 license: "MIT"
 homepage: "https://7api.st/?utm_source=github&utm_medium=repo&utm_campaign=uncensored-ai-api"
 defaultBranch: "main"
-snapshotDate: "2026-10-24"
+snapshotDate: "2026-10-25"
 pushedAt: "2026-10-23T06:24:13Z"
 ---
 
