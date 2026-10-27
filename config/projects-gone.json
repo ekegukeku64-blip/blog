@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-25T04:14:33Z",
+  "checkedAt": "2026-10-27T04:37:26Z",
   "note": "仓库已从 GitHub 删除或转为私有；链接会 404，页面上不再做成可点击的按钮。",
   "projects": [
     {
@@ -17,6 +17,10 @@
     {
       "fullName": "Abaz890/Civilization_VII_Unlimited_Gold___Science",
       "seenIn": "src/content/posts/daily-2026-07-02.md"
+    },
+    {
+      "fullName": "Andreas698/glm-5\\.3-uncensored",
+      "seenIn": "src/content/posts/daily-2026-10-27.md"
     },
     {
       "fullName": "AnonymousDev1494/System_Information_Viewer",
