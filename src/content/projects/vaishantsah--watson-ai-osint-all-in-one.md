@@ -5,15 +5,15 @@ name: "watson-AI-osint-all-in-one"
 fullName: "vaishantsah/watson-AI-osint-all-in-one"
 description: "Watson — free OSINT tool for Windows: people search across 3,100+ public sites by nickname, email, phone or website. Open-source intelligence made simple: digital footprint check, username lookup, social media search. No account, no tracking. Site: watsonfind.icu"
 sourceUrl: "https://github.com/vaishantsah/watson-AI-osint-all-in-one"
-stars: 192
-forks: 0
+stars: 357
+forks: 11
 language: "TypeScript"
 topics: ["cybersecurity", "desktop-app", "digital-footprint", "electron", "free", "infosec", "intelligence", "investigation"]
 license: "MIT"
 homepage: "https://watsonfind.icu"
 defaultBranch: "main"
-snapshotDate: "2026-10-28"
-pushedAt: "2026-10-28T00:53:34Z"
+snapshotDate: "2026-10-29"
+pushedAt: "2026-10-29T00:32:33Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -89,7 +89,7 @@ No setup wizard, no account, no admin rights. Download one file and open it.
 Two ways, same file:
 
 - **From the website:** open **[watsonfind.icu](https://watsonfind.icu)** and click **Download free**.
-- **From GitHub:** open **Releases** and download `Watson-1.3.2-portable.exe`.
+- **From GitHub:** open **Releases** and download `Watson-1.4.0-portable.exe`.
 
 Both serve the same build — pick whichever you prefer.
 
@@ -244,7 +244,7 @@ The download buttons use `DOWNLOAD_URL` in `src/pages/Landing.tsx`; on this serv
 npm run dist:win
 ```
 
-The file lands in `release/Watson-1.3.2-portable.exe`. Building on Linux works without Wine, but then the .exe keeps the default Electron file icon. Build on Windows to embed the Watson icon.
+The file lands in `release/Watson-1.4.0-portable.exe`. Building on Linux works without Wine, but then the .exe keeps the default Electron file icon. Build on Windows to embed the Watson icon.
 
 ### Stack
 
