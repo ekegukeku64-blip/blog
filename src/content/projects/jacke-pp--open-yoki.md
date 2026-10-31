@@ -5,13 +5,13 @@ name: "open-yoki"
 fullName: "jacke-pp/open-yoki"
 description: "An AI live-stream host that runs on one server: voice, face, chat, memory, posts. The base yoki runs on. By Jacke_pp · contact: DM @Jacke_pp on X"
 sourceUrl: "https://github.com/jacke-pp/open-yoki"
-stars: 339
-forks: 1
+stars: 579
+forks: 34
 language: "JavaScript"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-29"
+snapshotDate: "2026-10-31"
 pushedAt: "2026-10-28T09:21:00Z"
 ---
 

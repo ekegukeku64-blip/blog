@@ -5,15 +5,15 @@ name: "ff-ruyijs"
 fullName: "cutetailbud/ff-ruyijs"
 description: "Run any site JavaScript from Python with the real Firefox engine. Headless SpiderMonkey + Necko for automation and scraping."
 sourceUrl: "https://github.com/cutetailbud/ff-ruyijs"
-stars: 114
-forks: 132
+stars: 253
+forks: 217
 language: "C++"
 topics: ["anti-bot", "automation", "firefox", "headless-browser", "javascript", "python", "spidermonkey", "web-scraping"]
-license: "NOASSERTION"
+license: "AGPL-3.0"
 homepage: "https://cutetailbud.github.io/ff-ruyijs/"
 defaultBranch: "main"
-snapshotDate: "2026-10-29"
-pushedAt: "2026-10-28T17:08:10Z"
+snapshotDate: "2026-10-31"
+pushedAt: "2026-10-30T10:07:59Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -33,7 +33,7 @@ Sponsored by
 
 **Install** &nbsp;·&nbsp; **Features** &nbsp;·&nbsp; **Verification systems** &nbsp;·&nbsp; **Examples** &nbsp;·&nbsp; **FAQ** &nbsp;·&nbsp; **Contact** &nbsp;·&nbsp; **[LinuxDO](https://linux.do/t/topic/3078486)** &nbsp;·&nbsp; **English** · 简体中文
 
-> **⚠️ Disclaimer:** This project is for researching next-generation AI browsers. Any form of brute-force reverse engineering is strictly rejected. The source code is fully open-source. Unauthorized commercial use is prohibited.
+> **⚠️ Disclaimer:** This project is for researching next-generation AI browsers. Any form of brute-force reverse engineering is strictly rejected. The source code is open source under the AGPL-3.0; closed-source or proprietary use requires a commercial license.
 
 
   
@@ -106,6 +106,7 @@ with Context(proxy="http://127.0.0.1:7890") as context:
 Python  ──►  ruyiJS Context (isolated process)  ──►  Target site
                  ├─ SpiderMonkey — Firefox 159 JS engine
                  ├─ 38 browser contexts — DOM · Canvas · Workers · iframes · …
+                 ├─ Skia — Firefox 159 2D graphics behind Canvas
                  └─ Necko — HTTP/1.1 · 2 · 3, per-context proxy
 ```
 
@@ -157,13 +158,19 @@ The network stack is Firefox's own **Necko + NSS** (the same TLS library real Fi
 
 The Necko transport can **freely switch between Firefox 100 – 159 TLS profiles**. Each profile reproduces that version's exact ClientHello, giving you a different JA3 / JA4 fingerprint on the wire — useful for rotating browser identities, evading per-version blocks, or testing how a site reacts to different Firefox releases.
 
+Choose the release per context with `tls=` (`"100"`–`"159"`; default 159). It sets the TLS ClientHello, HTTP/2 settings and HTTP/3 priorities of that context's Necko transport only; set a matching user agent with `configure_fingerprint` when the page should agree.
+
 ```python
-with Context(proxy="http://127.0.0.1:7890", timeout=30) as context:
+with Context(proxy="http://127.0.0.1:7890", timeout=30, tls="120") as context:
     context.load_page("https://example.com/", "")
     context.eval("globalThis.r = null; fetch('/api').then(x => x.json()).then(v => r = v)")
     context.advance(25)               # drive the event loop until it settles
     print(context.eval("r"))
 ```
+
+### Canvas on Firefox's native Skia
+
+Canvas 2D draws through Firefox's own official **Skia** (`gfx/skia` from the Firefox 159 release), not a re-implementation.
 
 ### Python ↔ JavaScript bridge
 
@@ -256,6 +263,8 @@ Does it work on macOS or Linux?
 
 Not yet — currently Windows x64 only. Cross-platform support is planned.
 
+The JS engine is Mozilla's official **SpiderMonkey** and the networking stack is Mozilla's official **Necko** — both are pulled directly from the Firefox source tree. You can check out and build them yourself from [mozilla-central](https://hg.mozilla.org/mozilla-central/). The customizations ruyijs makes on top do not affect the engines' core functionality, so a vanilla SpiderMonkey + Necko built for Linux or macOS will work as the foundation for a port.
+
 
 Do I need to download a browser?
 
@@ -300,20 +309,21 @@ Questions, permission requests, commercial licensing, or just to talk shop — a
 
 
 WeChat: 如意
-Group: AI 浏览器交流群
+Group: AI浏览器ruyijs过检测交流群3
 
 
 > The group QR refreshes periodically; if it has expired, add the author on WeChat (如意) for an invite.
 
 ## 📄 License
 
-Licensed under the **ff-ruyijs Source Available License v1.0**.
+ff-ruyijs is **dual-licensed**:
 
-- ✅ Free for personal learning, research, and non-commercial use
-- ✅ Modifications **must be open-sourced** when distributed
-- ❌ Commercial use **requires written authorization** from the author
+- **AGPL-3.0** — free for any use, commercial included, as long as you comply: if you distribute ff-ruyijs or a modified version, **or offer it to users over a network** (a hosted service or API), you must publish the complete source of your version under the AGPL-3.0.
+- **Commercial license** — required to use ff-ruyijs in closed-source products or services, or to keep your modifications private.
 
-To request a commercial license, contact via WeChat (ID: **如意**) or open an issue on GitHub.
+For a commercial license, contact via WeChat (ID: **如意**) or open an issue on GitHub titled "Commercial license".
+
+Mozilla-derived code (SpiderMonkey, Necko) stays under the MPL-2.0. Releases up to 0.2.1 keep the license they shipped with.
 
 See `NOTICE` for third-party attributions.
 

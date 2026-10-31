@@ -5,14 +5,14 @@ name: "grim-prompter"
 fullName: "jmanico/grim-prompter"
 description: "Threat modeling for AI coding agents: point Claude Code, Codex or any agent at your repo and get an evidence-traced threat model. 36 architectures, 29 methods, MIT."
 sourceUrl: "https://github.com/jmanico/grim-prompter"
-stars: 87
-forks: 9
+stars: 265
+forks: 25
 language: "未知"
 topics: ["ai-agents", "appsec", "claude-code", "codex", "linddun", "llm", "pasta", "prompt-engineering"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-10-29"
-pushedAt: "2026-10-28T19:46:44Z"
+snapshotDate: "2026-10-31"
+pushedAt: "2026-10-29T20:53:55Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -25,6 +25,9 @@ Grim Prompter
 
 
 **Threat model your project with Claude Code, Codex, or another coding agent.** Grim Prompter provides 36 architecture workflows and 29 method and analysis prompts. Your agent follows a structured review of the code, trust boundaries, threats, existing controls, and proposed mitigations, with evidence you can check.
+
+Inspired by Trim Reaper and
+Dread Ledger.
 
 ## Install
 
@@ -141,6 +144,16 @@ See the catalog for every prompt and the artifact contract for the JSON format.
 ## Contributing
 
 Send a pull request with the threat-modeling question or boundary your change addresses. Cite method sources, follow the runbook, and keep private system data out of contributions.
+
+## About the author
+
+Created by Jim Manico of [manicode.ai](https://manicode.ai) and
+[Manicode Security](https://manicode.com).
+
+For teams looking to guide secure coding from the start,
+[manicode.ai](https://manicode.ai) offers commercial secure-coding prompts for AI
+assistants, designed to reduce avoidable security rework and the time and tokens
+spent on it.
 
 ## License
 

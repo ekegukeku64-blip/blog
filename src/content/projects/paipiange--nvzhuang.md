@@ -5,15 +5,15 @@ name: "nvzhuang"
 fullName: "paipiange/nvzhuang"
 description: "1407 张 AI 女装参考图集与虚拟试穿网站，支持中英检索、OpenAI Images / Gemini / 豆包及自定义 Base URL、API Key、模型。https://github.com/paipiange/nvzhuang"
 sourceUrl: "https://github.com/paipiange/nvzhuang"
-stars: 401
-forks: 150
+stars: 1337
+forks: 387
 language: "Go"
 topics: []
 license: "MIT"
 homepage: "https://paipiange.github.io/nvzhuang/"
 defaultBranch: "main"
-snapshotDate: "2026-10-30"
-pushedAt: "2026-10-30T02:58:56Z"
+snapshotDate: "2026-10-31"
+pushedAt: "2026-10-31T04:23:30Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -27,7 +27,8 @@ pushedAt: "2026-10-30T02:58:56Z"
 > 不仅收录了 1407 套纯净高质量服装图，还顺手接了 AI 虚拟换装后端——这下各位佬友哪怕现实中没有小裙子，直接传张自拍照就能一键无痛变身“女装大佬”出道了 😂！
 
 > 🔗 **在线预览**：https://paipiange.github.io/nvzhuang/  
-> ⭐ **GitHub 源码**：https://github.com/paipiange/nvzhuang
+> ⭐ **GitHub 源码**：https://github.com/paipiange/nvzhuang  
+> 💃 **兄弟项目（AI 姿势参考与生图工坊）**：https://github.com/paipiange/ai-pose-gallery-zh  
 > 💡 **原作者推文 / 灵感来源**：X [@giaaibusi](https://x.com/giaaibusi)  
 > 🐧 **社区友链**：[LINUX DO (https://linux.do/)](https://linux.do/)
 
@@ -52,6 +53,23 @@ pushedAt: "2026-10-30T02:58:56Z"
 |  |  |  |
 | **参考服装图**（图集中的精选女装） | **模特原图**（用户上传的人像日常照） | **AI 换装效果（图 1 + 图 2 ➔ 图 3）**（保留模特五官发型，自然融合服饰材质与剪裁） |
 
+## 🎬 兄弟项目联动：姿势参考 + 人物参考 → AI 生成结果
+
+如果你不仅想为模特挑选服装，还希望**自由掌控人体的拍摄姿势、骨架动作与构图视角**，推荐搭配我的另一个开源项目一起使用：  
+👉 **拍片哥 · AI 姿势参考库与生图工坊 (AI Pose Gallery & Studio)**
+
+该项目收录了 **288 组 / 1439 张** AI 人体多视角姿势参考图（日文数据完整汉化），内置「拍片哥 AI 姿势生图与试穿工坊」，支持骨架动作锁定、真实面料试穿与面容复刻：
+
+选择姿势骨架控制动作与构图，再上传人物/服装参考，即可生成同时保留目标姿势、人物面容与穿搭特征的完整图片：
+
+| ① 姿势与构图参考 | ② 人物与服装参考 | ③ AI 融合生成结果 |
+| :---: | :---: | :---: |
+|  |  |  |
+| **锁定身体动作、视角与画面构图**（从 1439 张多角度姿势库中挑选骨架素体） | **提供面容、发型与服装特征**（结合本项目精选服装或上传的模特穿搭） | **AI 融合生成结果（图 1 + 图 2 ➔ 图 3）**（动作精准还原，完美呈现人物与穿搭细节） |
+
+> **上图即实际工作流：图 1 + 图 2 → 图 3。** 人物头像与服装均为可选输入；只选择姿势，也可以让模型自动完成人物与穿搭设计。  
+> 💡 **联动工作流**：在 拍片哥女装 挑选高质量服装设计，在 拍片哥姿势库 挑选合适的人体动作构图，两者结合即可生成兼具神韵动作与精美穿搭的专业级 AI 模特大片！
+
 ## ✨ 功能特性
 
 - **8 大分类**：春（215）/ 夏（254）/ 秋（244）/ 冬（253）/ 内衣（199）/ 派对（48）/ 泳装（54）/ 性感（140）
@@ -59,9 +77,13 @@ pushedAt: "2026-10-30T02:58:56Z"
 - **双向检索**：中文（白、蕾丝、连衣裙…）和英文（white、lace、dress…）关键词都能搜索
 - **关键词本地化**：中文模式自动将服装属性翻译为中文展示
 - **交互体验**：分类筛选、实时搜索、无限滚动加载、放大查看、键盘 ←/→ 切换、Esc 关闭、原尺寸 PNG 下载
-- **AI 试穿搭配台**：上传人像 + 选服装，在线预览、拖拽缩放、抠图合成，或一键 AI 换装（需自备后端）
+- **AI 试穿搭配台**：上传人像后可从图库选服装，也可上传自己的服装图片；自定义服装支持 1 张完整全身穿搭，或按顺序上传 2 张上半身 / 下半身服装
+- **明确错误反馈**：换装校验、接口限流、鉴权和服务异常会同时显示页内提示与可聚焦弹窗
+- **黑白主题**：默认白色主题，可在图库页和试穿页切换黑色 / 白色主题，并记住本机选择
 - **浏览器设置中心**：可保存自己的后端地址、Base URL、API Key、接口协议与模型名；个人配置只保存在当前浏览器，后端仅按单次请求临时使用
 - **本机生成记录**：AI 换装成功后自动保存到当前浏览器的 IndexedDB，可随时查看、下载、单条删除或全部清空，不上传、不跨设备同步
+
+> 自定义上传的服装原图仅保留在当前页面内存中，不写入本地存储或生成记录；刷新或关闭页面后会自动清除。生成时只将压缩后的图片内容发送到用户配置的换装后端。
 - **电商以图搜同款**：大图详情与试穿操作区支持一键唤起淘宝图片搜索，快速查找现实中在售的同款服饰
 - **ComfyUI 本地离线生图**：支持零成本、免 API Key 本地私密运行；集成阿里开源 **Qwen-Image-Edit-2511 (Int8) + 4 步极速 Lightning LoRA** 与 **MiniMax H3** 双工作流，具备自动容灾回退能力
 
@@ -147,11 +169,13 @@ llm:
 # 1. 复制环境变量模板并填入你的 Key（如国内免翻墙的豆包 ARK_API_KEY，或 OpenAI Key）
 cp backend/.env.example backend/.env
 
-# 2. 一键启动后端
+# 2. 一键启动后端（内置开箱即用兜底，默认监听 8000 端口）
 docker compose up -d
 
 # 服务启动后监听在 http://localhost:8000
 ```
+
+> 提示：若需深度定制模型或高级路由，可复制配置文件模板：`cp backend/manifest/config/config.example.yaml backend/manifest/config/config.yaml`（未复制时系统也会自动使用模板并稳定监听 8000 端口）。
 
 #### 方式二：Docker Run 单命令运行
 
@@ -175,17 +199,19 @@ docker run -d --name costume-tryon \
 - **命令行运行**：
   ```bash
   cd backend
+  # 可选：复制配置文件（不复制时也会自动安全回退加载模板并监听 8000）
+  # cp manifest/config/config.example.yaml manifest/config/config.yaml
   export ARK_API_KEY="你的Key"   # Windows PowerShell 用 $env:ARK_API_KEY="你的Key"
-  go run main.go                 # 服务监听 :8000
+  go run main.go                 # 服务稳定监听 :8000
   ```
 
 ### 🔗 前端对接后端
 
 前端静态页面通过以下顺序识别换装后端地址（优先级从高到低）：
 
-1. **设置中心**：用户在当前浏览器保存的「后端 API 地址」
+1. **设置中心**：用户在当前浏览器保存的「后端 API 地址」（跨源外部公网后端须使用 `HTTPS`）
 2. **全局变量**：在 HTML 加载前配置 `window.AI_API_URL = "http://localhost:8000"`
-3. **URL 参数**：`https://你的前端地址/?tryon=http://localhost:8000`
+3. **URL 参数**：`https://你的前端地址/?tryon=http://localhost:8000`（安全约束：为防止钓鱼窃取 API Key 与私密照片，`?tryon=` 仅允许同源或本机回环 `localhost/127.0.0.1`；外部后端须在设置中心显式保存）
 4. **本地回退**：本地以 `localhost` 或 `127.0.0.1` 访问前端时，默认自动连接 `http://127.0.0.1:8000`
 
 ### 🛡️ 接口安全与资源限制（公网部署必备）
@@ -199,7 +225,7 @@ docker run -d --name costume-tryon \
 5. **图片校验与前端自适应压缩**：
    - 仅支持 JPEG / PNG / WebP 真实图像内容探测，严格防范伪造扩展名与代码注入；
    - 单图上限 8 MiB、两图合计 16 MiB、长宽限制 256~8192 px、总像素严格限制在 2000 万以内（防止解压像素炸弹导致服务器 OOM）；
-   - 前端上传照片时自适应缩放（最长边 2048 px）并阶梯压缩（WebP 优先，质量 0.90~0.75）。
+   - 前端上传照片时自适应缩放：任一边小于 256 px 时自动等比放大到合规尺寸，高清模式最长边 2048 px，并阶梯压缩（WebP 优先，质量 0.90~0.75）。
 
 > 完整的多模型接入、生产环境 Nginx 反代与安全加固说明见 `backend/DEPLOY.md`。
 
@@ -229,7 +255,7 @@ nvzhuang/
 ├── assets/
 │   ├── thumbs/         # 缩略图（webp，网格卡片用）
 │   └── img/            # 展示图（webp，弹窗放大用）
-├── docs/               # 文档图片与试穿效果演示图
+├── docs/               # 文档图片、换装效果演示与姿势生图联动图
 ├── backend/            # AI 换装后端（GoFrame v2，可选）
 │   ├── docker-compose.yml                 # 后端 Docker Compose 配置
 │   ├── .env.example                       # 环境变量示例文件
@@ -252,8 +278,9 @@ nvzhuang/
 ?lang=en&q=white  # 组合使用
 ```
 
-## 💡 灵感来源与社区友链
+## 💡 灵感来源与推荐项目
 
+- **兄弟项目 / 姿势与生图工坊**：拍片哥 AI 姿势参考库 (ai-pose-gallery-zh) —— 288 组 / 1439 张多角度人体姿势，集成本地与多云端 AI 姿势生图与试穿工坊。
 - **原作者 / 灵感来源**：[X @giaaibusi](https://x.com/giaaibusi) —— 诚挚鸣谢原作者对高质量 AI 服装图集的整理与创意分享！
 - **社区友链**：[LINUX DO (https://linux.do/)](https://linux.do/) —— 真诚、友善、团结、专业的开源与技术极客社区。
 - **审计与规范文档**：
@@ -298,3 +325,7 @@ Each record in `data.js` contains the following fields:
 | `原寸` | Full-size PNG path |
 
 > Note: `カテゴリ`, `キーワード`, `サムネ`, `画像`, and `原寸` are the original Japanese field names kept for compatibility with the source data. The site localizes them to Chinese or English on the frontend automatically.
+
+## 📈 Star 增长趋势
+
+*图片：Star History Chart*

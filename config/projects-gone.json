@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-30T05:21:59Z",
+  "checkedAt": "2026-10-31T05:05:42Z",
   "note": "仓库已从 GitHub 删除或转为私有；链接会 404，页面上不再做成可点击的按钮。",
   "projects": [
     {
@@ -17,6 +17,10 @@
     {
       "fullName": "Abaz890/Civilization_VII_Unlimited_Gold___Science",
       "seenIn": "src/content/posts/daily-2026-07-02.md"
+    },
+    {
+      "fullName": "Alice53211/auth-codex-plugin",
+      "seenIn": "src/content/posts/daily-2026-07-09.md"
     },
     {
       "fullName": "Andreas698/glm-5\\.3-uncensored",
@@ -91,6 +95,10 @@
       "seenIn": "src/content/posts/daily-2026-07-20.md"
     },
     {
+      "fullName": "Elias569/fintech-dashboard",
+      "seenIn": "src/content/posts/daily-2026-07-11.md"
+    },
+    {
       "fullName": "Euro-Truck-Simulator-2-DLC-Unlocker-v3/.github",
       "seenIn": "src/content/posts/daily-2026-06-02.md"
     },
@@ -143,6 +151,14 @@
       "seenIn": "src/content/posts/daily-2026-06-27.md"
     },
     {
+      "fullName": "KORAYTEACHER/fintech-advisor",
+      "seenIn": "src/content/posts/daily-2026-07-11.md"
+    },
+    {
+      "fullName": "KORAYTEACHER/fintech-forge",
+      "seenIn": "src/content/posts/daily-2026-07-11.md"
+    },
+    {
       "fullName": "Kindness-Kismet/stelliberty\\_android",
       "seenIn": "src/content/posts/daily-2026-09-29.md"
     },
@@ -161,6 +177,10 @@
     {
       "fullName": "LoAy-Ashraf-744/The_Sims_4_Cheat_Engine",
       "seenIn": "src/content/posts/daily-2026-07-01.md"
+    },
+    {
+      "fullName": "Matchameleon/moneyclaw",
+      "seenIn": "src/content/posts/daily-2026-07-12.md"
     },
     {
       "fullName": "Mguelfedrigo/Jenny-Mod-Jar",
@@ -387,6 +407,10 @@
       "seenIn": "src/content/posts/daily-2026-06-23.md"
     },
     {
+      "fullName": "angieruiz17/codex-gpt-plugin",
+      "seenIn": "src/content/posts/daily-2026-07-11.md"
+    },
+    {
       "fullName": "angusdevgo/IDM\\_Pro\\_Tool",
       "seenIn": "src/content/posts/daily-2026-09-11.md"
     },
@@ -559,6 +583,10 @@
       "seenIn": "src/content/posts/daily-2026-06-22.md"
     },
     {
+      "fullName": "imchine/FinTech-Solution",
+      "seenIn": "src/content/posts/daily-2026-07-11.md"
+    },
+    {
       "fullName": "indigothorn67/Electrum-Balance-Flasher",
       "seenIn": "src/content/posts/daily-2026-09-16.md"
     },
@@ -689,6 +717,10 @@
     {
       "fullName": "polymaxi2/polymarket-arbitrage-trading-bot",
       "seenIn": "src/content/posts/daily-2026-05-31.md"
+    },
+    {
+      "fullName": "pueschel88/Tradingview-MCP",
+      "seenIn": "src/content/posts/daily-2026-07-14.md"
     },
     {
       "fullName": "rabeelaimony/Archive_Password_Recovery",

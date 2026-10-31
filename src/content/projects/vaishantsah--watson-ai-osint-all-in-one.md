@@ -5,14 +5,14 @@ name: "watson-AI-osint-all-in-one"
 fullName: "vaishantsah/watson-AI-osint-all-in-one"
 description: "Watson — free OSINT tool for Windows: people search across 3,100+ public sites by nickname, email, phone or website. Open-source intelligence made simple: digital footprint check, username lookup, social media search. No account, no tracking. Site: watsonfind.icu"
 sourceUrl: "https://github.com/vaishantsah/watson-AI-osint-all-in-one"
-stars: 357
-forks: 11
+stars: 352
+forks: 20
 language: "TypeScript"
 topics: ["cybersecurity", "desktop-app", "digital-footprint", "electron", "free", "infosec", "intelligence", "investigation"]
 license: "MIT"
 homepage: "https://watsonfind.icu"
 defaultBranch: "main"
-snapshotDate: "2026-10-29"
+snapshotDate: "2026-10-31"
 pushedAt: "2026-10-29T00:32:33Z"
 ---
 
