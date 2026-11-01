@@ -5,14 +5,14 @@ name: "huashu-bird-sticker"
 fullName: "alchaincyf/huashu-bird-sticker"
 description: "花叔开源的全球鸟类贴纸库 · Stickers for all 11,064 living bird species, with names in 43 languages and structured data"
 sourceUrl: "https://github.com/alchaincyf/huashu-bird-sticker"
-stars: 285
-forks: 43
+stars: 416
+forks: 75
 language: "未知"
 topics: ["ai-generated", "biodiversity", "birding", "birds", "birdwatching", "claude-code", "codex", "dataset"]
 license: "NOASSERTION"
 defaultBranch: "main"
-snapshotDate: "2026-10-31"
-pushedAt: "2026-10-30T11:06:12Z"
+snapshotDate: "2026-11-01"
+pushedAt: "2026-11-01T04:42:26Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -28,7 +28,7 @@ By Huashu (花叔), from the bird-watching app Mingji (鸣迹). 11,064 bird spec
 
 *图片：40 stickers from 15 bird orders*
 
-The stickers are free to use for almost anything, including commercial work, under PolyForm Shield 1.0.0: the one thing you may not do is use them in a product that competes with our bird app (another birding, bird-ID or field-guide app or site). The data is MIT. Please read NOTICE for the parts that come from third parties, and About the reference photos below.
+**License in short:** use the stickers for anything, including commercial work, editing and redistribution. The one exception is a birding, bird-ID or field-guide app, site or service. Credit huashu-bird-sticker with a link to this repository and you're set. The legal text is PolyForm Shield 1.0.0. The data is MIT, and third-party parts are listed in NOTICE.
 
 ## Gallery
 
@@ -154,29 +154,18 @@ A record looks like this (names shortened):
 
 ## How the stickers were made, and how good they are
 
-11,030 stickers are AI illustrations. For each species we found a reference photo (or, for 453 species where no single photo was good enough, a board of several images plus a written description), drew the sticker with GPT-image, upscaled it, and cut it out. 34 are cut out from real photographs and passed a blind review against the original photo.
+11,064 stickers are AI illustrations. For each species we found a reference photo (or, for 453 species where no single photo was good enough, a board of several images plus a written description), drew the sticker with GPT-image, upscaled it, and cut it out.
 
 Every AI sticker was then scored by a separate reviewer against the reference for field marks: bill, eye, legs and feet, plumage pattern and colour. In the last round, 852 borderline stickers (80–82) also got a second, blind review, and 211 of them failed it and were redrawn. Borderline stickers from earlier rounds did not get this second review.
 
-- **7,676 meet our quality bar** (`"meetsQualityBar": true`): AI stickers scoring 80 or above, plus the 34 photo cutouts.
-- **3,388 do not.** They were redrawn up to the limit, and we kept the best-scoring version so that no species is left without a picture. 3,273 score 70–79, 109 score below 70, and 6 scored 80+ but failed the blind second review.
+- **7,668 meet our quality bar** (`"meetsQualityBar": true`): AI stickers scoring 80 or above.
+- **3,396 do not.** They were redrawn up to the limit, and we kept the best-scoring version so that no species is left without a picture. 3,281 score 70–79, 109 score below 70, and 6 scored 80+ but failed the blind second review.
 
 These are illustrations, not field-guide plates. Treat them as a friendly picture of the bird, and check a field guide before relying on a fine detail. If you spot a mistake, please open an issue — corrections from birders are the most valuable contribution this project can get.
 
 ## About the reference photos
 
-Each sticker's reference is listed in `sticker.reference`, with its page, author and license. They break down like this (AI stickers, by species):
-
-| Reference | Species |
-|---|---|
-| Openly licensed photo (CC0, public domain, CC BY, CC BY-SA) | 1,986 |
-| Board of openly licensed images, or a written description only | 46 |
-| Photo under a non-commercial or no-derivatives license (CC BY-NC, -ND, …) | 5,071 |
-| Photo with all rights reserved, or under Macaulay Library terms | 1,500 |
-| Photo whose license we did not record | 2,017 |
-| Board mixing images under different terms | 410 |
-
-The stickers are new drawings, not copies, and the reference photos are not distributed here. Whether a drawing made from a photo is bound by that photo's license is not settled law. If it matters for what you are doing, filter on `sticker.reference.license`.
+Every sticker is a new AI drawing, and no reference photo is included in this repository. The image each species was drawn from (page, author and license) is recorded in `sticker.reference` in `data/species.json`, so every sticker can be traced back to its source. A breakdown by reference license is in data/README.md.
 
 ## Use it
 

@@ -5,15 +5,15 @@ name: "nvzhuang"
 fullName: "paipiange/nvzhuang"
 description: "1407 张 AI 女装参考图集与虚拟试穿网站，支持中英检索、OpenAI Images / Gemini / 豆包及自定义 Base URL、API Key、模型。https://github.com/paipiange/nvzhuang"
 sourceUrl: "https://github.com/paipiange/nvzhuang"
-stars: 1337
-forks: 387
+stars: 1777
+forks: 473
 language: "Go"
 topics: []
 license: "MIT"
 homepage: "https://paipiange.github.io/nvzhuang/"
 defaultBranch: "main"
-snapshotDate: "2026-10-31"
-pushedAt: "2026-10-31T04:23:30Z"
+snapshotDate: "2026-11-01"
+pushedAt: "2026-10-31T17:01:39Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -326,6 +326,4 @@ Each record in `data.js` contains the following fields:
 
 > Note: `カテゴリ`, `キーワード`, `サムネ`, `画像`, and `原寸` are the original Japanese field names kept for compatibility with the source data. The site localizes them to Chinese or English on the frontend automatically.
 
-## 📈 Star 增长趋势
-
-*图片：Star History Chart*
+## Star History
