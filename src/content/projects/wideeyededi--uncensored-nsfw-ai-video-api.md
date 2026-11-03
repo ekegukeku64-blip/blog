@@ -5,14 +5,14 @@ name: "uncensored-nsfw-ai-video-api"
 fullName: "wideeyededi/uncensored-nsfw-ai-video-api"
 description: "Uncensored NSFW AI video API — Seedance Spicy & Wan NSFW docs for 18+ text-to-video / image-to-video: async tasks, webhooks, credits billing. 成人向 AI 视频生成 API：Seedance Spicy、Wan NSFW、文生/图生视频、异步任务、积分计费、接入指南。"
 sourceUrl: "https://github.com/wideeyededi/uncensored-nsfw-ai-video-api"
-stars: 322
+stars: 416
 forks: 0
 language: "未知"
 topics: ["123vips", "ai-api", "ai-companion", "ai-video", "ai-video-api", "ai-video-generator", "comfyui", "image-to-video"]
 license: "MIT"
 homepage: "https://123vips.com/"
 defaultBranch: "main"
-snapshotDate: "2026-11-02"
+snapshotDate: "2026-11-03"
 pushedAt: "2026-11-02T03:01:26Z"
 ---
 
