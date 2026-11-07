@@ -5,13 +5,13 @@ name: "youtube-uploader"
 fullName: "dragonwolfshovel/youtube-uploader"
 description: "Automated YouTube video uploader with batch processing, thumbnail support, and scheduled publishing. Uses official YouTube Data API v3. Open-source and privacy-first"
 sourceUrl: "https://github.com/dragonwolfshovel/youtube-uploader"
-stars: 426
+stars: 429
 forks: 358
 language: "Python"
 topics: ["automation", "batch-processing", "cli-tool", "content-creator", "metadata-manager", "oauth2", "open-source", "video-upload"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-06"
+snapshotDate: "2026-11-07"
 pushedAt: "2026-11-05T05:16:35Z"
 ---
 
