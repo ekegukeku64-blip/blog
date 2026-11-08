@@ -5,13 +5,13 @@ name: "tiktok-uploader"
 fullName: "TagPhaseArcade/tiktok-uploader"
 description: "Automated TikTok video uploader with batch processing, scheduling, and hashtag management. Local session-based auth. Open-source and cross-platform"
 sourceUrl: "https://github.com/TagPhaseArcade/tiktok-uploader"
-stars: 429
+stars: 431
 forks: 336
 language: "Python"
 topics: ["automation", "batch-processing", "content-creator", "cross-platform", "open-source", "scheduler", "social-media-tools", "tiktok-api"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-07"
+snapshotDate: "2026-11-08"
 pushedAt: "2026-11-05T06:49:18Z"
 ---
 

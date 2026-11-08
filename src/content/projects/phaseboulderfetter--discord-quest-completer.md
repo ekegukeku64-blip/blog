@@ -11,7 +11,7 @@ language: "Python"
 topics: ["automation", "discord", "discord-quest", "discord-tools", "game-booster", "open-source", "python", "quest-completer"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-07"
+snapshotDate: "2026-11-08"
 pushedAt: "2026-11-06T12:02:17Z"
 ---
 

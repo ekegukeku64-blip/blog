@@ -5,13 +5,13 @@ name: "hermes-voice"
 fullName: "majorminorlabs/hermes-voice"
 description: "Talk to a Hermes Agent profile through Home Assistant Assist"
 sourceUrl: "https://github.com/majorminorlabs/hermes-voice"
-stars: 459
-forks: 24
+stars: 509
+forks: 29
 language: "Python"
 topics: []
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-07"
+snapshotDate: "2026-11-08"
 pushedAt: "2026-11-06T21:59:50Z"
 ---
 

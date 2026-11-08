@@ -5,13 +5,13 @@ name: "crypto-portfolio-tracker"
 fullName: "Lowbetweentrim/crypto-portfolio-tracker"
 description: "Self-hosted, privacy-first crypto portfolio tracker. Import transactions via CSV, track real-time PnL, and manage your assets locally. No cloud, no subscriptions. Open-source"
 sourceUrl: "https://github.com/Lowbetweentrim/crypto-portfolio-tracker"
-stars: 425
+stars: 426
 forks: 358
 language: "Python"
 topics: ["crypto", "crypto-taxes", "finance", "local-first", "open-source", "pnl", "portfolio-tracker", "privacy-first"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-07"
+snapshotDate: "2026-11-08"
 pushedAt: "2026-11-06T09:59:25Z"
 ---
 

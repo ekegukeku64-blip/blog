@@ -5,13 +5,13 @@ name: "Token-Sniper"
 fullName: "Nebularotunnel/Token-Sniper"
 description: "Advanced desktop analyzer for DEX activity. Monitors new liquidity pair creation, applies smart filters to detect potential scam and rugpull patterns, and provides real-time alerts. Clean interface, regularly updated"
 sourceUrl: "https://github.com/Nebularotunnel/Token-Sniper"
-stars: 391
+stars: 392
 forks: 267
 language: "Python"
 topics: ["2026", "analyzer", "crypto", "desktop-app", "dex", "liquidity", "rugpull-detection", "scam-filter"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-11-07"
+snapshotDate: "2026-11-08"
 pushedAt: "2026-11-05T16:15:43Z"
 ---
 
