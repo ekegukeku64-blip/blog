@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-07T05:37:02Z",
+  "checkedAt": "2026-11-11T05:44:33Z",
   "note": "仓库已从 GitHub 删除或转为私有；链接会 404，页面上不再做成可点击的按钮。",
   "projects": [
     {
@@ -549,6 +549,10 @@
     {
       "fullName": "frecodecasti/gem5-branchpred",
       "seenIn": "src/content/posts/daily-2026-07-04.md"
+    },
+    {
+      "fullName": "ftstore-roblox/4K-Video-Downloader",
+      "seenIn": "src/content/posts/daily-2026-07-15.md"
     },
     {
       "fullName": "fxyz666/LogicPipe",
