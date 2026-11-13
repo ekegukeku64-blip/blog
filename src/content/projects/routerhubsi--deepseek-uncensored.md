@@ -5,14 +5,14 @@ name: "deepseek-uncensored"
 fullName: "routerhubSI/deepseek-uncensored"
 description: "Every uncensored and abliterated DeepSeek build — V4.1 Flash 1017 Abliterated (the pinned, reproducible build that ranks third on the AA Cyber benchmark), V4 Pro, the tuned variants, abliterated GGUF builds and a cyber red-team prompt library. Maintained by RouterHub."
 sourceUrl: "https://github.com/routerhubSI/deepseek-uncensored"
-stars: 67
+stars: 69
 forks: 20
 language: "Python"
 topics: ["abliterated", "abliterated-models", "ai-gateway", "anthropic-compatible", "cybersecurity", "deepseek", "deepseek-api", "deepseek-v4"]
 license: "MIT"
 homepage: "https://routerhub.si/?utm_source=github&utm_medium=repo&utm_campaign=deepseek-uncensored"
 defaultBranch: "main"
-snapshotDate: "2026-11-12"
+snapshotDate: "2026-11-13"
 pushedAt: "2026-11-12T05:37:52Z"
 ---
 

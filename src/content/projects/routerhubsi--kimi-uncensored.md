@@ -6,13 +6,13 @@ fullName: "routerhubSI/kimi-uncensored"
 description: "Every uncensored and abliterated Kimi build — Kimi K3.1 Pro Uncensored via API at 0.30/1.50 USD per million tokens, abliterated open-weight checkpoints for K3.1 Pro and K3, license notes and a red-team prompt library. Maintained by RouterHub."
 sourceUrl: "https://github.com/routerhubSI/kimi-uncensored"
 stars: 84
-forks: 14
+forks: 13
 language: "未知"
 topics: ["abliterated", "abliterated-models", "ai-gateway", "anthropic-compatible", "gguf", "kimi", "kimi-api", "kimi-k3-0"]
 license: "MIT"
 homepage: "https://routerhub.si/?utm_source=github&utm_medium=repo&utm_campaign=kimi-uncensored"
 defaultBranch: "main"
-snapshotDate: "2026-11-12"
+snapshotDate: "2026-11-13"
 pushedAt: "2026-11-12T05:37:21Z"
 ---
 
