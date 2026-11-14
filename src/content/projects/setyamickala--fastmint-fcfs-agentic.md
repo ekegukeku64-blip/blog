@@ -5,13 +5,13 @@ name: "fastmint-fcfs-agentic"
 fullName: "setyamickala/fastmint-fcfs-agentic"
 description: "FCFS mint di BNB Smart Chain lewat Binance Agentic Wallet, masuk blok ±2 detik setelah jam buka."
 sourceUrl: "https://github.com/setyamickala/fastmint-fcfs-agentic"
-stars: 217
-forks: 17
+stars: 227
+forks: 20
 language: "JavaScript"
 topics: []
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-11-12"
+snapshotDate: "2026-11-14"
 pushedAt: "2026-11-11T03:57:12Z"
 ---
 

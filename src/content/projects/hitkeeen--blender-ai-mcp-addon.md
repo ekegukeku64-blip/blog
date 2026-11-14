@@ -5,13 +5,13 @@ name: "blender-ai-mcp-addon"
 fullName: "hitkeeen/blender-ai-mcp-addon"
 description: "AI assistant and MCP server for Blender: visual chat, scene tools, multi-agent workflows. Works with ChatGPT/GPT, Claude, Gemini, Ollama, OpenCode. Blender AI addon, copilot for 3D, bpy Python scripting, MCP integration."
 sourceUrl: "https://github.com/hitkeeen/blender-ai-mcp-addon"
-stars: 67
-forks: 1
+stars: 200
+forks: 3
 language: "未知"
 topics: ["ai-agents", "ai-assistant", "blender", "blender-addon", "blender-ai", "blender-automation", "blender-mcp", "blender-plugin"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-13"
+snapshotDate: "2026-11-14"
 pushedAt: "2026-11-12T14:33:16Z"
 ---
 

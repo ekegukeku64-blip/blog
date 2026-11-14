@@ -5,13 +5,13 @@ name: "sakurai-skill"
 fullName: "kociden/sakurai-skill"
 description: "桜井政博のゲーム作るには 全本編257本の字幕から作ったゲーム制作の Agent Skill（非公式・日本語）"
 sourceUrl: "https://github.com/kociden/sakurai-skill"
-stars: 90
-forks: 8
+stars: 227
+forks: 16
 language: "Python"
 topics: ["agent-skills", "claude-code", "game-design", "gamedev"]
 license: "未标注"
 defaultBranch: "main"
-snapshotDate: "2026-11-13"
+snapshotDate: "2026-11-14"
 pushedAt: "2026-11-12T21:41:59Z"
 ---
 

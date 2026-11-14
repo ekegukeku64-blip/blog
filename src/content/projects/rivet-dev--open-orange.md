@@ -5,15 +5,15 @@ name: "open-orange"
 fullName: "rivet-dev/open-orange"
 description: "Run Cloudflare Workers and Durable Objects unchanged on AWS, GCP, Azure or your own servers."
 sourceUrl: "https://github.com/rivet-dev/open-orange"
-stars: 280
-forks: 11
+stars: 463
+forks: 18
 language: "TypeScript"
 topics: ["cloudflare", "cloudflare-workers", "durable-objects", "nodejs", "rivet", "self-hosted", "serverless", "sqlite"]
 license: "Apache-2.0"
 homepage: "https://openorange.dev"
 defaultBranch: "main"
-snapshotDate: "2026-11-13"
-pushedAt: "2026-11-13T00:06:46Z"
+snapshotDate: "2026-11-14"
+pushedAt: "2026-11-13T14:47:44Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

@@ -5,15 +5,15 @@ name: "Haru"
 fullName: "higurashi-ai/Haru"
 description: "Haru: a low-latency, multilingual, full-duplex spoken dialogue model"
 sourceUrl: "https://github.com/higurashi-ai/Haru"
-stars: 76
-forks: 1
+stars: 234
+forks: 12
 language: "Python"
 topics: []
 license: "Apache-2.0"
 homepage: "https://huggingface.co/higurashi-ai/Haru-4B"
 defaultBranch: "main"
-snapshotDate: "2026-11-13"
-pushedAt: "2026-11-13T05:45:27Z"
+snapshotDate: "2026-11-14"
+pushedAt: "2026-11-13T06:21:17Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。

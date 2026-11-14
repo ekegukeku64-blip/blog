@@ -5,14 +5,14 @@ name: "FFmpeg-GUI-Editor-Windows"
 fullName: "DevedevT/FFmpeg-GUI-Editor-Windows"
 description: "Lightweight portable FFmpeg GUI & lossless video trimmer for Windows (ready-to-use .exe). Supports English, Russian, Chinese, German, French & Italian."
 sourceUrl: "https://github.com/DevedevT/FFmpeg-GUI-Editor-Windows"
-stars: 143
+stars: 541
 forks: 0
 language: "Visual Basic .NET"
-topics: []
+topics: ["converter", "ffmpeg", "ffmpeg-command", "ffmpeg-gui", "ffmpeg-libraries", "ffmpeg-script", "gui", "gui-application"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-13"
-pushedAt: "2026-11-12T21:38:41Z"
+snapshotDate: "2026-11-14"
+pushedAt: "2026-11-13T09:24:36Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
