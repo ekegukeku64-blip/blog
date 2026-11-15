@@ -5,14 +5,14 @@ name: "islandcn"
 fullName: "opencoredev/islandcn"
 description: "The open-source Dynamic Island for React, installed with shadcn."
 sourceUrl: "https://github.com/opencoredev/islandcn"
-stars: 401
-forks: 38
+stars: 687
+forks: 56
 language: "TypeScript"
 topics: ["dynamic-island", "nextjs", "react", "shadcn", "typescript", "ui-components"]
 license: "MIT"
 homepage: "https://islandcn.dev"
 defaultBranch: "main"
-snapshotDate: "2026-11-14"
+snapshotDate: "2026-11-15"
 pushedAt: "2026-11-13T15:14:36Z"
 ---
 
