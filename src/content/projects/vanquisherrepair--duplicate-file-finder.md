@@ -11,7 +11,7 @@ language: "Python"
 topics: ["deduplicator", "disk-cleanup", "duplicate-files", "duplicate-photos", "file-finder", "file-management", "open-source", "python"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-17"
+snapshotDate: "2026-11-18"
 pushedAt: "2026-11-17T06:50:21Z"
 ---
 
