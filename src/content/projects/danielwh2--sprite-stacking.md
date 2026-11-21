@@ -1,0 +1,106 @@
+---
+title: "danielwh2/sprite-stacking"
+owner: "danielwh2"
+name: "sprite-stacking"
+fullName: "danielwh2/sprite-stacking"
+description: "Agent skill: turn four pixel art views into fake-3D sprites you can spin. Works with Claude Code, Codex, Cursor, OpenCode, Gemini CLI, Pi."
+sourceUrl: "https://github.com/danielwh2/sprite-stacking"
+stars: 181
+forks: 15
+language: "HTML"
+topics: ["agent-skills", "claude-code", "codex", "cursor", "fake-3d", "gamedev", "pixel-art", "sprite-stacking"]
+license: "MIT"
+defaultBranch: "main"
+snapshotDate: "2026-11-21"
+pushedAt: "2026-11-21T01:28:57Z"
+---
+
+> 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
+
+# sprite-stacking
+
+An agent skill that turns four pixel art views into fake-3D sprites you can spin. By Daniel White.
+
+*图片：MIT*
+*图片：Agent skill*
+*图片：Python 3 + Pillow + NumPy*
+*图片：Works with*
+
+*图片：Six sprite-stacked assets spinning*
+
+## Install
+
+```bash
+npx skills add danielwh2/sprite-stacking
+```
+
+Installs to the current project. Add `-g` for every project, `-a claude-code` (or `codex`, `cursor`, ...) to pick an agent. Uses the skills CLI, Node 22.20 or later.
+
+Or copy `skills/sprite-stacking` into your agent's skills folder:
+
+| Agent | Folder |
+| --- | --- |
+| Claude Code | `~/.claude/skills/` |
+| Codex, Cursor, OpenCode, Gemini CLI, Pi | `~/.agents/skills/` |
+
+## Use
+
+Ask your agent:
+
+- "Make a rotatable pixel art car."
+- "Sprite stack this 4-view sheet and give me a turntable."
+- "Add a fake 3D pixel art tree to my Godot game."
+
+No image generator? The agent draws the views itself in a short Python script.
+
+## How it works
+
+*图片：Sheet to slices to render*
+
+1. **Views:** top, side, front and back, orthographic, one row.
+2. **Carve:** a voxel survives only where all four views cover it.
+3. **Slices:** the volume is cut into a strip of flat layers, ground first.
+4. **Render:** each layer is rotated, squashed for pitch and lifted 1 px.
+
+## Slicer CLI
+
+```bash
+python3 skills/sprite-stacking/scripts/views_to_slices.py views.png slices.png \
+  --slices 36 --preview check.png --html viewer.html
+```
+
+- `--slices N`: layer count. 15-20 chunky, 32-48 detailed.
+- `--order reading`: force TOP, SIDE, FRONT, BACK. Default matches views by proportion.
+- `--round`: towers, balloons, pots carve round, not square.
+- `--side-nose right`: the side view faces right.
+- `--colours N`: shared palette size, `0` keeps every colour.
+- `--normals path.png`: save a matching 3D normal-map slice strip.
+- `--emissive path.png`: save an auto-detected emissive mask strip (headlights, windows, neon).
+
+## Viewer
+
+`--html` writes a standalone page:
+- **Modes:** Turntable, **Scene** (Living Diorama with **Neon Street** and **Meadow Island** procedural stacked props, unified Y-sorting, and multi-PNG drop / `+ Add Prop`), Slice scan, Exploded view, and **Play** mode (**Drive** with WASD/arrows + drift across infinite Street/Meadow/Grid worlds, **Wind** sway, **Shatter** & rebuild).
+- **Lighting & Weather:** Live **Time of Day** (Day → Sunset → Night with auto-emissive glow and ground light pools), draggable sun (`Shift+drag`) with projected 3D shadows, and **Weather** (**Rain** with pixel streaks, ground ripples, and wavy upside-down wet reflections; **Snow** with real-time snow cap accumulation on upward-facing voxels via `normZ`).
+- **Performance:** Vectorized NumPy carving, zero-allocation typed-array software rasterizer, and angle/lighting-keyed prop sprite caching (~0.2–1.5 ms/frame in Chrome).
+- **Export:** 16-direction baked PNG sprite sheet export. `skills/sprite-stacking/scripts/viewer.html` also opens on its own and accepts dropped slice strips.
+
+## Requirements
+
+Python 3 with Pillow and NumPy (`pip install pillow numpy`).
+
+## Contributing
+
+```bash
+python3 tests/check.py
+```
+
+Prints `ok`.
+
+## Prior art
+
+Sprite stacking is a long-standing indie game technique, not invented here. This skill adds the four-view carving and the agent workflow.
+
+## Licence
+
+MIT
