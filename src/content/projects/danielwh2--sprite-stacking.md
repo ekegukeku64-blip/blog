@@ -5,13 +5,13 @@ name: "sprite-stacking"
 fullName: "danielwh2/sprite-stacking"
 description: "Agent skill: turn four pixel art views into fake-3D sprites you can spin. Works with Claude Code, Codex, Cursor, OpenCode, Gemini CLI, Pi."
 sourceUrl: "https://github.com/danielwh2/sprite-stacking"
-stars: 181
-forks: 15
+stars: 394
+forks: 28
 language: "HTML"
 topics: ["agent-skills", "claude-code", "codex", "cursor", "fake-3d", "gamedev", "pixel-art", "sprite-stacking"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-21"
+snapshotDate: "2026-11-22"
 pushedAt: "2026-11-21T01:28:57Z"
 ---
 

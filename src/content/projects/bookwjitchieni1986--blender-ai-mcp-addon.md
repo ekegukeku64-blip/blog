@@ -5,13 +5,13 @@ name: "blender-ai-mcp-addon"
 fullName: "bookwjitchieni1986/blender-ai-mcp-addon"
 description: "AI assistant and MCP server for Blender: visual chat, scene tools, multi-agent workflows. Works with ChatGPT/GPT, Claude, Gemini, Ollama, OpenCode. Blender AI addon, copilot for 3D, bpy Python scripting, MCP integration."
 sourceUrl: "https://github.com/bookwjitchieni1986/blender-ai-mcp-addon"
-stars: 1854
-forks: 23
+stars: 2680
+forks: 36
 language: "未知"
 topics: ["ai-agents", "ai-assistant", "blender", "blender-addon", "blender-ai", "blender-automation", "blender-mcp", "blender-plugin"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-21"
+snapshotDate: "2026-11-22"
 pushedAt: "2026-11-19T14:44:11Z"
 ---
 
