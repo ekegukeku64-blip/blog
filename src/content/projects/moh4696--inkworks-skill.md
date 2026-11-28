@@ -5,14 +5,14 @@ name: "inkworks-skill"
 fullName: "Moh4696/inkworks-skill"
 description: "Inkworks: an agent skill for interactive 3D how-it-works pages drawn like an engineering sheet."
 sourceUrl: "https://github.com/Moh4696/inkworks-skill"
-stars: 292
-forks: 33
+stars: 547
+forks: 56
 language: "JavaScript"
 topics: ["3d", "agent-skills", "claude-code", "education", "explainer", "threejs"]
 license: "MIT"
 homepage: "https://x.com/exploraX_"
 defaultBranch: "main"
-snapshotDate: "2026-11-26"
+snapshotDate: "2026-11-28"
 pushedAt: "2026-11-25T13:53:35Z"
 ---
 

@@ -5,14 +5,14 @@ name: "llm.asm"
 fullName: "alesha-pro/llm.asm"
 description: "Qwen3-0.6B inference (12 KB), bare-metal bootable OS (22 KB), and from-scratch Mini-GPT trainer with live Braille TUI (32 KB) in 100% pure x86-64 NASM assembly. Zero C, zero libc, zero dependencies."
 sourceUrl: "https://github.com/alesha-pro/llm.asm"
-stars: 688
-forks: 101
+stars: 2370
+forks: 362
 language: "Assembly"
 topics: ["assembly", "avx2", "bare-metal", "llm", "machine-learning", "nasm", "osdev", "qwen"]
 license: "MIT"
 defaultBranch: "main"
-snapshotDate: "2026-11-26"
-pushedAt: "2026-11-25T15:42:44Z"
+snapshotDate: "2026-11-28"
+pushedAt: "2026-11-27T20:40:20Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -24,13 +24,14 @@ Zero C, zero C++, zero Rust, zero libc, zero libm, zero runtime dependencies.
 
 Assembled directly with `nasm` and linked with `ld`. Every math kernel (`expf`, `sincosf`, `RMSNorm`, `RoPE`, `SiLU`, `Softmax`), AVX2+FMA+F16C GEMM/GEMV engine, BPE tokenizer, `clone()`/`futex()` thread pool, bare-metal SMP kernel, analytical backward pass, AdamW optimizer, and live Unicode Braille TUI is hand-written x86-64 assembly (`17,252` lines total across all three projects).
 
-## The Trilogy
+## The Projects
 
 | Project | Binary | Size | Deps | Key Numbers |
 |---|---|---:|---:|---|
-| **01-qwen3-inference/** | `build/asm-llm` | **14,712 B** *(14,008 B `FAST_Q8=0`)* | **0** | Static Linux ELF running `Qwen/Qwen3-0.6B` (Q8_0, built-in BPE tokenizer, GQA + QK-Norm + RoPE + SwiGLU, single-shot & `--chat` multi-turn KV-cache REPL). **`FAST_Q8=1` (default):** **126.8 tok/s** decode at 40T (**20.7 tok/s** at 1T), **+18% to +36% faster than `llama.cpp` CPU (`Q8_0`) across 1..40T**, **`0.99965`** cosine & **64/64** exact greedy tokens vs PyTorch FP32. |
-| **02-baremetal-os/** | `build/asm-llm-os.elf` | **24,252 B** *(23,612 B `FAST_Q8=0`)* | **0** | Bootable bare-metal `Qwen3-0.6B` OS with no Linux or Windows. Multiboot 1 -> Long Mode -> AVX2/FMA/F16C -> ACPI/APIC SMP -> VGA + PS/2 + COM1 multi-turn KV-cache chat (`/clear`, `/think`, `/bench`). **74–94 ms** boot, **134.9 tok/s** KVM EPYC (**23.7 tok/s** 1 vCPU, **136.6 tok/s** peak), **55.4 tok/s** live on Proxmox Xeon E5-2670 v3 with **0 GB** disk. |
-| **03-minigpt-train/** | `build/asm-gpt-train` | **32,944 B** | **0** | From-scratch FP32 Mini-GPT trainer and sampler. Register-blocked `6x16` AVX2+FMA SGEMM, full analytical backward pass (**`1.0000000000`** cosine across all 21 gradient tensors vs PyTorch CPU), decoupled AdamW, **27,662 train tok/s**, live 80x24 Braille TUI, `val_loss 4.19 -> 1.51` on TinyShakespeare in 4 min. |
+| **01-qwen3-inference/** | `build/asm-llm` | **14,712 B** *(14,008 B `FAST_Q8=0`)* | **0** | Pure x86-64 NASM static Linux ELF running `Qwen/Qwen3-0.6B` (Q8_0, built-in BPE tokenizer, GQA + QK-Norm + RoPE + SwiGLU, single-shot & `--chat` multi-turn KV-cache REPL). **`FAST_Q8=1` (default):** **126.8 tok/s** decode at 40T (**20.7 tok/s** at 1T), **+18% to +36% faster than `llama.cpp` CPU (`Q8_0`) across 1..40T**, **`0.99965`** cosine & **64/64** exact greedy tokens vs PyTorch FP32. |
+| **02-baremetal-os/** | `build/asm-llm-os.elf` | **24,252 B** *(23,612 B `FAST_Q8=0`)* | **0** | Pure x86-64 NASM bootable bare-metal `Qwen3-0.6B` OS with no Linux or Windows. Multiboot 1 -> Long Mode -> AVX2/FMA/F16C -> ACPI/APIC SMP -> VGA + PS/2 + COM1 multi-turn KV-cache chat (`/clear`, `/think`, `/bench`). **74–94 ms** boot, **134.9 tok/s** KVM EPYC (**23.7 tok/s** 1 vCPU, **136.6 tok/s** peak), **55.4 tok/s** live on Proxmox Xeon E5-2670 v3 with **0 GB** disk. |
+| **03-minigpt-train/** | `build/asm-gpt-train` | **32,944 B** | **0** | Pure x86-64 NASM FP32 Mini-GPT trainer and sampler. Register-blocked `6x16` AVX2+FMA SGEMM, full analytical backward pass (**`1.0000000000`** cosine across all 21 gradient tensors vs PyTorch CPU), decoupled AdamW, **27,662 train tok/s**, live 80x24 Braille TUI, `val_loss 4.19 -> 1.51` on TinyShakespeare in 4 min. |
+| **04-ring1-kernel-surgeon/** | `04-ring1-kernel-surgeon/build/surgeon.elf` | **75,424 B** | **0** *(freestanding NASM + zero-libc C)* | Bare-metal Type-1 AMD SVM hypervisor (`Ring -1`) running beneath unmodified Linux `5.15` (`Ring 0`) with an embedded **MiniCPM5-2B `Q4_K_M`** engine across 24 LAPIC SMP cores, NPT memory isolation, live `efifb` HUD, static x86-64 patch validator, and single-level KVM verifier RL. **97.54% pass@1** (`119/122` unseen test scenarios, `0%` dangerous continues) vs **16.39%** base. |
 
 ---
 
@@ -140,6 +141,16 @@ make train
 
 Full training, live Braille TUI, checkpoint chat loop, and PyTorch gradient check guide: **03-minigpt-train/README.md**.
 
+### 4. Live-Patch Linux Ring 0 Crashes from Ring `-1` (`04-ring1-kernel-surgeon/`)
+
+```bash
+cd 04-ring1-kernel-surgeon
+make hv                                # Build 75 KB freestanding Ring -1 AMD SVM hypervisor (surgeon.elf)
+python3 verifier/kvm_verifier.py --selftest
+```
+
+Full architecture, QEMU nested-SVM + VNC demo, SFT/GRPO training, and KVM verifier guide: **04-ring1-kernel-surgeon/README.md**.
+
 ---
 
 ## Repository Layout
@@ -181,6 +192,17 @@ llm.asm/
 │   ├── model.asm                  # Arena layout, deterministic init, full fwd/bwd pass, sampler
 │   ├── tui.asm                    # ioctl(TCGETS) TTY detect + flicker-free 80x24 ANSI/Braille TUI
 │   └── main.asm                   # CLI, auto char-vocab, 90/10 split, .gptckpt I/O, train/sample loop
+├── 04-ring1-kernel-surgeon/       # Phase 4: Ring -1 AMD SVM hypervisor + MiniCPM5-2B live kernel patcher
+│   ├── README.md
+│   ├── ARCHITECTURE.md            # Physical memory map, NPT isolation, SVM intercepts
+│   ├── Makefile                   # Builds surgeon.elf, surgeon_crash.ko, initramfs, UEFI ISO
+│   ├── hv/                        # Bare-metal Ring -1 hypervisor (NASM + freestanding zero-libc C)
+│   ├── guest/                     # Ring 0 fault-injection test module (crash_mod) & KVM verifier module (bench_mod)
+│   ├── dataset/                   # 48-pilot & 600-scenario corpus + DeepSeek distillation script
+│   ├── verifier/                  # 3-tier single-level QEMU/KVM + Capstone safety verifier
+│   ├── training/                  # MiniCPM5-2B LoRA SFT, KVM-verified GRPO, eval, TensorBoard logger
+│   ├── dashboard/                 # Live FastAPI training & verifier telemetry dashboard
+│   └── scripts/                   # Initramfs/ISO builders, QEMU/VNC demos, GGUF/.r1m packers
 └── scripts/
     ├── export_weights.py          # Offline HuggingFace Qwen3-0.6B -> .asmbin (Q8_0) converter
     ├── mkiso.sh                   # Bootable BIOS+UEFI hybrid GRUB Multiboot 1 ISO builder
@@ -213,11 +235,13 @@ Every phase is built on the same engineering rules: no runtime libraries, determ
 - **Phase 1 verification:** All math/SIMD kernels pass unit tests within `1e-7..1e-6` (`init_rope_freqs` FP64 `< 5e-14`) for both `FAST_Q8=1` and `FAST_Q8=0` across v1 FP32 and v2 FP16 scale formats. `FAST_Q8=1` matches PyTorch FP32 `Qwen3-0.6B` with `cosine = 0.9996517` and **64/64 exact greedy tokens** (`FAST_Q8=0` matches the Python Q8_0 reference with `cosine = 1.000000000`). Bit-exact deterministic from `1T` to `40T`.
 - **Phase 2 verification:** **100% token-exact and byte-for-byte identical** to Phase 1 across 5 test prompts (English, Russian UTF-8, arithmetic, `--think` mode), multi-turn KV-cache recall + `/clear`, and across `1..32` KVM vCPUs (`134.9 tok/s` at 16 vCPUs). Verified on both QEMU KVM (AMD EPYC 7642) and a real Proxmox VE VM (Intel Xeon E5-2670 v3, 0 GB disk, BIOS GRUB ISO).
 - **Phase 3 verification:** Verified against PyTorch FP32 CPU on all **21 parameter tensors** (`worst max_abs_diff = 3.35e-8`, `min cosine_sim = 1.0000000000`), 10-step AdamW + cosine LR + grad-clip trajectory (`max_loss_diff = 4.77e-7`), and bit-exact determinism across `1T`, `8T`, and `16T`.
+- **Phase 4 verification (`04-ring1-kernel-surgeon/`):** MiniCPM5-2B GRPO achieves **`97.54%` pass@1 (`119/122`)** on unseen held-out fault scenarios (`16.39%` base) with **`0%` dangerous continues** under the 3-tier QEMU/KVM verifier, and runs end-to-end inside Ring `-1` (`75 KB` `surgeon.elf`, 24 LAPIC SMP cores, 2 GiB read-only NVDIMM unmapped in AMD NPT) to live-patch `#PF`/`#DE`/`#UD`, delegate `extable`, and freeze `lock_held` faults.
 
 See each project's README for full tables, memory layouts, and reproduction steps:
 - 01-qwen3-inference/README.md
 - 02-baremetal-os/README.md
 - 03-minigpt-train/README.md
+- 04-ring1-kernel-surgeon/README.md
 
 ---
 

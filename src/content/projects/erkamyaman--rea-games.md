@@ -5,15 +5,15 @@ name: "rea-games"
 fullName: "erkamyaman/rea-games"
 description: "Reverse-engineer any game, rebuild it in any engine (web, Rust, Godot) and prove the rebuild plays the same, frame by frame. Behavior specs in the open GAME.md format."
 sourceUrl: "https://github.com/erkamyaman/rea-games"
-stars: 250
-forks: 43
+stars: 439
+forks: 92
 language: "JavaScript"
 topics: ["2048", "agent-skills", "bevy", "canvas", "claude-code", "clean-room", "codex", "deterministic"]
 license: "MIT"
 homepage: "https://erkamyaman.github.io/rea-games"
 defaultBranch: "main"
-snapshotDate: "2026-11-26"
-pushedAt: "2026-11-25T17:01:12Z"
+snapshotDate: "2026-11-28"
+pushedAt: "2026-11-28T07:21:03Z"
 ---
 
 > 本页保存的是公开项目资料快照，阅读过程不需要连接 GitHub。
@@ -60,6 +60,7 @@ Each is written from a behavior spec (`GAME.md`), draws its own art, and passes 
 | Blocks (falling blocks) | jakesgordon/javascript-tetris, MIT | [play it](https://erkamyaman.github.io/rea-games/play/blocks.html) | 36 cases, 104,208 frames: web, Godot and Rust (Bevy) ports |
 | Bricks (brick breaking) | jakesgordon/javascript-breakout, MIT | [play it](https://erkamyaman.github.io/rea-games/play/bricks.html) | 37 cases, 209,600 steps: web port |
 | Paddles (two-paddle ball game) | jakesgordon/javascript-pong, MIT | [play it](https://erkamyaman.github.io/rea-games/play/paddles.html) | 19 cases, 198,300 steps: web port |
+| Mines (mine-finding grid) | Joeynoh/HTML5-Minesweeper, MIT | [play it](https://erkamyaman.github.io/rea-games/play/mines.html) | 14 cases, 628 inputs: web port |
 
 ## How it works
 
@@ -90,6 +91,7 @@ blocks / godot      => 36/36 cases identical, 104208 inputs
 blocks / bevy       => 36/36 cases identical, 104208 inputs
 bricks / web        => 37/37 cases identical, 209600 inputs
 paddles / web       => 19/19 cases identical, 198300 inputs
+mines / web         => 14/14 cases identical, 628 inputs
 ```
 
 A check that cannot fail proves nothing, so each port was also broken on purpose (a constant, a collision offset, a timing gate, a spawn-gap factor): `verify` failed each time, for example 5 of 30 Canvas Bird cases pass with the 30 fps gate changed, 3 of 19 for 2048 with the spawn odds changed from 0.9 to 0.8.
@@ -115,13 +117,13 @@ node bin/rea-games.mjs verify my-game --port web
 node bin/rea-games.mjs pack all           # gzip the cases for git
 ```
 
-Needs Node 22. Browser games also need Playwright with Chromium; the Rust ports need `cargo`, the Godot one a Godot 4.4 binary (`REA_GODOT=/path/to/godot`).
+Needs Node 22. Browser games also need Playwright with Chromium (`npm install --no-save playwright && npx playwright install chromium`); for a Playwright install outside the repository, point `PLAYWRIGHT_PATH` at its `playwright` folder (`export PLAYWRIGHT_PATH=/usr/local/lib/node_modules/playwright` before the record command). The Rust ports need `cargo`, the Godot one a Godot 4.4 binary (`REA_GODOT=/path/to/godot`).
 
 ## Engines
 
 | Target | Status |
 |---|---|
-| Web (canvas, one HTML file, mobile friendly) | every game (2048, Dino, Canvas Bird, Blocks, Bricks, Paddles), verified |
+| Web (canvas, one HTML file, mobile friendly) | every game (2048, Dino, Canvas Bird, Blocks, Bricks, Paddles, Mines), verified |
 | Rust / Bevy | 2048, Dino, Canvas Bird and Blocks as Bevy projects (`dino-core` logic verified through `dino-runner`; the Bevy window itself compiles and ran 25 s under Xvfb, never played) |
 | Godot 4.4 (GDScript) | 2048, Dino, Canvas Bird and Blocks, verified: a headless runner passes all 19 cases. A playable scene (`ports/godot/main.tscn`) loads and takes input in a headless smoke test; its look has not been checked |
 | Unity (C#) | not started |
